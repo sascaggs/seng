@@ -1,4 +1,4 @@
-baseurl = "/"
+baseurl = "https://seng.netlify.app/"
 languageCode = "en-us"
 title = "Social Ecological Networks Group"
 theme = "hugo-lithium"
