@@ -9,7 +9,7 @@ The Social Ecological Networks Group (SENG) is graduate student led working grou
 
 At SENG, we hold regular meetings where we can openly discuss these complex network dynamics. In these meetings, we focus on **network theory** -- the concepts and ideas that we can use to apply a network perspective and conduct network science. But as you likely know, science is more than ideas; it is a practice. At SENG, we also hold meetings dedicated understanding **network analysis**, where we can learn to construct and analyze networks together as a casual learning community. 
 
-If any of this sounds interesting to you, [send us an email](https://seng.netlify.app/contact/) and get involved with SENG. If you'd like to learn more about how SENG is structured and what our short and long term goals are, have a look at our first post, [What is SENG?](https://seng.netlify.app/2021/01/11/what-is-seng/)
+If any of this sounds interesting to you, [send us a message](https://seng.netlify.app/contact/) and get involved with SENG. If you'd like to learn more about how SENG is structured and what our short and long term goals are, have a look at our first post, [What is SENG?](https://seng.netlify.app/2021/01/11/what-is-seng/)
 
 Cheers!
 
