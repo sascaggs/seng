@@ -1,0 +1,10 @@
+---
+title: Canon
+---
+
+*This section is in progress*
+
+```{r, echo=F, out.width="70%"}
+knitr::include_graphics('/images/fernand-de-canne.jpg/', error = F)
+```
+

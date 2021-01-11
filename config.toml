@@ -23,9 +23,14 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_cache$", "\\.knit\\.md$", "\\.utf8\
     weight=3
     
 [[menu.main]]
+    name = "Canon"
+    url = "/canon/"
+    weight=4
+
+[[menu.main]]
     name = "Contact"
     url = "/contact/"
-    weight=4
+    weight=5
     
 [params]
     description = "A website built through Hugo and blogdown."
