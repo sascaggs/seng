@@ -1,10 +1,52 @@
 ---
 title: Canon
+bibliography: seng_canon.bib
+output:
+    blogdown::html_page:
+        toc: true
 ---
 
-*This section is in progress*
+*This collection is always in progress*. 
 
-```{r, echo=F, out.width="70%"}
-knitr::include_graphics('/images/fernand-de-canne.jpg/', error = F)
-```
+# Network (Graph) Theory
 
+[Emergence of Scaling in Random Networks](https://homes.luddy.indiana.edu/jbollen/I501F13/readings/Science-1999-Barabasi-509-12.pdf) [@barabasi1999]
+
+[Explosive Percolation in Random Networks](http://www.uvm.edu/pdodds/files/papers/others/2009/achlioptas2009a.pdf) [@achlioptas2009]
+
+# Social Network Theory 
+
+[Social Capital and Social Quilts: Network Patterns of Favor Exchange](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.154.2629&rep=rep1&type=pdf) [@jackson2012]
+
+[Meeting Strangers and Friends of Friends: How Random are Social Networks](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.84.8381&rep=rep1&type=pdf) [@jackson2007]
+
+[Governing Institutional Complexity: The Ecology of Games Framework](https://onlinelibrary.wiley.com/doi/pdf/10.1111/psj.12028?casa_token=qidLJtKNYLgAAAAA%3AdDWTYUMb1oFzVHiOegyTcFPZjv7D9qFElERhqwvd3LqH7pKuuYdZFWOQkUyhVS5dBPxY5WoopfypIpk) [@lubell2013governing]  
+
+# Ecological Network Theory 
+
+[Ecological Networks: Linking Structure to Dynamics in Food Webs](https://books.google.com/books?hl=en&lr=&id=YpQRDAAAQBAJ&oi=fnd&pg=PP1&ots=K642d6Yw6X&sig=jYbQ1ORGpkloo8l3dxWSLaRB0fI#v=onepage&q&f=false) [@pascual2006]
+
+[Network structure and biodiversity loss in food webs: robustness increases with connectance](https://onlinelibrary.wiley.com/doi/abs/10.1046/j.1461-0248.2002.00354.x) [@dunne2002network]
+
+[The nested assembly of plant-animal mutualistic networks](https://www.pnas.org/content/pnas/100/16/9383.full.pdf) [@bascompte2003]
+
+# Social-Ecological Networks
+
+[Toward a Network Perspective of the Study of Resilience in Social-Ecological Systems](https://www.ecologyandsociety.org/vol11/iss1/art15/ES-2005-1462.pdf) [@janssen2006]
+
+# Network Analysis
+
+# Empirical Cases
+
+[Identifying governance gaps among interlinked sustainability challenges](https://www.sciencedirect.com/science/article/pii/S1462901118303010/pdfft?isDTMRedir=true&download=true) [@bergsten2019]
+
+# Philsophical Foundations
+
+[A Symbiotic View of Life: We Have Never Been Individuals](https://www.journals.uchicago.edu/doi/pdfplus/10.1086/668166) [@gilbert2012]
+
+[The information theory of individuality](https://link.springer.com/content/pdf/10.1007/s12064-020-00313-7.pdf) [@krakauer2020]
+
+
+# Full Reference List
+
+[Download current .bib file](/bib/seng_canon.bib)
