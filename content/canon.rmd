@@ -15,12 +15,15 @@ output:
 [Explosive Percolation in Random Networks](http://www.uvm.edu/pdodds/files/papers/others/2009/achlioptas2009a.pdf) [@achlioptas2009]
 
 # Social Network Theory 
+[Birds of Feather: Homophily in Social Networks](https://www.annualreviews.org/doi/pdf/10.1146/annurev.soc.27.1.415) [@mcpherson2001]
 
 [Social Capital and Social Quilts: Network Patterns of Favor Exchange](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.154.2629&rep=rep1&type=pdf) [@jackson2012]
 
 [Meeting Strangers and Friends of Friends: How Random are Social Networks](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.84.8381&rep=rep1&type=pdf) [@jackson2007]
 
 [Governing Institutional Complexity: The Ecology of Games Framework](https://onlinelibrary.wiley.com/doi/pdf/10.1111/psj.12028?casa_token=qidLJtKNYLgAAAAA%3AdDWTYUMb1oFzVHiOegyTcFPZjv7D9qFElERhqwvd3LqH7pKuuYdZFWOQkUyhVS5dBPxY5WoopfypIpk) [@lubell2013governing]  
+
+[The role of social networks in natural resource governance: What relational patterns make a differences?](https://www.stockholmresiliencecenter.org/download/18.5ce3bd8012d79a5929580003005/Bodin+and+Crona+2009_Social+networks+in+NRM+review.pdf) [@bodin2009role]
 
 # Ecological Network Theory 
 
@@ -34,9 +37,15 @@ output:
 
 [Toward a Network Perspective of the Study of Resilience in Social-Ecological Systems](https://www.ecologyandsociety.org/vol11/iss1/art15/ES-2005-1462.pdf) [@janssen2006]
 
+[Disentangling intangible social-ecological systems](http://explorer.bee.oregonstate.edu/Topic/InfluenceNetworks/Documents/DisentanglingIntangibleSES.pdf) [@bodin2012]
+
 # Network Analysis
 
+[Macrostructure from Microstructure: Generating Whole Systems from Ego Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4203462/) [@smith2012macro]
+
 # Empirical Cases
+
+[Why wage earners hunt: food sharing, social structure, and influence in an arctic mixed economy](http://eprints.lse.ac.uk/86516/1/Power_Why%20wage%20earners%20hunt_2018.pdf) [@ready2018wage]
 
 [Identifying governance gaps among interlinked sustainability challenges](https://www.sciencedirect.com/science/article/pii/S1462901118303010/pdfft?isDTMRedir=true&download=true) [@bergsten2019]
 
