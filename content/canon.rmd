@@ -15,6 +15,11 @@ output:
 [Explosive Percolation in Random Networks](http://www.uvm.edu/pdodds/files/papers/others/2009/achlioptas2009a.pdf) [@achlioptas2009]
 
 # Social Network Theory 
+
+[Network approaches and social movements](https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199678402.001.0001/oxfordhb-9780199678402-e-9) [@diani2015network]
+
+[Network theory | A network theory of power](https://ijoc.org/index.php/ijoc/article/view/1136/553) [@castells2011network]
+
 [Birds of Feather: Homophily in Social Networks](https://www.annualreviews.org/doi/pdf/10.1146/annurev.soc.27.1.415) [@mcpherson2001]
 
 [Social Capital and Social Quilts: Network Patterns of Favor Exchange](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.154.2629&rep=rep1&type=pdf) [@jackson2012]
@@ -34,6 +39,10 @@ output:
 [The nested assembly of plant-animal mutualistic networks](https://www.pnas.org/content/pnas/100/16/9383.full.pdf) [@bascompte2003]
 
 # Social-Ecological Networks
+
+[Managing ecological disturbances: Learning and the structure of social-ecological networks](https://www.sciencedirect.com/science/article/pii/S1364815217313075/pdfft?casa_token=V6jbplf111wAAAAA:SLSMw9lKHtWf8yefTzdNPWGDyilN8woe7zp-78fuRtSW8yTkZXf4BNEku0RCYTOTqp-ZJZXnNg&md5=afeb4de4cb5f0c326cd4aec2cc178778&pid=1-s2.0-S1364815217313075-main.pdf) [@baggio2018managing]
+
+[Early warning signs in social ecological networks](https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0101851&type=printable) [@suweis2014early]
 
 [Toward a Network Perspective of the Study of Resilience in Social-Ecological Systems](https://www.ecologyandsociety.org/vol11/iss1/art15/ES-2005-1462.pdf) [@janssen2006]
 
