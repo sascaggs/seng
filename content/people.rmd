@@ -1,6 +1,16 @@
 ---
-title: People
+title: Contributors
 ---
+
+![](/./people_files/SAS_amanita.jpg)
+
+### Shane A. Scaggs
+
+[Contact Shane](mailto: scaggs.32@osu.edu) (he/him)
+
+[Twitter](http://www.twitter.com/ShaneAScaggs)
+
+I am a PhD candidate and NSF Graduate Research Fellow in the Department of Anthropology at the Ohio State University where I work in the [Human Complexity Lab](http://u.osu.edu/hclab/). I am generally interested in how humans directly and indirectly shape ecosystems and the feedbacks between social and ecological processes. My dissertation research focuses on how Q'eqchi' Maya foragers and horticulturalists interact with tropical food webs and forest landscapes in southern Belize where I have conducted fieldwork with my adviser, [Dr. Sean Downey](https://anthropology.osu.edu/people/downey.205). In my master's research with [Dr. Drew Gerkey](https://liberalarts.oregonstate.edu/users/drew-gerkey), I conducted fieldwork with the [Division of Subsistence](https://www.adfg.alaska.gov/index.cfm?adfg=subsistence.main), a branch of the Alaska Department of Fish & Game, and used network modeling to characterize the relationship between subsistence harvest diversity and resource sharing in a network of rural Alaskan households.    
 
 ![](/./people_files/Headshot.jpg){width=280px}
 
@@ -8,8 +18,30 @@ title: People
 
 I am a graduate research fellow in the School of Environment and Natural Resources at The Ohio State University and I am interested in how people manage ecological processes. My master’s research, which is advised by [Dr. Ramiro Berardo](http://www.ramiroberardo.net/) and [Dr. Matthew Hamilton](https://senr.osu.edu/our-people/matthew-hamilton), focuses on a social-ecological network depicting climate change adaptation in Ohio. The guiding question of my research is to determine under what conditions environmental stakeholders manage for ecological interdependencies. My research interests in local environmental protection are heavily shaped by my undergraduate thesis experience, in which I studied how human-induced environmental stressors impact fish in Lake Erie.
 
-![](/./people_files/SAS_amanita.jpg)
+### Priya Bhattacharya
 
-### Shane A. Scaggs
+[Contact Priya](mailto: bhattacharya.97@osu.edu) (she/her)
 
-I am a PhD candidate and NSF Graduate Research Fellow in the Department of Anthropology at the Ohio State University where I work in the [Human Complexity Lab](http://u.osu.edu/hclab/). I am generally interested in how humans directly and indirectly shape ecosystems and the feedbacks between social and ecological processes. My dissertation research focuses on how Q'eqchi' Maya foragers and horticulturalists interact with tropical food webs and forest landscapes in southern Belize where I have conducted fieldwork with my adviser, [Dr. Sean Downey](https://anthropology.osu.edu/people/downey.205). In my master's research with [Dr. Drew Gerkey](https://liberalarts.oregonstate.edu/users/drew-gerkey), I conducted fieldwork with the [Division of Subsistence](https://www.adfg.alaska.gov/index.cfm?adfg=subsistence.main), a branch of the Alaska Department of Fish & Game, and used network modeling to characterize the relationship between subsistence harvest diversity and resource sharing in a network of rural Alaskan households.    
+[LinkedIn](https://www.linkedin.com/in/priya-bhattacharya-a4092919/)
+
+I have a bachelor's degree in commerce and have two master's degree in business administration and environmental science. Currently I am working on my research for PhD under Dr. Sayeed Mehmood. The topics are Reasonable Person Model and valuation of coal mine restoration efforts using the Stated Preference Method. 
+
+![](/./people_files/AndrewM.jpg){width=280px}
+
+### Andrew Mitchel 
+
+[Contact Mitchel](mailto: mitchel.13@osu.edu) (he/him/his)
+
+[Twitter](http://www.twitter.com/mitchel_andrew) 
+
+I am a first-year PhD student in Cultural Anthropology working with Professor Jeffrey Cohen. I received my BA from the University of Michigan in Anthropology and Spanish, and my MA in Latin American Studies from University of California, Los Angeles. My MA thesis concerned the Dominican academy system run by Major League Baseball, to which young Latin American baseball players are recruited and signed at sixteen years old in their first step toward potential major league stardom. My current dissertation plan is to study Latinx foodways around the Midwest. I hope to learn about how food traditions, as well as jobs in food service and food production, play into livelihoods for Latinx folks in this part of the country.
+
+![](/./people_files/Matthew.jpg){width=280px} 
+
+### Matthew Walker 
+
+[Contact Matthew](mailto: walker.2035@osu.edu) (He/Him)
+
+[LinkedIn](https://www.linkedin.com/in/matthew-j-walker-osu)
+
+I'm a senior undergrad at Ohio State studying Data Analytics and Comparative Studies. In my free time I enjoy rock climbing, reading, and photography (astro and analog). I am also a research assistant in the [Human Complexity Lab](http://u.osu.edu/hclab) under Dr. Sean Downey. In the long term, I am interested in growing interdisciplinary teams and reimagining how we use data in the social sciences. 
