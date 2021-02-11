@@ -8,7 +8,7 @@ output:
 
 *This collection is always in progress*. 
 
-# Network (Graph) Theory
+# Network (Graph) Theory 
 
 [Emergence of Scaling in Random Networks](https://homes.luddy.indiana.edu/jbollen/I501F13/readings/Science-1999-Barabasi-509-12.pdf) [@barabasi1999]
 
@@ -39,6 +39,8 @@ output:
 [The nested assembly of plant-animal mutualistic networks](https://www.pnas.org/content/pnas/100/16/9383.full.pdf) [@bascompte2003]
 
 # Social-Ecological Networks
+
+[Social-ecological network analysis for sustainability sciences: a systematic review and innovative research agenda for the future](https://iopscience.iop.org/article/10.1088/1748-9326/ab2619/pdf) [@sayles2019social]
 
 [Managing ecological disturbances: Learning and the structure of social-ecological networks](https://www.sciencedirect.com/science/article/pii/S1364815217313075/pdfft?casa_token=V6jbplf111wAAAAA:SLSMw9lKHtWf8yefTzdNPWGDyilN8woe7zp-78fuRtSW8yTkZXf4BNEku0RCYTOTqp-ZJZXnNg&md5=afeb4de4cb5f0c326cd4aec2cc178778&pid=1-s2.0-S1364815217313075-main.pdf) [@baggio2018managing]
 
