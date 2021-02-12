@@ -19,7 +19,7 @@ enableEmoji = true
     url = "/people/"
     weight=2
 [[menu.main]]
-    name = "Archives"
+    name = "Posts"
     url = "/post/"
     weight=3
     
@@ -31,7 +31,12 @@ enableEmoji = true
 [[menu.main]]
     name = "Contact"
     url = "/contact/"
-    weight=5
+    weight=6
+
+[[menu.main]]
+    name = "Meetings"
+    url = "/meetings/"
+    weight=5   
     
 [params]
     description = "The Social Ecological Networks Group"

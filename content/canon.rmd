@@ -60,6 +60,8 @@ output:
 
 [Identifying governance gaps among interlinked sustainability challenges](https://www.sciencedirect.com/science/article/pii/S1462901118303010/pdfft?isDTMRedir=true&download=true) [@bergsten2019]
 
+[Linking subsistence harvest diversity](https://pubmed.ncbi.nlm.nih.gov/33554415/) [@scaggs2021]
+
 # Philsophical Foundations
 
 [A Symbiotic View of Life: We Have Never Been Individuals](https://www.journals.uchicago.edu/doi/pdfplus/10.1086/668166) [@gilbert2012]

@@ -1,0 +1,79 @@
+---
+title: Foundations of the Network Perspective
+author: Shane A. Scaggs
+date: '2021-02-12'
+slug: foundations-of-the-network-perspective
+categories:
+  - theory
+tags:
+  - nodes
+  - edges
+  - boundaries
+  - layers
+---
+
+# Discussion I 
+
+To start our discussion, let's to reflect on our current understandings of a *network* as a concept. In small groups, take a moment to discuss the following questions.
+
+> *What is a network?* 
+
+> *How would you describe a network in simple terms?* 
+
+In our view, a network is a representation of a set(s) of **relationships** between one or more entities. The entities of interest to the SENG are usually social or ecological beings. But in theory, any entity can have connections and thus be represented within a network graph. 
+
+Networks are frequently used to represent the **structure** of a social or ecological system. As network scientist Albert-Lazlo Barabasi concluded in his book *Linked*, "networks are the prerequisite for describing any complex system, indicating that complexity theory must inevitably stand on the shoulders of network theory." Networks make the intractable tractable. Importantly, networks are purely an abstraction, but they are a useful for studying systems.
+
+# Nodes and Edges
+
+But how do we actually represent such complexity? 
+
+In network science, we use nodes and edges from graph theory. A **node** is any entity that is connected to other entities. Nodes often represent the conventional subjects of social and ecological sciences: persons, groups, organisms, populations, organizations, places. 
+
+An **edge** is a the relationship between two nodes. We don't need edges if our goal is to summarize the attributes of nodes. We can use conventional statistics for that. If we want to understand how individuals are connected and the implications of different kinds of connections, we need edges. 
+
+```{r, echo=F, message=F, warning=F, fig.cap="Two nodes (red) connected by a single undirected edge."}
+library(network)
+g <- network(matrix(c(0,1,1,0), nrow=2),
+             directed = F)
+par(mar=c(0,0,0,0))
+plot(g, vertex.cex = 5, edge.lwd=5)
+```
+
+# Discussion II
+
+Now that we understand the inherent relationality of networks and the way they are represented, let's think about some examples of networks and how they would be assembled. 
+
+> What are some examples of networks that interest you? 
+
+> Who/what are the nodes? 
+
+> What kinds of edges link the nodes? 
+
+# Network Forms 
+
+During that discussion, you might have noticed that there are many different ways that networks can be assembled. And it is not always clear how many kinds of nodes or edges there are. To this end, there are several general types of networks that are described and use in published literature. We will cover these types here, moving from simple to complex.
+
+## One-mode network 
+
+You can think about nodes and edges as **layers**. A network with a single layer contains one kind of node and one kind of edge. These are sometimes referred to as **one-mode networks**. 
+
+```{r, echo=F, fig.cap="A single layer (one-mode) network with 10 nodes."}
+set.seed(27)
+m <- matrix(c(rbinom(100, 1, prob = 0.3)), 
+       nrow = 10)
+diag(m) <- 0
+par(mar=c(0,0,0,0))
+plot(network(m, directed = F))
+```
+
+## Bipartite (two-mode) Network 
+
+## Directed Network 
+
+## Weighted (valued) Network 
+
+## Multilevel Network
+
+## Social Ecological Network (SEN)
+
