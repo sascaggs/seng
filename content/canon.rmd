@@ -1,11 +1,11 @@
 ---
 title: Canon
-bibliography: seng_canon.bib
+bibliography: seng_canon_update.bib
 output:
     blogdown::html_page:
         toc: true
 ---
-
+ 
 *This collection is always in progress*. 
 
 # Network (Graph) Theory 
@@ -20,7 +20,7 @@ output:
 
 [Network theory | A network theory of power](https://ijoc.org/index.php/ijoc/article/view/1136/553) [@castells2011network]
 
-[Birds of Feather: Homophily in Social Networks](https://www.annualreviews.org/doi/pdf/10.1146/annurev.soc.27.1.415) [@mcpherson2001]
+[Birds of Feather: Homophily in Social Networks](https://www.annualreviews.org/doi/pdf/10.1146/annurev.soc.27.1.415) [@mcpherson2001birds]
 
 [Social Capital and Social Quilts: Network Patterns of Favor Exchange](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.154.2629&rep=rep1&type=pdf) [@jackson2012]
 
@@ -52,9 +52,9 @@ output:
 
 # Network Analysis
 
-[Macrostructure from Microstructure: Generating Whole Systems from Ego Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4203462/) [@smith2012macro]
+[Macrostructure from Microstructure: Generating Whole Systems from Ego Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4203462/) [@smith2012macrostructure]
 
-# Empirical Cases
+# Empirical Cases 
 
 [Why wage earners hunt: food sharing, social structure, and influence in an arctic mixed economy](http://eprints.lse.ac.uk/86516/1/Power_Why%20wage%20earners%20hunt_2018.pdf) [@ready2018wage]
 

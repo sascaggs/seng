@@ -2,6 +2,7 @@
 title: Foundations of the Network Perspective
 author: Shane A. Scaggs
 date: '2021-02-12'
+bibliography: [seng_canon_update.bib]
 slug: foundations-of-the-network-perspective
 categories:
   - theory
@@ -12,11 +13,11 @@ tags:
   - layers
 ---
 
-# Discussion I 
+# Discussion I
 
 To start our discussion, let's to reflect on our current understandings of a *network* as a concept. In small groups, take a moment to discuss the following questions.
 
-> *What is a network?* 
+> *What is a network?*
 
 > *How would you describe a network in simple terms?* 
 
@@ -24,7 +25,7 @@ In our view, a network is a representation of a set(s) of **relationships** betw
 
 Networks are frequently used to represent the **structure** of a social or ecological system. As network scientist Albert-Lazlo Barabasi concluded in his book *Linked*, "networks are the prerequisite for describing any complex system, indicating that complexity theory must inevitably stand on the shoulders of network theory." Networks make the intractable tractable. Importantly, networks are purely an abstraction, but they are a useful for studying systems.
 
-# Nodes and Edges
+# Nodes and Edges 
 
 But how do we actually represent such complexity? 
 
@@ -33,7 +34,7 @@ In network science, we use nodes and edges from graph theory. A **node** is any 
 An **edge** is a the relationship between two nodes. We don't need edges if our goal is to summarize the attributes of nodes. We can use conventional statistics for that. If we want to understand how individuals are connected and the implications of different kinds of connections, we need edges. 
 
 ```{r, echo=F, message=F, warning=F, fig.cap="Two nodes (red) connected by a single undirected edge."}
-library(network)
+library(statnet)
 g <- network(matrix(c(0,1,1,0), nrow=2),
              directed = F)
 par(mar=c(0,0,0,0))
@@ -52,28 +53,178 @@ Now that we understand the inherent relationality of networks and the way they a
 
 # Network Forms 
 
-During that discussion, you might have noticed that there are many different ways that networks can be assembled. And it is not always clear how many kinds of nodes or edges there are. To this end, there are several general types of networks that are described and use in published literature. We will cover these types here, moving from simple to complex.
+Many of the examples that arise is disucssion are associated with several types of commonly used networks. Some of these are relatively simple and others that are very complex. As we move from simple to complex examples, think about different classes of nodes and edges forming specific layers. Simple networks might have just one layer, while more intricate forms may have multiple interacting layers at different scales.
 
-## One-mode network 
+## One-mode network. 
 
-You can think about nodes and edges as **layers**. A network with a single layer contains one kind of node and one kind of edge. These are sometimes referred to as **one-mode networks**. 
+A network with a single layer contains one kind of node and one kind of edge. These are sometimes referred to as **one-mode networks**. 
 
 ```{r, echo=F, fig.cap="A single layer (one-mode) network with 10 nodes."}
 set.seed(27)
 m <- matrix(c(rbinom(100, 1, prob = 0.3)), 
-       nrow = 10)
+            nrow = 10)
 diag(m) <- 0
 par(mar=c(0,0,0,0))
 plot(network(m, directed = F))
 ```
 
-## Bipartite (two-mode) Network 
+Many conventional social relationships can be represented with a single layer undirected network. Here are some examples: 
+
+- Kinship
+- Friendship
+- Joint attendance
+- Affiliation
+- Communcation
+- Coauthorship
+- Collaborative partnerships 
 
 ## Directed Network 
 
+While an undirected network may suffice for many social relationships, there may be reasons you want think about directionality. Take friendship, for example. Although friendship seems like an undirected attribute of a relationship, it is possible that one person calls someone there friend, but that someone does not reciprocate the sentiment. Thus, an advantage of using directed networks is the ability to ask how important **reciprocity** is to network structure. 
+
+In a directed network, a dyad can have one of three edge states (Figure 3):
+
+- 0 = no edge (j, k)
+- 1 = an edge in one direction (i, k)
+- 2 = reciprocal edge (i, j, and j, i)
+
+```{r, echo=F, fig.cap="A directed triad. Arrows indicate the flow of edges. A reciprocal edge is colored black."}
+e <- rbind(c('i','j'),
+           c('j','i'),
+           c('i','k'))
+g <- as.network(e, directed = T)
+par(mar=c(0,0,0,0))
+gplot(g, displaylabels = T, mode = "kamadakawai", edge.col = c('black','black','gray85'))
+```
+
 ## Weighted (valued) Network 
+
+A common representation of edges is binary; edges are either present (1) or absent (0). But many edges occur with different magnitudes, so we can envision edges with weights or values. In these weighted networks, edges could have meaningful frequencies or probabilities. 
+
+```{r, echo=F, fig.cap="An undirected weighted network. Edges is this network have values ranging from 0 to 3."}
+set.seed(27)
+m <- matrix( rbinom(100, 3, 0.2), 
+             nrow=10)
+diag(m) <- 0
+g <- as.network(m, directed = F, matrix.type = "adjacency", 
+                ignore.eval = F, names.eval = "weight")
+par(mar=c(0,0,0,0))
+gplot(g, edge.lwd = (g %e% 'weight')^2, usearrows=F)
+```
+
+
+## Bipartite (two-mode) Network 
+
+While a one-mode network only has one class of node with edges that occur within that class, a bipartite networks has two classes of nodes with edges that *only occur between classes*. 
+
+```{r, echo=F, fig.cap="Two-mode (bipartite) network. Note that edges only occur between red nodes (first layer) and blue nodes (second layer)."}
+e <- rbind(c('A','I'),
+           c('B','K'),
+           c('B','I'),
+           c('C','J'),
+           c('C','I'), 
+           c('D','K'),
+           c('D','I'))
+g <- as.network(e, bipartite=4, directed=FALSE)
+par(mar=c(0,0,0,0))
+gplot(g, gmode="twomode", usearrows=FALSE, displaylabels=TRUE)
+```
+
+Because of the strict definition of edges only occuring between layers, bipartitate networks are used for specific kinds of interactions: 
+
+- plant-pollinator connections 
+- host-parasite connections 
+- individuals attending events 
+- party affiliations 
+- policy writing 
+- place-based connections 
 
 ## Multilevel Network
 
+If a bipartite network has edges that only occur between modes (i.e. interlayer edges), then a multilevel networks has both interlayer and intralayer edges. 
+
+```{r, echo=F, message=F, warning=F, fig.cap="Multilevel network constructed using `igraph` and `graphlayouts` packages in `R`. Orange nodes and edges are one layer; black nodes and edges are a second layers; and purple edges indicate interlayer connections."}
+library(igraph)
+library(graphlayouts)
+
+set.seed(27)
+m1 <- matrix(rbinom(100, 1, 0.2), 
+             nrow=10)
+diag(m1) <- 0
+rownames(m1) <- colnames(m1) <- LETTERS[1:10]
+
+m2 <- matrix(rbinom(64, 1, 0.2), 
+             nrow=8)
+diag(m2) <- 0
+rownames(m2) <- colnames(m2) <- letters[1:8]
+
+
+g1 <- graph.adjacency(m1)
+g2 <- graph.adjacency(m2)
+el1 <- as.data.frame(get.edgelist(g1))
+el1$V3 <- 'black'
+el2 <- as.data.frame(get.edgelist(g2))
+el2$V3 <- 'tomato'
+int <- as.data.frame(
+    rbind(c('a','A'),
+          c('b','B'),
+          c('a','B'),
+          c('b','A'),
+          c('a','C'),
+          c('b','D'),
+          c('c','F'),
+          c('c','E'))
+)
+int$V3 <- 'purple'
+
+
+ml <- rbind(el1, el2, int)
+
+vlm <- data.frame(
+    id = c(LETTERS[1:10], letters[1:8]), 
+    lvl = c(rep(1,10), rep(2,8)), 
+    vcol = c(rep('black',10), rep('tomato',8))
+)
+
+mlg <- simplify(graph.data.frame(ml, vertices = vlm, directed = F), 
+                edge.attr.comb = 'first')
+
+xy <- layout_as_multilevel(mlg, type = 'all')
+
+par(mar=c(0,0,0,0))
+plot(mlg, layout = xy, vertex.label = NA,
+     vertex.color = V(mlg)$vcol,
+     vertex.frame.color = V(mlg)$vcol,
+     edge.color = E(mlg)$V3)
+```
+
+
 ## Social Ecological Network (SEN)
 
+SENs are a specific kind of multilevel network in which one layer contains social interactions (e.g. cooperation, sharing, communication) and another layer contains ecological interactions (e.g. migration, dispersal). These layers are connected with interlayer edges that specify how the social process is linked to the ecology and vice versa. 
+
+```{r, echo=F, fig.cap="A social-ecological motif following the conventions of Bodin and Tengo (2012). Orange nodes are social, with orange social-social edges. Green nodes are ecological, with green ecological-ecological connections. Blue edges represent social-ecological connections."}
+e <- rbind(c('S1','S2','tomato'),
+      c('E1','E2','forestgreen'),
+      c('S1','E1','cornflowerblue'),
+      c('S2','E2','cornflowerblue'))
+g <- graph.data.frame(e, directed = F)
+
+par(mar=c(0,0,0,0))
+plot(g, vertex.label = NA,
+     vertex.color = c('tomato','forestgreen','tomato',
+                      'forestgreen'
+                      ), 
+     edge.color = E(g)$V3,
+     edge.width = 2)
+
+```
+
+# Suggested Readings 
+
+There are many references available to learn about the foundations of the network perspective. This meeting draws inspiration from *The SAGE Handbook of Social Network Analysis* [@scott2011sage] and the structures outlined by Bodin and Crona [-@bodin2009role]. Our discussion of SENs draws on the ideas expressed by Sayles *et al.* [-@sayles2019social] and the well known article on *Disentangling Social Ecological Systems* [@bodin2012]. 
+
+
+[The R script used to create the figures in this post](foundations.R)
+
+# References 
