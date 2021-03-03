@@ -1,0 +1,341 @@
+---
+title: Introduction to Networks in R
+author: Shane A. scaggs
+date: '2021-02-26'
+slug: introduction-to-networks-in-r
+categories:
+  - methods
+tags:
+  - matrix
+  - edgelist
+  - nodes
+  - edges
+  - igraph
+  - statnet
+  - tidygraph
+  - visualization
+  - graphs
+output:
+    blogdown::html_page:
+        toc: true
+---
+
+In this meeting, we cover the basics of working with networks in R. By the end of the workshop, you will be acquainted with three packages -- `igraph`, `statnet`, and `tidygraph` -- and you will be able to create a network from scratch, turn it into a network object, create vertex and edge attributes, and genereate a basic visualization. Let's get started. 
+
+
+# Data Structures 
+
+Before we dive into network objects, let's understand the data structures that are used to represent relational data. We will focus on **matrices** and **edgelists**, as these are among the most common structures used for network data. 
+
+## The Square Matrix  
+
+```{r, echo=F }
+v <- letters[9:11]
+M <- matrix(c(0,0,0,
+              0,0,0,
+              0,0,0), 
+            nrow = length(v), 
+            dimnames = list(v,v))
+kableExtra::kbl(M, align = 'c')
+```
+
+
+One way to represent a network is using a square matrix where every node in the network has its own row and column. To do this, let's create a vector of three nodes `i`, `j`, and `k`. 
+```{r}
+v <- letters[9:11]
+v
+```
+
+Now, we can create a matrix in R using the index vector `v`. 
+
+```{r}
+M <- matrix(c(0,0,0,
+              0,0,0,
+              0,0,0), 
+            nrow = length(v), 
+            dimnames = list(v,v))
+M
+```
+
+Every cell in the matrix `M` represents a relationship between the two nodes -- these are the network edges. A value of `0` means that no edge is present. So in this matrix, there aren't any edges. But let's add an edge from `i` to `j` and from `i` to `k`.
+
+```{r}
+M[1,2] <- 1
+M[1,3] <- 1
+M
+```
+
+This is the conventional way of representing **directed** edges between nodes. We can represent a reciprocal edge from `k` to `i` as well. In an **undirected** network, this information is redundant. 
+
+```{r}
+M[3,1] <- 1
+M
+```
+
+Cells along the diagonal are known as loops. For example, we can an edge from `j` to `j` along the diagonal.
+
+```{r}
+M[2,2] <- 1
+M
+```
+
+You can always extract the diagonal using `diag()`. This is also a handy way to set the diagonal to `0` if your network does not contain loops. 
+
+```{r}
+diag(M) <- 0
+```
+
+## The Edgelist
+
+```{r, echo=F}
+E <- rbind(c('i','k'),
+           c('j','j'),
+           c('k','i'))
+colnames(E) <- c('Sender','Receiver')
+kableExtra::kbl(E)
+```
+
+An **edgelist** is a more compact way to store network data. This is because it does not include the `0`s in that are shown in the matrix. Instead an edgelist only contains rows for each of the edges that are present in the network. This may seem trivial for a small network of 3 nodes, but when you work with a large network with hundreds or thousands of rows, eliminating all of those zeros is very convenient. 
+
+To construct an edgelist, stack rows on top of one another using the `rbind` function. 
+
+```{r}
+E <- rbind(c('i','k'),
+           c('j','j'),
+           c('k','i'))
+```
+
+You can think of the first column as a *sender* column. The second column is a *receiver* column. This is how directionality is represented in the edge list. 
+
+If you want to add edges to an edgelist, simply bind a new row to the current edgelist. 
+
+```{r}
+E <- rbind(E, c('i','j'))
+E
+```
+
+Use the same bracket `[]` notation to delete rows. 
+
+```{r}
+E[-4,] 
+```
+
+## But Why? 
+
+You might be wondering... why do we need to know these details about data structure? Here are two reasons. 
+
+First, whether you collect your own network data or receive data from someone else, you'll need to store/wrangle the data into one of these formats. When you collect your own data, you can store it in this format right away. But if you receive a network you did not collect, knowing these data structures will help you understand what you are looking at. 
+
+Second, understand data structure opens the door to simulation. Put differently, you don't need to collect data to begin learning about and visualizing networks. You can simulate synthetic data. Here is a brief example. 
+
+### Bernouli Graph Simulation
+
+In our example matrix above there were `3` nodes and a matrix with `9` possible edges. These means that for $N$ nodes, there are $N^2$ possible edges. We can use this information to simulate a random network. 
+
+```{r}
+set.seed(777)
+# How many nodes? 
+N <- 7 
+
+# How many edges? 
+N_edges <- N^2
+
+# Use binomial distribution to simulate edges (coin flip)
+simM <- matrix(rbinom(N_edges, 
+                   size=1,
+                   prob=0.5),
+            nrow = N)
+# No loops
+diag(simM) <- 0
+simM
+```
+We can use a similar procedure to simulate an edgelist. We just need to create a third column to simulate the edges, then filter out the zeros. 
+
+```{r}
+set.seed(777)
+N <- letters[1:5]
+simE <- expand.grid(N,N)
+
+simE$Edge <- rbinom(nrow(simE), 
+                 size = 1, 
+                 prob = 0.5)
+
+simE <- simE[!simE$Edge == 0 & !simE$Var1 == simE$Var2, 1:2]
+head(simE)
+```
+# Network objects in `igraph`
+
+Now we will turn these data structures into `igraph` network objects. First, install and load the `igraph` package.
+
+```{r, echo=FALSE,message=F, warning=F}
+library(igraph)
+```
+```{r, eval=FALSE}
+install.packages('igraph')
+library(igraph)
+```
+
+First let's create some attributes for our `3` node network. They don't need to be fancy; just some sizes and colors. 
+
+```{r}
+att <- data.frame(
+    name = c("i","j","k"), 
+    size = c(20,27,34),
+    color = c('tomato', 
+              'cornflowerblue', 
+              'darkorchid')
+)
+att
+```
+
+## Matrix $\rightarrow$ network
+
+To create a network object using a matrix, we use the `graph.adjacency` function. In graph theory, relational matrices are often referred to as adjacency matrices. Use the `M` matrix that we created before.
+
+```{r}
+gM <- graph.adjacency(M)
+gM
+```
+When we call the object, we receive a summary of the network. `DN` means this is a *directed network* with `3` nodes and `3` edges. There is just one attributes, the `name` of the vertices. We can tell that this is a categorical vertex attribute by the notation `(v/c)`. The edges are listen at the bottom. 
+
+Manually add vertex attributes to the network `gM` from out `att` data frame. 
+
+```{r}
+gM <- set_vertex_attr(gM, name = 'size', value = att$size)
+gM <- set_vertex_attr(gM, name = 'color', value = att$color)
+gM
+```
+
+## Edgelist $\rightarrow$ network
+
+To create an object using an edgelist, we use the `graph.data.frame` function. Using edgelists is nice because you can add the vertex attribute table in directly. 
+
+```{r}
+gE <- graph.data.frame(E, vertices = att)
+gE
+```
+Once you have an `igraph` network object, you can extract vertex and edge attributes. 
+```{r}
+V(gE)$color
+```
+We don't have any edge attributes in this network, but if we did, we would use `E(object)$attr` syntax. 
+
+## Visualize `igraph` objects 
+
+There are many aesthetic properties of network graph. But you can generally think of them as **vertex** (or node) aesthetics, **edge** aesthetics, and **network** aesthetics. To learn more about all of the ways to specify these in `igraph`, called `??igraph.plotting`. 
+
+Let's visualize our object `gE`. Here is a generic plot. 
+
+```{r}
+plot(gE)
+```
+
+By default, `igraph` labels each node with the `$name` attribute, and, if they exist, it will choose the sizes and colors using the `$color` and `$size` attributes. Since we set `size` and `color` in our `att` data frame, we replaced the defaults. But we can easily override them. 
+
+```{r}
+plot(gE, 
+     vertex.color = '#2a00fa', 
+     vertex.size = 30)
+```
+
+Let's also change the color of the label to make it easier to read, change the edge colors to black, and make the arrow heads a bit smaller. 
+
+```{r}
+plot(gE, 
+     vertex.color = '#2a00fa',
+     vertex.size = 30,
+     vertex.label.color = 'white', 
+     edge.color = 'black',
+     edge.arrow.size = 0.681)
+```
+
+Finally, let's set the layout to `layout.circle` and add some curve to the edges.
+
+```{r}
+plot(gE, 
+     vertex.color = '#2a00fa',
+     vertex.size = 30,
+     vertex.label.color = 'white', 
+     edge.color = 'black',
+     edge.arrow.size = 0.681, 
+     edge.curved = 0.1,
+     layout = layout.circle)
+```
+
+
+# Network objects in `statnet`
+
+Create network objects in `statnet` is pretty intuitive. First, install and load the `statnet` suite of packages. 
+
+```{r, eval=FALSE}
+install.packages('statnet', dependencies=T)
+library(statnet)
+```
+```{r, echo=F, message=F, warning=F}
+library(statnet)
+```
+
+To create network objects, use the `network` function. When using an edgelist, tell the function you are using one in the `matrix.type` parameter.
+```{r}
+netM <- network(M, vertex.attr = att)
+netE <- network(E, vertex.attr = att, 
+                matrix.type = "edgelist" )
+netE
+```
+
+Like the `igraph` object, when we call the `network` object, we get a summary of some important network details. 
+
+To extract variables from the `network` object, we use one of three operators:
+
+- `%v%` -- extract vertex attributes
+- `%e%` -- extract edge attributes 
+- `%n%` -- extract network attributes 
+
+For example, we can see the values for color by extracting the attribute from the network by calling the network object, the appropriate operator, and the name of the attribute. 
+
+```{r}
+netE %v% 'color'
+```
+
+
+## Visualize `network` objects
+
+Rather than working with the same old triadic network as we did before, let's load a network from the `ergm.count` library that is part if `statnet`. 
+
+```{r}
+data(zach)
+```
+
+This is a network known as Zachary's karate club. Here is the description from the package: 
+
+> *Zachary (1977) reported observations of social relations in a university karate club, with membership that varied between 50 and 100, of whom 34 individuals: 32 ordinary club members and officers, the club president ("John A."), and the part-time instructor ("Mr. Hi"); consistently interacted outside of the club. Over the course of the study, the club divided into two factions, and, ultimately, split into two clubs, one led by Hi and the other by John and the original club's officers. The split was driven by a disagreement over whether Hi could unilaterally change the level of compensation for his services.*
+
+Call the `zach` object and see the description. 
+
+```{r}
+zach
+```
+Generate a generic plot of `zach` using the `gplot` function specific to the `sna` package. 
+
+```{r}
+par(mar=c(0,0,0,0)) # make margins smaller
+gplot(zach, usearrows = F)
+```
+
+There are appear to be some individuals who have many more connections than any of the others. Let's add an attribute to each node that shows the count of their connections. This is called **degree centrality**, and we can calculate it using the function `degree`. 
+
+```{r}
+# set gmode to 'graph' for undirected graphs 
+set.vertex.attribute(zach, 
+                     attrname = 'degree', 
+                     value = degree(zach, gmode = 'graph'))
+
+```
+
+Now we have a vertex attribute that we can use to rescale the size of each node. 
+
+
+
+# References
+
+Zachary, WW (1977). An Information Flow Model for Conflict and Fission in Small Groups. Journal of Anthropological Research, 33(4), 452-473.
