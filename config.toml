@@ -51,8 +51,8 @@ enableEmoji = true
     MathJaxVersion = "2.7.5"
 
     # path to the favicon, under "static"
-    favicon = "favicon.ico"
-
+    favicon = "images/SENG_Circle_NoOutline.png"
+    
     [params.logo]
     url = "SENG_Circle_NoOutline.png"
     width = 50

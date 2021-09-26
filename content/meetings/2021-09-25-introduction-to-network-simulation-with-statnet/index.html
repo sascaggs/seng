@@ -1,0 +1,405 @@
+---
+title: 'Network simulation using statnet'  
+author: Shane A. Scaggs
+date: '2021-09-25'
+slug: introduction-to-network-simulation-with-statnet
+categories:
+  - methods
+tags:
+  - statnet
+  - Rstudio
+  - analysis
+  - simulation
+  - coding
+  - workflow
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="preamble" class="section level1">
+<h1>Preamble</h1>
+<p>In this post, I will demonstrate how to use tools from the <code>statnet</code> collection of packages to simulate and model networks. The purpose of this post is to provide readers with tools that I wish I had when I first started using network analysis. <em>I’m not an expert and I’m still learning how to use these tools well</em>. But knowing they exist and how to use them will enable you to creatively study network processes and validate your prior knowledge of and conclusions about the networks that you study.</p>
+<div id="why-simulate" class="section level2">
+<h2>Why simulate?</h2>
+<p>Before we get into the content, let me first pose a question about simulation: why should we use simulation in our data analysis? Well, simulation can be pretty fun, but I am biased, so here are some better reasons.</p>
+<ol style="list-style-type: decimal">
+<li>Connect theory to practice.</li>
+<li>Practice analysis before you have data.</li>
+<li>Improve research design.</li>
+<li>Contribute to open science.</li>
+</ol>
+<p>Simulation forces you to make careful decisions about the processes that generate a network. These decisions are much improved if you draw on existing theory and published literature. So a focus on simulation will help you connect theory to method in a practical way. Additionally, simulation let’s you work with (synthetic) data before you have started collecting a network. This greatly improves research design because you’ll know, before you start data collection, what kinds of variables and sample sizes are needed to detect patterns. Having a prior understanding of candidate models and variables makes it easier to explain your conclusions once you’ve collected and analyzed empirical data and your simulations can be readily shared. This kind of open science improve reproducibility and helps the scientific community validate and improve theory.</p>
+</div>
+<div id="the-tools" class="section level2">
+<h2>The tools</h2>
+<p>Throughout this post, I’ll be using several packages. I’ll use the <code>statnet</code> collection for many of the network tasks, but I’ll also dip into the <code>tidyverse</code> for data wrangling. I use <code>igraph</code> for very specific data management tasks and <code>intergraph</code> to switch between <code>network</code> and <code>igraph</code> objects.</p>
+<pre class="r"><code>library(tidyverse)
+library(igraph)
+library(intergraph)
+library(statnet)
+library(tidygraph)
+library(ggraph)</code></pre>
+</div>
+<div id="specifying-formulas-with-ergm-terms" class="section level2">
+<h2>Specifying formulas with <code>ergm-terms</code></h2>
+<p>Whether you are simulating or modeling a network, the formula syntax used within <code>statnet</code> remains the same. The syntax is superificially similar to syntax use in <code>lm</code> and <code>glm</code> in <code>R</code>. Here is a simple example:</p>
+<blockquote>
+<p><code>network ~ edges + mutual + nodematch('group')</code></p>
+</blockquote>
+<p>On the left of the tilde, we include our network object. On the right of the tilde are the <code>edges</code> and <code>mutual</code> terms. These are terms within the <code>ergm</code> package that codify network structures. For example, <code>edges</code> similar to an <code>Intercept</code> and is used to estimate network density. The <code>mutual</code> term estimates reciprocity directed networks.</p>
+<p>I am using the last term, <code>nodematch</code> to parameterize the likelihood that two individuals who share the same attribute value (in this case <code>group</code>) will connect. This term can be used to understand homophily. Some terms like <code>nodematch</code> require attribute arguments, while structural terms, like <code>mutual</code> or <code>edges</code>, don’t necessarily require attributes. To view all of the terms in the Help tab, call <code>?ergm-terms</code>.</p>
+</div>
+<div id="initializing-an-empty-network" class="section level2">
+<h2>Initializing an empty network</h2>
+<p>The first step in our workflow is to initialize a network of <code>N</code> vertices with no edges (<code>density = 0</code>). We are going to set our own parameters for each term that we will used to generate the network. The initialized network object serves as a container for the network that we will generate.</p>
+<pre class="r"><code>set.seed(777)                      # reproducibility
+N &lt;- 20                            # N vertices
+net1 &lt;- network(N, directed = T, density = 0)    # edge density
+net1</code></pre>
+<pre><code>##  Network attributes:
+##   vertices = 20 
+##   directed = TRUE 
+##   hyper = FALSE 
+##   loops = FALSE 
+##   multiple = FALSE 
+##   bipartite = FALSE 
+##   total edges= 0 
+##     missing edges= 0 
+##     non-missing edges= 0 
+## 
+##  Vertex attribute names: 
+##     vertex.names 
+## 
+## No edge attributes</code></pre>
+<p>If we were only using structural terms like <code>edges</code>, then we could simulate right away. Terms based on attribute conditions need attributes assigned. For simplicity, let’s just assign two color attributes: <code>purple</code> and <code>green.</code> We just have to make sure the length of our attribute vector matches the length of <code>N</code>.</p>
+<pre class="r"><code># some colors
+cols &lt;- c(&#39;purple&#39;,&#39;green&#39;)
+
+# sample from `col` and assign to net1
+net1 %v% &#39;vcolor&#39; &lt;- sample(cols, size = N, replace = T)
+net1 %v% &#39;vcolor&#39;</code></pre>
+<pre><code>##  [1] &quot;green&quot;  &quot;purple&quot; &quot;purple&quot; &quot;green&quot;  &quot;green&quot;  &quot;green&quot;  &quot;green&quot;  &quot;purple&quot;
+##  [9] &quot;purple&quot; &quot;green&quot;  &quot;green&quot;  &quot;green&quot;  &quot;green&quot;  &quot;green&quot;  &quot;green&quot;  &quot;purple&quot;
+## [17] &quot;green&quot;  &quot;purple&quot; &quot;purple&quot; &quot;purple&quot;</code></pre>
+</div>
+<div id="parameterization-and-calibration" class="section level2">
+<h2>Parameterization and calibration</h2>
+<p>The final step in a basic simulation is to set the coefficients that <code>simulate</code> will use to generate the network. The scale used to specify these coefficients is in <em>log-odds</em>, which can be a bit challenging to understand. It is easier if you convert log-odds into a probability:</p>
+<pre class="r"><code>logit2prob &lt;- function(coef) {
+  odds &lt;- exp(coef)
+  prob &lt;- odds / (1 + odds)
+  return(prob)
+}</code></pre>
+<p>Use this reference point when setting a coefficient:</p>
+<blockquote>
+<p>When the log-odds are 0, this is the same as a 0.5 probability.</p>
+</blockquote>
+<p>See for yourself.</p>
+<pre class="r"><code>logit2prob(0)</code></pre>
+<pre><code>## [1] 0.5</code></pre>
+<p>In practice, theory and published studies should help you decide coefficient parameters. For now, we’ll generate a sparse network (<code>density ~0.02</code>) where there is a half chance of reciprocity (<code>log-odds = 0</code>) and homophily is probable (<code>log-odds = 1</code>)</p>
+<pre class="r"><code># density (probability) to log odds 
+qlogis(0.02)        # -3.8</code></pre>
+<pre><code>## [1] -3.89182</code></pre>
+<pre class="r"><code># model formula 
+form1 &lt;- net1 ~ edges + mutual + nodematch(&#39;vcolor&#39;)
+
+# coefficients must be same order and length as terms to the right of ~
+coefs &lt;- c(qlogis(0.02),0,2)  </code></pre>
+<p>Now place the formula and coefficients inside <code>simulate</code> and store the results.</p>
+<pre class="r"><code>sim1 &lt;- simulate(form1, coef = coefs)
+sim1</code></pre>
+<pre><code>##  Network attributes:
+##   vertices = 20 
+##   directed = TRUE 
+##   hyper = FALSE 
+##   loops = FALSE 
+##   multiple = FALSE 
+##   bipartite = FALSE 
+##   total edges= 27 
+##     missing edges= 0 
+##     non-missing edges= 27 
+## 
+##  Vertex attribute names: 
+##     vcolor vertex.names 
+## 
+## No edge attributes</code></pre>
+<pre class="r"><code># plot networks
+gplot(sim1, vertex.col = sim1 %v% &#39;vcolor&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>You can do simulations like these over and over for different combinations of coefficients. The iterated workflow of sweeping through parameter estimates is something we will cover in the next example. For now, here are the important steps:</p>
+<ol style="list-style-type: decimal">
+<li><strong>specification</strong>: remember the formula <code>network ~ ergm-terms</code>; explore <code>?ergm-terms</code> and create attributes for specific terms.</li>
+<li><strong>initialization</strong>: create a network with <code>N</code> nodes and 0 edge <code>density</code>.</li>
+<li><strong>parameterization</strong>: choose coefficient values for each of your simulation terms.</li>
+<li><strong>inspection</strong>: use descriptive graphs and summary statistics to understand the output of your simulation.</li>
+</ol>
+</div>
+</div>
+<div id="birds-of-a-feather" class="section level1">
+<h1>Birds of a feather</h1>
+<p><img src="images/Flock-Party_Eric-Losh.jpg" style="width:70.0%;height:70.0%" /></p>
+<p>Artwork by <a href="http://www.elosh.com/illustration/">Eric Losh</a></p>
+<p>Flocking behavior is an interesting social phenomenon and it turns out that some birds like to hang out in mixed species flocks. Let’s simulate some different flocking interactions and see what kind of networks form. We’ll start by picking where we left off with <em>homophily</em>.</p>
+<div id="flock-together" class="section level2">
+<h2>Flock together</h2>
+<p>Birds who prefer to interact with their conspecifics would be an example of intraspecific homophily. So let’s initialize a network with a vertex attribute for <code>species</code> and vary the strength of intraspecific interactions.</p>
+<pre class="r"><code># initialization
+N_birds &lt;- 30   
+N_sp &lt;- 5        # how many species? 
+flock &lt;- network(N_birds, directed = F, density = 0)</code></pre>
+<p>Now assign a species to each vertex. We’ll just index each species with an integer, and sample from those integers. In practice this will be based on observations and species identifications.</p>
+<pre class="r"><code># species vector
+species &lt;- sample( 1:N_sp,          # species index
+                   size = N_birds,  # N samples = N birds
+                   replace = T)     # replace index after each sample
+# assignment
+flock %v% &#39;species&#39; &lt;- species
+flock %v% &#39;species&#39; </code></pre>
+<pre><code>##  [1] 3 5 3 3 5 4 4 3 1 5 1 4 3 5 5 4 2 3 4 5 1 3 2 1 3 3 4 3 3 3</code></pre>
+<p>It’s possible that not every species would be equality present. We can alter this by using the <code>prob</code> argument in <code>sample</code>. For simplicity, we’ll assume all species are evenly abundant.</p>
+</div>
+<div id="density-parameter" class="section level2">
+<h2>Density parameter</h2>
+<p>The model formula for this simulation is: <code>flock ~ edges + nodematch('species')</code>. But we need to choose coefficients for each of the terms. We know that homophily should be positive, but it’s hard to know what the log-odds for energy should be.</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-12"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" alt="Many networks are sparse, with fewer than 2% of all possible edges present. This corresponds appoximately to -4 log odds (reference lines). A) Relationship between log odds and probability; B) zoomed in on -4 and 0.02." width="70%" />
+<p class="caption">
+Figure 1: Many networks are sparse, with fewer than 2% of all possible edges present. This corresponds appoximately to -4 log odds (reference lines). A) Relationship between log odds and probability; B) zoomed in on -4 and 0.02.
+</p>
+</div>
+</div>
+<div id="parameter-sweep" class="section level2">
+<h2>Parameter sweep</h2>
+<p>If we really want to understand the impact of homophily, we should simulate several networks with different coefficient values for <code>nodematch('species')</code>. We can do this by creating a sequence of coefficient values (on the log odds scale), and using a <code>for</code> loop to simulate one network for each value. To reduce the computational load, I’m going create a sequence of 9 values for 9 different networks.</p>
+<pre class="r"><code>N_sims &lt;- 9                              # number of simulations
+Hseq &lt;- seq(-2,2, length.out = N_sims)   # length.out controls breaks
+Hseq</code></pre>
+<pre><code>## [1] -2.0 -1.5 -1.0 -0.5  0.0  0.5  1.0  1.5  2.0</code></pre>
+<p>I also need a container for the results. I’ll use an empty <code>list</code>.</p>
+<pre class="r"><code>L &lt;- list() </code></pre>
+<p>Now write a <code>for</code> loop that cycles through each value of <code>Hseq</code>, uses that value as a coefficient for a simulation, and plots the result. Keep density constant at <code>-5</code> to see the effect of homophily changing from negative to positive.</p>
+<pre class="r"><code># plotting grid parameters
+par(mfrow=c(3,3), mar=c(2,2,2,2))
+
+# loop through sequence
+for(i in seq_along(Hseq)) {
+  
+  # simulate every value of Hseq
+  L[[i]] &lt;- simulate(flock ~ edges + nodematch(&#39;species&#39;), 
+                     coef = c(-5, i), 
+                     seed = 777)
+  
+  # plot resulting network with minimal aesthetics
+  gplot( L[[i]], 
+        vertex.col = L[[i]] %v% &#39;vcolor&#39;, 
+        edge.col = adjustcolor(&#39;black&#39;, alpha.f = 0.5), 
+        arrowhead.cex = 0.1, 
+        main=paste(&#39;homophily =&#39;, round( logit2prob(Hseq[i]), digits = 2))) 
+}</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>We can see qualitative changes in the network structure from one graph to the next. For a quantitative description of the changes, let’s plot the degree distributions for each of these 9 networks.</p>
+<pre class="r"><code># first I calculate degree centrality for each node in all 9 networks
+G &lt;- lapply(L, degree) 
+
+# convert list to data.frame
+names(G) &lt;- Hseq         # name the list 
+df &lt;- bind_rows(G)       # collapse list since each element same dimensions
+head(df)</code></pre>
+<pre><code>## # A tibble: 6 x 9
+##    `-2` `-1.5`  `-1` `-0.5`   `0` `0.5`   `1` `1.5`   `2`
+##   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     2      2     2      8     8    18    12    20    20
+## 2     0      0     4      2    12    10     8    12    12
+## 3     0      0     6      2    14    12    18    20    22
+## 4     0      2     0      6    14    10    20    22    22
+## 5     2      0     4      4     8     8    10    12    10
+## 6     0      0     0      2    12     8    10    10    10</code></pre>
+<p>Now we can use<code>df</code> – which contains 9 columns of degree centrality scores 9 simulated network – to plot the distributions and compare the effects. Explaining how to plot these is beyond this scope of this document, but there are many plotting tutorials available (including my own).</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="408" /></p>
+<p>Looking at the graphs, it is clear that as homophily increase, so does the density. But I thought we held density constant? We did, but since there are lots of <em>possible</em> species pairs available in this network (each species has ~15 members), as we increase the odds, more edges form and this increase the network density above and beyond coefficient. This is evident in graph A: the density shifts more or less symmetrically to the right, suggesting that increased homophily improve the degree centrality of all vertices on average.</p>
+</div>
+</div>
+<div id="body-size" class="section level1">
+<h1>Body size</h1>
+<p>In a 2012 paper, Farine, Garroway, and Sheldon use network analysis to study a mixed species flock made up of blue tits (<em>Cyanistes caeruleus</em>), coal tits (<em>Parus ater</em>), great tits (<em>Parus major</em>), marsh tits (<em>Poecile palustris</em>), and nuthatches (<em>Sitta europaea</em>). Two hypotheses – vigilance and foraging efficiency – are thought to explain some aspects of group composition, and both are connected to body size and dominance.</p>
+<p>Larger individuals tend to be more dominant within groups of birds and fishes. A consequence of this is that dominant individuals tend to face less competition from social partners, which makes them more efficien foragers, and they can deter predators more easily, which improves vigilance. So the expectation of Farine, Garroway, and Sheldon is that larger birds should have more partners. They also argue that, in general, birds ought to prefer heterospecifics (i.e. negative homophily) because they will encounter a greater variety of body sizes, thus increasing their chances of foraging with an efficient and protective partner.</p>
+<div id="creating-wingspan-and-length-variables" class="section level2">
+<h2>Creating wingspan and length variables</h2>
+<p>How should we decide what size to make each bird? There are many sources of information, but we want to keep it rough dirty, so let’s just visit the <a href="https://www.bto.org/">British Trust for Ornithology</a>. Here is what they say:</p>
+<pre><code>##        bird length wingspan
+## 1 great tit     14       24
+## 2  coal tit     12       19
+## 3  blue tit     12       18
+## 4 marsh tit     11       19
+## 5  nuthatch     14       24</code></pre>
+<p>So let’s add our own <code>wingspan</code> and <code>length</code> variables by drawing random values centered around the values in the table above.</p>
+<p>First, we’ll sample from the <code>bird</code> column to get our species groups.</p>
+<pre class="r"><code># set seed and number of birds
+set.seed(27)
+N_birds &lt;- 30
+
+# sample from species common names
+df &lt;- data.frame(
+  species = factor(sample(BTO$bird, size = N_birds, replace = T))
+)</code></pre>
+<p>Then we’ll merge our newly sampled birds with the <code>BTO</code> table to get our mean <code>wingspan</code> and <code>length</code> values.</p>
+<pre class="r"><code># merge to get length and wingspan 
+df &lt;- merge(BTO, df, by.x = &#39;bird&#39;, by.y = &#39;species&#39;)
+head(df)</code></pre>
+<pre><code>##       bird length wingspan
+## 1 blue tit     12       18
+## 2 blue tit     12       18
+## 3 blue tit     12       18
+## 4 blue tit     12       18
+## 5 blue tit     12       18
+## 6 coal tit     12       19</code></pre>
+<p>Now we will <code>group_by</code> the <code>bird</code> column and use <code>mutate</code> two create two new variables: <code>sim_wingspan</code> and <code>sim_length</code>. <strong>Note</strong> that we use the <code>wingspan</code> and <code>length</code> variables embedded inside of the <code>rnorm</code> function. The makes it so that the mean value for the random draw changes according to the group. Finally the function <code>n()</code> tells <code>mutate</code> how many rows are associated with each bird group – this is the number of random draws that we need.</p>
+<pre class="r"><code># use dplyr to sim new variables
+df &lt;- df %&gt;% group_by(bird) %&gt;%
+  mutate(sim_wingspan =  rnorm(n(), wingspan, 4), 
+         sim_length = rnorm(n(), length, 4))
+df</code></pre>
+<pre><code>## # A tibble: 30 x 5
+## # Groups:   bird [5]
+##    bird      length wingspan sim_wingspan sim_length
+##    &lt;chr&gt;      &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;
+##  1 blue tit      12       18        18.3       15.2 
+##  2 blue tit      12       18        17.7        6.97
+##  3 blue tit      12       18         6.01      18.8 
+##  4 blue tit      12       18        13.1       15.4 
+##  5 blue tit      12       18        14.0       13.3 
+##  6 coal tit      12       19        20.3       16.4 
+##  7 coal tit      12       19        24.2       13.7 
+##  8 great tit     14       24        25.3       18.1 
+##  9 great tit     14       24        23.4        9.48
+## 10 great tit     14       24        20.2       15.8 
+## # ... with 20 more rows</code></pre>
+<p>It might be easier to visualize what we’ve done if we plot the new distributions.</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-22"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-22-1.png" alt="Simulated wingspans and body lengths for five bird species. Dashed lines indicate wingspan and body length values from the British Trust for Ornithology." width="480" />
+<p class="caption">
+Figure 2: Simulated wingspans and body lengths for five bird species. Dashed lines indicate wingspan and body length values from the British Trust for Ornithology.
+</p>
+</div>
+<p>One final step we need to take is to rescale our variables. This will make it much easier to choose coefficients that are comparable.</p>
+<pre class="r"><code>df &lt;- df %&gt;% ungroup() %&gt;%
+  mutate(s_wingspan = (sim_wingspan - mean(sim_wingspan)) / sd(sim_wingspan), 
+         s_length = (sim_length - mean(sim_length))/ sd(sim_length))
+df</code></pre>
+<pre><code>## # A tibble: 30 x 7
+##    bird      length wingspan sim_wingspan sim_length s_wingspan s_length
+##    &lt;chr&gt;      &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+##  1 blue tit      12       18        18.3       15.2      -0.470    0.212
+##  2 blue tit      12       18        17.7        6.97     -0.578   -1.64 
+##  3 blue tit      12       18         6.01      18.8      -2.59     1.03 
+##  4 blue tit      12       18        13.1       15.4      -1.37     0.275
+##  5 blue tit      12       18        14.0       13.3      -1.22    -0.200
+##  6 coal tit      12       19        20.3       16.4      -0.127    0.493
+##  7 coal tit      12       19        24.2       13.7       0.532   -0.125
+##  8 great tit     14       24        25.3       18.1       0.726    0.872
+##  9 great tit     14       24        23.4        9.48      0.396   -1.07 
+## 10 great tit     14       24        20.2       15.8      -0.158    0.357
+## # ... with 20 more rows</code></pre>
+</div>
+<div id="extending-the-homophily-model" class="section level2">
+<h2>Extending the homophily model</h2>
+<p>Let’s add body size to our homophily model. We’ll use the same iterated workflow as before, but we won’t use all values of homophily; instead, we’ll conduct one set of simulations where homophily is positive (<code>2</code>) and another negative (<code>-2</code>). But first, we need to initialize our network for the simulation.</p>
+<pre class="r"><code># initialize
+flock2 &lt;- network(N_birds, directed = F, density = 0, vertex.attr = df)</code></pre>
+<p>Notice that this time, <em>I added the vertex attributes directly</em> when I initialized the network (<code>vertex.attr = df</code>).</p>
+<pre class="r"><code>flock2</code></pre>
+<pre><code>##  Network attributes:
+##   vertices = 30 
+##   directed = FALSE 
+##   hyper = FALSE 
+##   loops = FALSE 
+##   multiple = FALSE 
+##   bipartite = FALSE 
+##   total edges= 0 
+##     missing edges= 0 
+##     non-missing edges= 0 
+## 
+##  Vertex attribute names: 
+##     bird length s_length s_wingspan sim_length sim_wingspan vertex.names wingspan 
+## 
+## No edge attributes</code></pre>
+<p>Now let’s construct the model formula. We already know that we can use <code>nodematch</code> for species homophily and <code>edges</code> for network density. For the effect of body size, let’s use <code>nodecov</code> – a term that adds one statistic to the network that covaries with a node attribute, in this case <code>s_wingspan</code>.</p>
+<pre class="r"><code># simulation formula
+formula2 &lt;- flock2 ~ edges + nodematch(&#39;bird&#39;) + nodecov(&#39;s_wingspan&#39;)</code></pre>
+<p>Next we need a sequence of coefficients for <code>s_wingspan</code> that we will loop through.</p>
+<pre class="r"><code>Wseq &lt;- seq(-2,2, length.out = 9)</code></pre>
+<p>Now we need a workflow to test negative and positive homophily. We could try to embed a loop within a loop, but it’s probably easier to just run two separate loops for each scenario. Remember, we’re just changing the coefficient for homophily from <code>-2</code> to <code>2</code>.</p>
+<pre class="r"><code># containers 
+neg &lt;- list()
+pos &lt;- list()
+
+# negative homophily 
+for( i in seq_along(Wseq)) {
+  neg[[i]] &lt;- simulate(formula2, coef=c(-5,-2,i), seed=777)
+}
+
+# positive homophily 
+for( i in seq_along(Wseq)) {
+  pos[[i]] &lt;- simulate(formula2, coef=c(-5, 2,i), seed=777)
+}</code></pre>
+<p>Let’s loop through a plot a few of our simulations. In practice, you’ll have many simulations. But for clarity, I’m only going plot <code>4</code> from each of the scenarios. First the negative homophily simulation.</p>
+<pre class="r"><code>P &lt;- list()
+for(i in seq_along(Wseq)) {
+   g &lt;- asIgraph(neg[[i]])
+   # plot w/ ggraph
+   gg &lt;- as_tbl_graph(g) %&gt;%
+     activate(nodes) %&gt;%
+     #calculate degree centrality
+     mutate(degree = centrality_degree()) %&gt;%
+     ggraph(&#39;stress&#39;) + 
+     geom_edge_link0(alpha=0.5) + 
+     # remove isolates
+     geom_node_point(aes(filter = degree &gt; 0, size=degree, color=bird)) + 
+     theme(panel.background = element_blank())  + 
+     # remove legends
+     scale_size_continuous(guide = &#39;none&#39;) + 
+     scale_color_discrete(guide = &#39;none&#39;) + 
+     # convert to probability
+     ggtitle(paste(&#39;body size =&#39;, round(logit2prob(Wseq[i]), digits = 2)))
+     
+   P[[i]] &lt;- gg
+   
+}
+
+# choose 4
+cowplot::plot_grid(P[[1]], P[[2]], P[[4]], P[[5]])</code></pre>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-29"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-29-1.png" alt="Four networks from the negative homophily simulation, each different parameters for the influence of body size. Node color represent species and node size represents the number of partners (i.e., degree centrality)." width="768" />
+<p class="caption">
+Figure 3: Four networks from the negative homophily simulation, each different parameters for the influence of body size. Node color represent species and node size represents the number of partners (i.e., degree centrality).
+</p>
+</div>
+<p>And again for the positive homophily simulation. The code is the same – we just swap <code>pos</code> for <code>neg</code> – so for brevity, it is omitted.</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-30"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-30-1.png" alt="Four networks from the positive homophily simulation, each different parameters for the influence of body size. Node color represent species and node size represents the number of partners (i.e., degree centrality)." width="768" />
+<p class="caption">
+Figure 4: Four networks from the positive homophily simulation, each different parameters for the influence of body size. Node color represent species and node size represents the number of partners (i.e., degree centrality).
+</p>
+</div>
+<p>It’s actually pretty hard to tell the differences from graph to graph and simulation to simulation. But one thing is pretty clear, the effect of body size <em>does not need</em> to be very strong. In fact, when it reaches a probability of <code>0.5</code>, it makes it so that every bird appears dominant.</p>
+<p>Let’s visualize degree distribution like we did above.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-31-1.png" width="408" /></p>
+<p>And the positive version.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-32-1.png" width="408" /></p>
+<p>One important takeaway from the simulation above is that even when there are two totally different social processes at work (homophily and body size domination), the resulting networks can be hardly distinguishable. This is a crucial thing to recognize early on.</p>
+</div>
+<div id="extensions-to-try" class="section level2">
+<h2>Extensions to try</h2>
+<ol style="list-style-type: decimal">
+<li><strong>network size</strong>: vary the number of nodes and see how the results differ.</li>
+<li><strong>sensitivity</strong>: repeat a simulation multiple using same coefficient several times. Do results change or do they remain more or less the same?</li>
+<li><strong>group size</strong>: vary the sizes of the grouples using the <code>prob</code> argument in <code>sample</code>. How do the resulting networks change when there is one dominant species?</li>
+<li><strong>one big individual</strong>: add a single individual to the network who is <em>much</em> larger than the rest (a blue jay?). What effect does this individual have on the degree distribution?</li>
+<li><strong>structural terms</strong>: add more <code>ergm-terms</code> to the simulation like triangles or k-stars.</li>
+<li><strong>personalities</strong>: individuals birds have different personalities; maybe some like to forage alone or with conspecifics, while other prefer heterospecifics. Add a variable to reflect this and simulate.</li>
+<li><strong>valued</strong>: not all interactions are positive or neutral; maybe some interactions are negative? add values to the edges to indicate whether an interaction was positive or negative.</li>
+</ol>
+</div>
+</div>
