@@ -65,13 +65,13 @@ Whether you are simulating or modeling a network, the formula syntax used within
 
 > `network ~ edges + mutual + nodematch('group')`
 
-On the left of the tilde, we include our network object. On the right of the tilde are the `edges` and `mutual` terms. These are terms within the `ergm` package that codify network structures. For example, `edges` similar to an `Intercept` and is used to estimate network density. The `mutual` term estimates reciprocity directed networks. 
+On the left of the tilde, we include our network object. On the right of the tilde are three terms. The `edges` and `mutual` terms are part of the `ergm` package and they codify network structures. For example, `edges` is similar to an `Intercept` and is used to estimate network density. The `mutual` term estimates reciprocity in directed networks. 
 
-I am using the last term, `nodematch` to parameterize the likelihood that two individuals who share the same attribute value (in this case `group`) will connect. This term can be used to understand homophily. Some terms like `nodematch` require attribute arguments, while structural terms, like `mutual` or `edges`, don't necessarily require attributes. To view all of the terms in the Help tab, call `?ergm-terms`. 
+I am using the last term, `nodematch`, to parameterize the likelihood that two nodes that share the same attribute value (in this case `group`) will connect one another. This is one way to generate homophily. Some terms like `nodematch` require attribute arguments, while structural terms, like `mutual` or `edges`, don't necessarily require attributes. To view all of the terms in the Help tab, call `?ergm-terms`. 
 
 ## Initializing an empty network
 
-The first step in our workflow is to initialize a network of `N` vertices with no edges (`density = 0`). We are going to set our own parameters for each term that we will used to generate the network. The initialized network object serves as a container for the network that we will generate. 
+The first step in our workflow is to initialize a network of `N` vertices with no edges (`density = 0`). We will eventually set parameters for each term that we will used to generate the network. For now the initialized network object serves as a container for the network that we will generate. 
 
 ```{r}
 set.seed(777)                      # reproducibility
@@ -80,7 +80,7 @@ net1 <- network(N, directed = T, density = 0)    # edge density
 net1
 ```
 
-If we were only using structural terms like `edges`, then we could simulate right away. Terms based on attribute conditions need attributes assigned. For simplicity, let's just assign two color attributes: `purple` and `green.` We just have to make sure the length of our attribute vector matches the length of `N`. 
+If we were only using structural terms like `edges`, then we could simulate without creating attributes, but terms based on attribute conditions need attributes assigned to the network object. For simplicity, let's just assign two color attributes: `purple` and `green.` We just have to make sure the length of our attribute vector matches the length of `N`. 
 
 ```{r}
 # some colors
@@ -93,7 +93,7 @@ net1 %v% 'vcolor'
 
 ## Parameterization and calibration
 
-The final step in a basic simulation is to set the coefficients that `simulate` will use to generate the network. The scale used to specify these coefficients is in *log-odds*, which can be a bit challenging to understand. It is easier if you convert log-odds into a probability: 
+The next step is to set the coefficients that the `simulate` will use to generate the network. The scale used to specify these coefficients is in *log-odds*, which can be a bit challenging to conceptualize without a reference point. It is somewhat easier if you convert log-odds into probabilities: 
 
 ```{r}
 logit2prob <- function(coef) {
@@ -114,7 +114,7 @@ See for yourself.
 logit2prob(0)
 ```
 
-In practice, theory and published studies should help you decide coefficient parameters. For now, we'll generate a sparse network (`density ~0.02`) where there is a half chance of reciprocity (`log-odds = 0`) and homophily is probable (`log-odds = 1`)
+In practice you would use theory and published studies should help you decide coefficient parameters. For now, we'll generate a sparse network (`density ~0.02`) where there is a half chance of reciprocity (`log-odds = 0`) and homophily is probable (`log-odds = 2`)
 ```{r}
 # density (probability) to log odds 
 qlogis(0.02)        # -3.8
@@ -149,11 +149,11 @@ You can do simulations like these over and over for different combinations of co
 
 Artwork by [Eric Losh](http://www.elosh.com/illustration/)
 
-Flocking behavior is an interesting social phenomenon and it turns out that some birds like to hang out in mixed species flocks. Let's simulate some different flocking interactions and see what kind of networks form. We'll start by picking where we left off with *homophily*. 
+Flocking behavior is an interesting social phenomenon and it turns out that some birds like to hang out in mixed-species flocks. Let's simulate some flocking interactions and see what kind of networks arise. We'll start by picking up where we left off with *homophily*. 
 
 ## Flock together
 
-Birds who prefer to interact with their conspecifics would be an example of intraspecific homophily. So let's initialize a network with a vertex attribute for `species` and vary the strength of intraspecific interactions. 
+Birds who prefer to interact with their conspecifics would be an example of intraspecific homophily. So let's initialize a network with a vertex attribute for `species` and vary the strength of intraspecific preference. 
 
 ```{r}
 # initialization
@@ -173,7 +173,8 @@ species <- sample( 1:N_sp,          # species index
 flock %v% 'species' <- species
 flock %v% 'species' 
 ```
-It's possible that not every species would be equality present. We can alter this by using the `prob` argument in `sample`. For simplicity, we'll assume all species are evenly abundant. 
+
+It's possible that not every species would have the same number of individuals. We can alter this by using the `prob` argument in `sample`. For simplicity, I'm just going to assume all species are evenly abundant. 
 
 ```{r, echo=F}
 vcol <- rainbow(N_sp)
@@ -184,7 +185,7 @@ flock <- asNetwork(iflock)
 
 ## Density parameter
 
-The model formula for this simulation is: `flock ~ edges + nodematch('species')`. But we need to choose coefficients for each of the terms. We know that homophily should be positive, but it's hard to know what the log-odds for energy should be. 
+The model formula for this simulation is: `flock ~ edges + nodematch('species')`. But we need to choose coefficients for each of the terms. We know that homophily should be positive, but it's hard to know what the log-odds for density should be. 
 
 ```{r, echo=F,out.width='70%', fig.width=6.5, fig.height=3, fig.cap="Many networks are sparse, with fewer than 2% of all possible edges present. This corresponds appoximately to -4 log odds (reference lines). A) Relationship between log odds and probability; B) zoomed in on -4 and 0.02."}
 lo <- seq(-6,6, length.out = 100)
@@ -202,7 +203,8 @@ p2 <- df %>% filter(probs < 0.2) %>% ggplot(aes(lo, probs)) + geom_vline(xinterc
 
 cowplot::plot_grid(p1,p2, labels = c('A','B')) 
 ```
-## Parameter sweep 
+
+## Parameter sweeps 
 
 If we really want to understand the impact of homophily, we should simulate several networks with different coefficient values for `nodematch('species')`. We can do this by creating a sequence of coefficient values (on the log odds scale), and using a `for` loop to simulate one network for each value. To reduce the computational load, I'm going create a sequence of 9 values for 9 different networks. 
 
@@ -272,13 +274,15 @@ p2 <- df %>% gather(key = 'homophily', value = 'degree') %>% group_by(as.numeric
 cowplot::plot_grid(p1, p2, nrow = 2, labels = c('A','B'))
 ```
 
-Looking at the graphs, it is clear that as homophily increase, so does the density. But I thought we held density constant? We did, but since there are lots of *possible* species pairs available in this network (each species has ~15 members), as we increase the odds, more edges form and this increase the network density above and beyond coefficient. This is evident in graph A: the density shifts more or less symmetrically to the right, suggesting that increased homophily improve the degree centrality of all vertices on average. 
+Looking at the graphs, it is clear that as homophily increases, so does the density. But I thought we held density constant? We did in one sense. Another way to describe the edges parameter is *the probability that an edge connect any two nodes, regardless of their attributes*. 
+
+Once we add homophily, we create a lot of *possible* species pairs  in this network (each species has ~15 members), and as we increase the odds, more edges form. A consequence of this is that it increases the network density above and beyond `edges` coefficient. This is evident in graph A: the peak density for each value of `nodematch` flattens and shifts to the right, suggesting that increased homophily uniformly improves the degree centrality of all vertices on average. 
 
 # Body size 
 
 In a 2012 paper, Farine, Garroway, and Sheldon use network analysis to study a mixed species flock made up of blue tits (*Cyanistes caeruleus*), coal tits (*Parus ater*), great tits (*Parus major*), marsh tits (*Poecile palustris*), and nuthatches (*Sitta europaea*). Two hypotheses -- vigilance and foraging efficiency -- are thought to explain some aspects of group composition, and both are connected to body size and dominance. 
 
-Larger individuals tend to be more dominant within groups of birds and fishes. A consequence of this is that dominant individuals tend to face less competition from social partners, which makes them more efficien foragers, and they can deter predators more easily, which improves vigilance. So the expectation of Farine, Garroway, and Sheldon is that larger birds should have more partners. They also argue that, in general, birds ought to prefer heterospecifics (i.e. negative homophily) because they will encounter a greater variety of body sizes, thus increasing their chances of foraging with an efficient and protective partner. 
+Larger individuals tend to be more dominant within groups of birds and fishes. A consequence of this is that dominant individuals tend to face less competition from social partners, which makes them more efficient foragers. They can also deter predators more easily, which makes them effective vigilantes. So the expectation of Farine, Garroway, and Sheldon is that larger birds should have more flocking partners. They also argue that, in general, birds ought to prefer heterospecifics (i.e. no homophily) because by focusing in different species they are more likely to encounter a variety of body sizes, thereby increasing their chances of foraging with an efficient and protective partner. 
 
 ## Creating wingspan and length variables
 

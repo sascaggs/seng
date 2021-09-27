@@ -11,7 +11,7 @@ knitr::include_graphics("/images/SENG 80s Fira.png", error = FALSE)
 
 Welcome to the Social Ecological Networks Group. For brevity, we use SENG (sen-jee) as a mnemonic that you'll find throughout this website and our social media handles. SENG is a graduate student led working group that uses the network concept to think about and study social and ecological processes. You can learn more about us and our research interests by checking out the [People](https://seng.netlify.app/people/) tab. 
 
-We were motivated to create SENG for numerous reasons. But perhaps the most important of these was the desire for a casual learning community where we can discuss wide ranging ideas about social and ecological processes from a network perspective. As budding academics, we appreciate the formality of courses and seminars. But we also believe that informal discussion and collaboration can seed new and radical ideas. 
+We were motivated to create SENG for numerous reasons. But perhaps the most important of these was the desire for a casual learning community where we can discuss wide ranging ideas about social and ecological processes from a network perspective. As budding academics, we appreciate the formality of courses and seminars. But we also believe that informal discussion and collaboration can seed new -- sometimes radically new -- ideas. 
 
 # The Structure of SENG
 
