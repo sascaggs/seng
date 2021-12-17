@@ -10,11 +10,15 @@ output:
 
 # Network (Graph) Theory 
 
+[Social Network Analysis](https://journals.sagepub.com/doi/pdf/10.1177/0038038588022001007?casa_token=u0IemtO8RKEAAAAA:wKiTVxloaouj7Y4g4ZiACmtQYQ-aHxQZcdLGurJuEihST6vgaBrFXa1V7Ad3zp1cyKhhMdGka7iMTA) [@scott1988social]
+
 [Emergence of Scaling in Random Networks](https://homes.luddy.indiana.edu/jbollen/I501F13/readings/Science-1999-Barabasi-509-12.pdf) [@barabasi1999]
 
 [Explosive Percolation in Random Networks](http://www.uvm.edu/pdodds/files/papers/others/2009/achlioptas2009a.pdf) [@achlioptas2009]
 
 # Social Network Theory 
+
+[An economic model of friendship: Homophily, minorities, and segregation](https://onlinelibrary.wiley.com/doi/pdf/10.3982/ECTA7528?casa_token=gOxDDGfqQJ4AAAAA:54cxVptr1JRmCi3ErwoSs5LrblN8ChoLYB40Tayxl_b4NtsBO5EftAsBg_ZC0xuyPjQttrH4nMZzb_Qz) [@currarini2009economic]
 
 [Network approaches and social movements](https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199678402.001.0001/oxfordhb-9780199678402-e-9) [@diani2015network]
 
@@ -50,7 +54,13 @@ output:
 
 [Disentangling intangible social-ecological systems](http://explorer.bee.oregonstate.edu/Topic/InfluenceNetworks/Documents/DisentanglingIntangibleSES.pdf) [@bodin2012]
 
-# Network Analysis
+# Exponential Random Graph Models
+
+[An introduction to exponential random graph (p*) modles for social networks](https://pdf.sciencedirectassets.com/271850/1-s2.0-S0378873307X01060/1-s2.0-S0378873306000372/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEMH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJGMEQCICb1ZS8KkZQ54LeB5W7pPqe2FnE%2Bzjf08%2FbFmT5KLZQnAiBensC83e1xEpyULJxVk9WnutGvTYbTF%2B%2FA7eN5YTuvvCqDBAiq%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAQaDDA1OTAwMzU0Njg2NSIMHLjlZ6qONEO0rCaZKtcDRIcNPH5G9OsVQZoTvmWOOZuZZQ%2BLUIS1Rj9ChH2Cf7G1xTNOH%2BifKjWZmMJSI7B%2FylUisEbJxdoTst2ioY1%2BbdlV2ExCKhq3VYPCrO7JvTnYZ4jWaQcEHydm91Bp1uzJwxbMTueWM64AL%2Bi3mEW%2FHFKjPoyk6BqUK0p%2B5bALCGHYQh%2BxSpPvOsR4htIsbGDpERzpglydU7DGVkRyZ5UW88zaRnnZRTXcVnRXx98OKa40n8p1DcyrVpCNIippLAuntpmEHvQCu%2BcZgDe8mfGT%2BFOLDp8yrkDR4MPrZhVOoU2NgK08g8nFYsIGYPA4yJKNpnHODSZveB%2F%2FMctP6FuDAQEZ9wwtXUl1n%2FQzY97NbkFbNHkvLQKNGSVEKBKcDdSUDNE1NvnBsZJy4j%2BV2qjsiQLGGq1UQGGvK%2FhW71x3Lz%2F2rvpox9a7v%2FH8NYHnT%2FHB8sCLHjZV0%2F5ujtT78horTM7ovssfefiB7Dd2sN5%2BC1zw2%2BjPx1UZTzoES%2BFteVqBupecYzPteQlWiL5O9yHsGRR0ia2wk6vo62alBZdfIN7HQzck%2BilkNHJlrh%2Fh%2FUix%2BckZ1RhUI2MQmrlXaOWRyebuMIRAwSNyhjNCU%2BiI4iXyz2k174LcMMGC840GOqYB3PentLFjjgMXZhAy7qBToDaa%2BLzX8TpNpMqSjslSqBrE%2BNhKv3z2HlTKLNLJ7uIf0P9rn0%2BaXVjt4TzxyplTjNv1thS3DYOATNobecs7JMjGJcRmiM1Kxtah2qqaaTqLvG%2F1ShkWRBeatOrdZbylYsdHHcGqQAkFr8vnq48FUQOfFwV7BS1ke1C6jAwTMdacJNPrmCJEKdVruLxqMYcWS4NwuJpT4g%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20211217T172011Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTYQDXNYKML%2F20211217%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=60bbc468687acfff69ed0d837d921c7e79c682c844cee8c4aea5b707ffa59069&hash=58dbdfdd6c4e846dba7a0bd3d331096579d8bd200a95cfb6754aa3d25c88783f&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0378873306000372&tid=spdf-86738f18-1d9c-4dc1-bf8d-a193a9689e57&sid=728f9b2a871f7341802b02231807f7b4a000gxrqa&type=client) [@robins2007introduction]
+
+[Specification of exponential-family random graph models: terms and computation aspects](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2481518/pdf/nihms-54862.pdf) [@morris2008specification]
+
+# Egonetworks
 
 [Macrostructure from Microstructure: Generating Whole Systems from Ego Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4203462/) [@smith2012macrostructure]
 
