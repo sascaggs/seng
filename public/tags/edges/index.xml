@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>edges on Social Ecological Networks Group</title>
+    <link>https://seng.netlify.app/tags/edges/</link>
+    <description>Recent content in edges on Social Ecological Networks Group</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 26 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/edges/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Introduction to Networks in R</title>
+      <link>https://seng.netlify.app/meetings/introduction-to-networks-in-r/</link>
+      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/introduction-to-networks-in-r/</guid>
+      <description>Data StructuresThe Square MatrixThe EdgelistBut Why?Bernouli Graph SimulationNetwork objects in igraphMatrix \(\rightarrow\) networkEdgelist \(\rightarrow\) networkVisualize igraph objectsNetwork objects in statnetVisualize network objectsReferencesIn this meeting, we cover the basics of working with networks in R. By the end of the workshop, you will be acquainted with three packages – igraph, statnet, and tidygraph – and you will be able to create a network from scratch, turn it into a network object, create vertex and edge attributes, and genereate a basic visualization.</description>
+    </item>
+    
+    <item>
+      <title>Foundations of the Network Perspective</title>
+      <link>https://seng.netlify.app/meetings/foundations-of-the-network-perspective/</link>
+      <pubDate>Fri, 12 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/foundations-of-the-network-perspective/</guid>
+      <description>Discussion ITo start our discussion, let’s to reflect on our current understandings of a network as a concept. In small groups, take a moment to discuss the following questions.
+What is a network?
+How would you describe a network in simple terms?
+In our view, a network is a representation of a set(s) of relationships between one or more entities. The entities of interest to the SENG are usually social or ecological beings.</description>
+    </item>
+    
+  </channel>
+</rss>

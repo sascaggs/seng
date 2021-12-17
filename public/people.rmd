@@ -1,0 +1,94 @@
+---
+title: "Contributors"
+output:
+    blogdown::html_page:
+        toc: true
+---
+
+<br> 
+
+## Shane A. Scaggs
+
+![](/./people_files/SAS_amanita.jpg)
+
+[Contact Shane](mailto: scaggs.32@osu.edu) (he/him)
+
+[Twitter](http://www.twitter.com/ShaneAScaggs)
+
+[Google Scholar](https://scholar.google.com/citations?user=CtWNkOkAAAAJ&hl=en)
+
+I am a PhD candidate and NSF Graduate Research Fellow in the Department of Anthropology at the Ohio State University where I work in the [Human Complexity Lab](http://u.osu.edu/hclab/). My research focuses on the social and ecological dynamics of human subsistence activities (e.g., cultivation, foraging, exchange). I am conducting my dissertation research in southern Belize, where I have previous conducted fieldwork with my advisor, [Sean Downey](https://anthropology.osu.edu/people/downey.205). 
+
+I have a master of science in Applied Anthropology from Oregon State University where I worked with [Drew Gerkey](https://liberalarts.oregonstate.edu/users/drew-gerkey), and conducted fieldwork with the [Division of Subsistence](https://www.adfg.alaska.gov/index.cfm?adfg=subsistence.main), a branch of the Alaska Department of Fish & Game. In my thesis at Oregon State, I used network modeling to characterize the relationship between subsistence harvest diversity and resource sharing in a network of rural Alaskan households.  
+
+<br>
+
+## Harrison Fried 
+
+![](/./people_files/Headshot.jpg){width=280px}
+
+[Contact Harrison](mailto: fried.64@osu.edu) (he/his)
+
+I am a graduate research fellow in the School of Environment and Natural Resources at The Ohio State University and I am interested in how people manage ecological processes. My master’s research, which is advised by [Dr. Ramiro Berardo](http://www.ramiroberardo.net/) and [Dr. Matthew Hamilton](https://senr.osu.edu/our-people/matthew-hamilton), focuses on a social-ecological network depicting climate change adaptation in Ohio. The guiding question of my research is to determine under what conditions environmental stakeholders manage for ecological interdependencies. My research interests in local environmental protection are heavily shaped by my undergraduate thesis experience, in which I studied how human-induced environmental stressors impact fish in Lake Erie.
+
+<br>
+
+## Chelsea E. Hunter 
+
+![](/./people_files/CEH.jpg){width=40% height=40%}
+
+[Contact Chelsea](mailto: chelseaehunter@gmail.com) (she/her)
+
+[Google Scholar](https://scholar.google.com/citations?user=19NQwykAAAAJ&hl=en)
+
+Chelsea joined Ohio State’s Anthropology PhD program in 2019. Prior to joining OSU, Chelsea earned her B.A. from Portland State University in 2013. While at PSU, she conducted research on fair trade cocoa farming and social, ecological, and environmental sustainability in Ghana, West Africa. Hunter went on to earn an MA in Applied Anthropology from San Diego State University in 2017. While there, she worked on an interdisciplinary research project on coral reef resilience in Moorea, French Polynesia. While at SDSU, she was named an Inamori Fellow – a university wide award granted to ten graduate students. Hunter graduated as the Anthropology Department’s “Outstanding Graduate Student”. Between completing her MA and starting her PhD, Chelsea completed a post-master’s scholarship on resilience and adaptive capacity following the 2015 Nepal Earthquakes. Her dissertation research examines the intersection of co-management and Indigenous sovereignty on land-and-sea conservation projects in the South Pacific. Her research has been funded by the Elizabeth A. Salt Anthropology Travel Award, the OSU Office of International Affairs, and the National Science Foundation.
+
+<br>
+
+## Drew Gerkey 
+
+![](/./people_files/Drew Gerkey-Photo Smallest.jpg){width=40% height=40%}
+
+[Contact Drew](mailto: drew.gerkey@oregonstate.edu)
+
+[Twitter](https://twitter.com/drewgerkey)
+
+I am an ecological anthropologist.  My research focuses on the emergence and stability of cooperation and collective action.  I have conducted research primarily with communities of salmon fishers and reindeer herders on the Kamchatka Peninsula in Northeast Siberia.  Recently, I initiated several research projects across the Pacific in Alaska.
+
+My research combines qualitative and quantitative ethnographic methods to examine subsistence activities, market expansion, natural resource use, social networks, institutions, social movements, and sustainability. 
+
+Prior to joining Oregon State, I was a postdoctoral fellow at the University of Maryland's National Socio-Environmental Synthesis Center (SESYNC) and the University of Washington Department of Anthropology.
+
+<br>
+
+## Priya Bhattacharya
+
+[Contact Priya](mailto: bhattacharya.97@osu.edu) (she/her)
+
+[LinkedIn](https://www.linkedin.com/in/priya-bhattacharya-a4092919/)
+
+I have a bachelor's degree in commerce and have two master's degree in business administration and environmental science. Currently I am working on my research for PhD under Dr. Sayeed Mehmood. The topics are Reasonable Person Model and valuation of coal mine restoration efforts using the Stated Preference Method. 
+
+<br>
+
+## Andrew Mitchel 
+
+![](/./people_files/AndrewM.jpg){width=280px}
+
+[Contact Mitchel](mailto: mitchel.13@osu.edu) (he/him/his)
+
+[Twitter](http://www.twitter.com/mitchel_andrew) 
+
+I am a first-year PhD student in Cultural Anthropology working with Professor Jeffrey Cohen. I received my BA from the University of Michigan in Anthropology and Spanish, and my MA in Latin American Studies from University of California, Los Angeles. My MA thesis concerned the Dominican academy system run by Major League Baseball, to which young Latin American baseball players are recruited and signed at sixteen years old in their first step toward potential major league stardom. My current dissertation plan is to study Latinx foodways around the Midwest. I hope to learn about how food traditions, as well as jobs in food service and food production, play into livelihoods for Latinx folks in this part of the country.
+
+<br>
+
+## Matthew Walker 
+
+![](/./people_files/Matthew.jpg){width=280px} 
+
+[Contact Matthew](mailto: walker.2035@osu.edu) (He/Him)
+
+[LinkedIn](https://www.linkedin.com/in/matthew-j-walker-osu)
+
+I'm a senior undergrad at Ohio State studying Data Analytics and Comparative Studies. In my free time I enjoy rock climbing, reading, and photography (astro and analog). I am also a research assistant in the [Human Complexity Lab](http://u.osu.edu/hclab) under Dr. Sean Downey. In the long term, I am interested in growing interdisciplinary teams and reimagining how we use data in the social sciences. 

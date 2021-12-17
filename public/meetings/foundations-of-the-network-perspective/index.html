@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+<title>Foundations of the Network Perspective - Social Ecological Networks Group</title>
+<meta property="og:title" content="Foundations of the Network Perspective - Social Ecological Networks Group">
+
+
+  <link href='https://seng.netlify.app/images/SENG_Circle_NoOutline.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/SENG_Circle_NoOutline.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="/people/">Contributors</a></li>
+    
+    <li><a href="/post/">Posts</a></li>
+    
+    <li><a href="/canon/">Canon</a></li>
+    
+    <li><a href="/meetings/">Meetings</a></li>
+    
+    <li><a href="/contact/">Contact</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+
+    <h1 class="article-title">Foundations of the Network Perspective</h1>
+
+    
+
+    <div class="article-content">
+      
+<script src="index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="discussion-i" class="section level1">
+<h1>Discussion I</h1>
+<p>To start our discussion, let’s to reflect on our current understandings of a <em>network</em> as a concept. In small groups, take a moment to discuss the following questions.</p>
+<blockquote>
+<p><em>What is a network?</em></p>
+</blockquote>
+<blockquote>
+<p><em>How would you describe a network in simple terms?</em></p>
+</blockquote>
+<p>In our view, a network is a representation of a set(s) of <strong>relationships</strong> between one or more entities. The entities of interest to the SENG are usually social or ecological beings. But in theory, any entity can have connections and thus be represented within a network graph.</p>
+<p>Networks are frequently used to represent the <strong>structure</strong> of a social or ecological system. As network scientist Albert-Lazlo Barabasi concluded in his book <em>Linked</em>, “networks are the prerequisite for describing any complex system, indicating that complexity theory must inevitably stand on the shoulders of network theory.” Networks make the intractable tractable. Importantly, networks are purely an abstraction, but they are a useful for studying systems.</p>
+</div>
+<div id="nodes-and-edges" class="section level1">
+<h1>Nodes and Edges</h1>
+<p>But how do we actually represent such complexity?</p>
+<p>In network science, we use nodes and edges from graph theory. A <strong>node</strong> is any entity that is connected to other entities. Nodes often represent the conventional subjects of social and ecological sciences: persons, groups, organisms, populations, organizations, places.</p>
+<p>An <strong>edge</strong> is a the relationship between two nodes. We don’t need edges if our goal is to summarize the attributes of nodes. We can use conventional statistics for that. If we want to understand how individuals are connected and the implications of different kinds of connections, we need edges.</p>
+<div class="figure"><span id="fig:unnamed-chunk-1"></span>
+<img src="index_files/figure-html/unnamed-chunk-1-1.png" alt="Two nodes (red) connected by a single undirected edge." width="672" />
+<p class="caption">
+Figure 1: Two nodes (red) connected by a single undirected edge.
+</p>
+</div>
+</div>
+<div id="discussion-ii" class="section level1">
+<h1>Discussion II</h1>
+<p>Now that we understand the inherent relationality of networks and the way they are represented, let’s think about some examples of networks and how they would be assembled.</p>
+<blockquote>
+<p>What are some examples of networks that interest you?</p>
+</blockquote>
+<blockquote>
+<p>Who/what are the nodes?</p>
+</blockquote>
+<blockquote>
+<p>What kinds of edges link the nodes?</p>
+</blockquote>
+</div>
+<div id="network-forms" class="section level1">
+<h1>Network Forms</h1>
+<p>Many of the examples that arise is disucssion are associated with several types of commonly used networks. Some of these are relatively simple and others that are very complex. As we move from simple to complex examples, think about different classes of nodes and edges forming specific layers. Simple networks might have just one layer, while more intricate forms may have multiple interacting layers at different scales.</p>
+<div id="one-mode-network." class="section level2">
+<h2>One-mode network.</h2>
+<p>A network with a single layer contains one kind of node and one kind of edge. These are sometimes referred to as <strong>one-mode networks</strong>.</p>
+<div class="figure"><span id="fig:unnamed-chunk-2"></span>
+<img src="index_files/figure-html/unnamed-chunk-2-1.png" alt="A single layer (one-mode) network with 10 nodes." width="672" />
+<p class="caption">
+Figure 2: A single layer (one-mode) network with 10 nodes.
+</p>
+</div>
+<p>Many conventional social relationships can be represented with a single layer undirected network. Here are some examples:</p>
+<ul>
+<li>Kinship</li>
+<li>Friendship</li>
+<li>Joint attendance</li>
+<li>Affiliation</li>
+<li>Communcation</li>
+<li>Coauthorship</li>
+<li>Collaborative partnerships</li>
+</ul>
+</div>
+<div id="directed-network" class="section level2">
+<h2>Directed Network</h2>
+<p>While an undirected network may suffice for many social relationships, there may be reasons you want think about directionality. Take friendship, for example. Although friendship seems like an undirected attribute of a relationship, it is possible that one person calls someone there friend, but that someone does not reciprocate the sentiment. Thus, an advantage of using directed networks is the ability to ask how important <strong>reciprocity</strong> is to network structure.</p>
+<p>In a directed network, a dyad can have one of three edge states (Figure 3):</p>
+<ul>
+<li>0 = no edge (j, k)</li>
+<li>1 = an edge in one direction (i, k)</li>
+<li>2 = reciprocal edge (i, j, and j, i)</li>
+</ul>
+<div class="figure"><span id="fig:unnamed-chunk-3"></span>
+<img src="index_files/figure-html/unnamed-chunk-3-1.png" alt="A directed triad. Arrows indicate the flow of edges. A reciprocal edge is colored black." width="672" />
+<p class="caption">
+Figure 3: A directed triad. Arrows indicate the flow of edges. A reciprocal edge is colored black.
+</p>
+</div>
+</div>
+<div id="weighted-valued-network" class="section level2">
+<h2>Weighted (valued) Network</h2>
+<p>A common representation of edges is binary; edges are either present (1) or absent (0). But many edges occur with different magnitudes, so we can envision edges with weights or values. In these weighted networks, edges could have meaningful frequencies or probabilities.</p>
+<div class="figure"><span id="fig:unnamed-chunk-4"></span>
+<img src="index_files/figure-html/unnamed-chunk-4-1.png" alt="An undirected weighted network. Edges is this network have values ranging from 0 to 3." width="672" />
+<p class="caption">
+Figure 4: An undirected weighted network. Edges is this network have values ranging from 0 to 3.
+</p>
+</div>
+</div>
+<div id="bipartite-two-mode-network" class="section level2">
+<h2>Bipartite (two-mode) Network</h2>
+<p>While a one-mode network only has one class of node with edges that occur within that class, a bipartite networks has two classes of nodes with edges that <em>only occur between classes</em>.</p>
+<div class="figure"><span id="fig:unnamed-chunk-5"></span>
+<img src="index_files/figure-html/unnamed-chunk-5-1.png" alt="Two-mode (bipartite) network. Note that edges only occur between red nodes (first layer) and blue nodes (second layer)." width="672" />
+<p class="caption">
+Figure 5: Two-mode (bipartite) network. Note that edges only occur between red nodes (first layer) and blue nodes (second layer).
+</p>
+</div>
+<p>Because of the strict definition of edges only occuring between layers, bipartitate networks are used for specific kinds of interactions:</p>
+<ul>
+<li>plant-pollinator connections</li>
+<li>host-parasite connections</li>
+<li>individuals attending events</li>
+<li>party affiliations</li>
+<li>policy writing</li>
+<li>place-based connections</li>
+</ul>
+</div>
+<div id="multilevel-network" class="section level2">
+<h2>Multilevel Network</h2>
+<p>If a bipartite network has edges that only occur between modes (i.e. interlayer edges), then a multilevel networks has both interlayer and intralayer edges.</p>
+<div class="figure"><span id="fig:unnamed-chunk-6"></span>
+<img src="index_files/figure-html/unnamed-chunk-6-1.png" alt="Multilevel network constructed using `igraph` and `graphlayouts` packages in `R`. Orange nodes and edges are one layer; black nodes and edges are a second layers; and purple edges indicate interlayer connections." width="672" />
+<p class="caption">
+Figure 6: Multilevel network constructed using <code>igraph</code> and <code>graphlayouts</code> packages in <code>R</code>. Orange nodes and edges are one layer; black nodes and edges are a second layers; and purple edges indicate interlayer connections.
+</p>
+</div>
+</div>
+<div id="social-ecological-network-sen" class="section level2">
+<h2>Social Ecological Network (SEN)</h2>
+<p>SENs are a specific kind of multilevel network in which one layer contains social interactions (e.g. cooperation, sharing, communication) and another layer contains ecological interactions (e.g. migration, dispersal). These layers are connected with interlayer edges that specify how the social process is linked to the ecology and vice versa.</p>
+<div class="figure"><span id="fig:unnamed-chunk-7"></span>
+<img src="index_files/figure-html/unnamed-chunk-7-1.png" alt="A social-ecological motif following the conventions of Bodin and Tengo (2012). Orange nodes are social, with orange social-social edges. Green nodes are ecological, with green ecological-ecological connections. Blue edges represent social-ecological connections." width="672" />
+<p class="caption">
+Figure 7: A social-ecological motif following the conventions of Bodin and Tengo (2012). Orange nodes are social, with orange social-social edges. Green nodes are ecological, with green ecological-ecological connections. Blue edges represent social-ecological connections.
+</p>
+</div>
+</div>
+</div>
+<div id="suggested-readings" class="section level1">
+<h1>Suggested Readings</h1>
+<p>There are many references available to learn about the foundations of the network perspective. This meeting draws inspiration from <em>The SAGE Handbook of Social Network Analysis</em> <span class="citation">(Scott and Carrington 2011)</span> and the structures outlined by Bodin and Crona <span class="citation">(2009)</span>. Our discussion of SENs draws on the ideas expressed by Sayles <em>et al.</em> <span class="citation">(2019)</span> and the well known article on <em>Disentangling Social Ecological Systems</em> <span class="citation">(Bodin and Tengö 2012)</span>.</p>
+<p><a href="foundations.R">The R script used to create the figures in this post</a></p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-bodin2009role" class="csl-entry">
+Bodin, Örjan, and Beatrice I Crona. 2009. <span>“The Role of Social Networks in Natural Resource Governance: What Relational Patterns Make a Difference?”</span> <em>Global Environmental Change</em> 19 (3): 366–74.
+</div>
+<br>
+<div id="ref-bodin2012" class="csl-entry">
+Bodin, Örjan, and Maria Tengö. 2012. <span>“Disentangling Intangible Social–Ecological Systems.”</span> <em>Global Environmental Change</em> 22 (2): 430–39.
+</div>
+<br>
+<div id="ref-sayles2019social" class="csl-entry">
+Sayles, JS, M Mancilla Garcia, M Hamilton, SM Alexander, JA Baggio, AP Fischer, K Ingold, GR Meredith, and J Pittman. 2019. <span>“Social-Ecological Network Analysis for Sustainability Sciences: A Systematic Review and Innovative Research Agenda for the Future.”</span> <em>Environmental Research Letters</em> 14 (9): 093003.
+</div>
+<br>
+<div id="ref-scott2011sage" class="csl-entry">
+Scott, John, and Peter J Carrington. 2011. <em>The SAGE Handbook of Social Network Analysis</em>. SAGE publications.
+</div>
+</div>
+</div>
+
+
+    </div>
+  </article>
+  
+  <aside> 
+  
+  </aside>
+
+  
+
+
+</main>
+
+<footer class="footer">
+        <ul class="footer-links">
+          
+          <h1> <strong> Social Ecological Networks Group </strong> </h1>
+          <img src = "/images/SENG_Circle_NoOutline.png" alt = "SENG logo" width = "270" height = "240">
+          <br>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
+            
+             
+            <a href="https://bookdown.org/yihui/blogdown/" class="footer-links-kudos">Via <img src="/images/blogdown.png" width="22" height="22"></a>
+          </li>
+          
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+
+    
+  </body>
+</html>
+

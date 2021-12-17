@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Social Ecological Networks Group</title>
+    <link>https://seng.netlify.app/tags/</link>
+    <description>Recent content in Tags on Social Ecological Networks Group</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 25 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>analysis</title>
+      <link>https://seng.netlify.app/tags/analysis/</link>
+      <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>coding</title>
+      <link>https://seng.netlify.app/tags/coding/</link>
+      <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/coding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Rstudio</title>
+      <link>https://seng.netlify.app/tags/rstudio/</link>
+      <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/rstudio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>simulation</title>
+      <link>https://seng.netlify.app/tags/simulation/</link>
+      <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/simulation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>statnet</title>
+      <link>https://seng.netlify.app/tags/statnet/</link>
+      <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/statnet/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>workflow</title>
+      <link>https://seng.netlify.app/tags/workflow/</link>
+      <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/workflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>edgelist</title>
+      <link>https://seng.netlify.app/tags/edgelist/</link>
+      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/edgelist/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>edges</title>
+      <link>https://seng.netlify.app/tags/edges/</link>
+      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/edges/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>graphs</title>
+      <link>https://seng.netlify.app/tags/graphs/</link>
+      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/graphs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>igraph</title>
+      <link>https://seng.netlify.app/tags/igraph/</link>
+      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/igraph/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>matrix</title>
+      <link>https://seng.netlify.app/tags/matrix/</link>
+      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/matrix/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nodes</title>
+      <link>https://seng.netlify.app/tags/nodes/</link>
+      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/nodes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tidygraph</title>
+      <link>https://seng.netlify.app/tags/tidygraph/</link>
+      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/tidygraph/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>visualization</title>
+      <link>https://seng.netlify.app/tags/visualization/</link>
+      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/visualization/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>boundaries</title>
+      <link>https://seng.netlify.app/tags/boundaries/</link>
+      <pubDate>Fri, 12 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/boundaries/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>layers</title>
+      <link>https://seng.netlify.app/tags/layers/</link>
+      <pubDate>Fri, 12 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/layers/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

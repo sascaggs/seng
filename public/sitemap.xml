@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/analysis/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/categories/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/coding/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/meetings/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/categories/methods/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/rstudio/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/simulation/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/statnet/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/workflow/</loc>
+    <lastmod>2021-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/meetings/a-brief-introduction-to-r/</loc>
+    <lastmod>2021-04-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/edgelist/</loc>
+    <lastmod>2021-02-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/edges/</loc>
+    <lastmod>2021-02-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/graphs/</loc>
+    <lastmod>2021-02-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/igraph/</loc>
+    <lastmod>2021-02-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/meetings/introduction-to-networks-in-r/</loc>
+    <lastmod>2021-02-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/matrix/</loc>
+    <lastmod>2021-02-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/nodes/</loc>
+    <lastmod>2021-02-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/tidygraph/</loc>
+    <lastmod>2021-02-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/visualization/</loc>
+    <lastmod>2021-02-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/boundaries/</loc>
+    <lastmod>2021-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/meetings/foundations-of-the-network-perspective/</loc>
+    <lastmod>2021-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/layers/</loc>
+    <lastmod>2021-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/categories/theory/</loc>
+    <lastmod>2021-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/post/</loc>
+    <lastmod>2021-01-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/2021/01/11/what-is-seng/</loc>
+    <lastmod>2021-01-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/about/</loc>
+    <lastmod>2016-05-05T21:48:51-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/canon/</loc>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/contact/</loc>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/oldpeople/</loc>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/people/</loc>
+  </url>
+  
+</urlset>

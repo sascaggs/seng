@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>theory on Social Ecological Networks Group</title>
+    <link>https://seng.netlify.app/categories/theory/</link>
+    <description>Recent content in theory on Social Ecological Networks Group</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 12 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/categories/theory/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Foundations of the Network Perspective</title>
+      <link>https://seng.netlify.app/meetings/foundations-of-the-network-perspective/</link>
+      <pubDate>Fri, 12 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/foundations-of-the-network-perspective/</guid>
+      <description>Discussion ITo start our discussion, let’s to reflect on our current understandings of a network as a concept. In small groups, take a moment to discuss the following questions.
+What is a network?
+How would you describe a network in simple terms?
+In our view, a network is a representation of a set(s) of relationships between one or more entities. The entities of interest to the SENG are usually social or ecological beings.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+<title>Introduction to Networks in R - Social Ecological Networks Group</title>
+<meta property="og:title" content="Introduction to Networks in R - Social Ecological Networks Group">
+
+
+  <link href='https://seng.netlify.app/images/SENG_Circle_NoOutline.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/SENG_Circle_NoOutline.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="/people/">Contributors</a></li>
+    
+    <li><a href="/post/">Posts</a></li>
+    
+    <li><a href="/canon/">Canon</a></li>
+    
+    <li><a href="/meetings/">Meetings</a></li>
+    
+    <li><a href="/contact/">Contact</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+
+    <h1 class="article-title">Introduction to Networks in R</h1>
+
+    
+
+    <div class="article-content">
+      
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<script src="index_files/kePrint/kePrint.js"></script>
+<link href="index_files/lightable/lightable.css" rel="stylesheet" />
+
+<div id="TOC">
+<ul>
+<li><a href="#data-structures">Data Structures</a>
+<ul>
+<li><a href="#the-square-matrix">The Square Matrix</a></li>
+<li><a href="#the-edgelist">The Edgelist</a></li>
+<li><a href="#but-why">But Why?</a>
+<ul>
+<li><a href="#bernouli-graph-simulation">Bernouli Graph Simulation</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#network-objects-in-igraph">Network objects in <code>igraph</code></a>
+<ul>
+<li><a href="#matrix-rightarrow-network">Matrix <span class="math inline">\(\rightarrow\)</span> network</a></li>
+<li><a href="#edgelist-rightarrow-network">Edgelist <span class="math inline">\(\rightarrow\)</span> network</a></li>
+<li><a href="#visualize-igraph-objects">Visualize <code>igraph</code> objects</a></li>
+</ul></li>
+<li><a href="#network-objects-in-statnet">Network objects in <code>statnet</code></a>
+<ul>
+<li><a href="#visualize-network-objects">Visualize <code>network</code> objects</a></li>
+</ul></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+
+<p>In this meeting, we cover the basics of working with networks in R. By the end of the workshop, you will be acquainted with three packages – <code>igraph</code>, <code>statnet</code>, and <code>tidygraph</code> – and you will be able to create a network from scratch, turn it into a network object, create vertex and edge attributes, and genereate a basic visualization. Let’s get started.</p>
+<div id="data-structures" class="section level1">
+<h1>Data Structures</h1>
+<p>Before we dive into network objects, let’s understand the data structures that are used to represent relational data. We will focus on <strong>matrices</strong> and <strong>edgelists</strong>, as these are among the most common structures used for network data.</p>
+<div id="the-square-matrix" class="section level2">
+<h2>The Square Matrix</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:center;">
+i
+</th>
+<th style="text-align:center;">
+j
+</th>
+<th style="text-align:center;">
+k
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+i
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+j
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+k
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>One way to represent a network is using a square matrix where every node in the network has its own row and column. To do this, let’s create a vector of three nodes <code>i</code>, <code>j</code>, and <code>k</code>.</p>
+<pre class="r"><code>v &lt;- letters[9:11]
+v</code></pre>
+<pre><code>## [1] &quot;i&quot; &quot;j&quot; &quot;k&quot;</code></pre>
+<p>Now, we can create a matrix in R using the index vector <code>v</code>.</p>
+<pre class="r"><code>M &lt;- matrix(c(0,0,0,
+              0,0,0,
+              0,0,0), 
+            nrow = length(v), 
+            dimnames = list(v,v))
+M</code></pre>
+<pre><code>##   i j k
+## i 0 0 0
+## j 0 0 0
+## k 0 0 0</code></pre>
+<p>Every cell in the matrix <code>M</code> represents a relationship between the two nodes – these are the network edges. A value of <code>0</code> means that no edge is present. So in this matrix, there aren’t any edges. But let’s add an edge from <code>i</code> to <code>j</code> and from <code>i</code> to <code>k</code>.</p>
+<pre class="r"><code>M[1,2] &lt;- 1
+M[1,3] &lt;- 1
+M</code></pre>
+<pre><code>##   i j k
+## i 0 1 1
+## j 0 0 0
+## k 0 0 0</code></pre>
+<p>This is the conventional way of representing <strong>directed</strong> edges between nodes. We can represent a reciprocal edge from <code>k</code> to <code>i</code> as well. In an <strong>undirected</strong> network, this information is redundant.</p>
+<pre class="r"><code>M[3,1] &lt;- 1
+M</code></pre>
+<pre><code>##   i j k
+## i 0 1 1
+## j 0 0 0
+## k 1 0 0</code></pre>
+<p>Cells along the diagonal are known as loops. For example, we can an edge from <code>j</code> to <code>j</code> along the diagonal.</p>
+<pre class="r"><code>M[2,2] &lt;- 1
+M</code></pre>
+<pre><code>##   i j k
+## i 0 1 1
+## j 0 1 0
+## k 1 0 0</code></pre>
+<p>You can always extract the diagonal using <code>diag()</code>. This is also a handy way to set the diagonal to <code>0</code> if your network does not contain loops.</p>
+<pre class="r"><code>diag(M) &lt;- 0</code></pre>
+</div>
+<div id="the-edgelist" class="section level2">
+<h2>The Edgelist</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+Sender
+</th>
+<th style="text-align:left;">
+Receiver
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+i
+</td>
+<td style="text-align:left;">
+k
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+j
+</td>
+<td style="text-align:left;">
+j
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+k
+</td>
+<td style="text-align:left;">
+i
+</td>
+</tr>
+</tbody>
+</table>
+<p>An <strong>edgelist</strong> is a more compact way to store network data. This is because it does not include the <code>0</code>s in that are shown in the matrix. Instead an edgelist only contains rows for each of the edges that are present in the network. This may seem trivial for a small network of 3 nodes, but when you work with a large network with hundreds or thousands of rows, eliminating all of those zeros is very convenient.</p>
+<p>To construct an edgelist, stack rows on top of one another using the <code>rbind</code> function.</p>
+<pre class="r"><code>E &lt;- rbind(c(&#39;i&#39;,&#39;k&#39;),
+           c(&#39;j&#39;,&#39;j&#39;),
+           c(&#39;k&#39;,&#39;i&#39;))</code></pre>
+<p>You can think of the first column as a <em>sender</em> column. The second column is a <em>receiver</em> column. This is how directionality is represented in the edge list.</p>
+<p>If you want to add edges to an edgelist, simply bind a new row to the current edgelist.</p>
+<pre class="r"><code>E &lt;- rbind(E, c(&#39;i&#39;,&#39;j&#39;))
+E</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,] &quot;i&quot;  &quot;k&quot; 
+## [2,] &quot;j&quot;  &quot;j&quot; 
+## [3,] &quot;k&quot;  &quot;i&quot; 
+## [4,] &quot;i&quot;  &quot;j&quot;</code></pre>
+<p>Use the same bracket <code>[]</code> notation to delete rows.</p>
+<pre class="r"><code>E[-4,] </code></pre>
+<pre><code>##      [,1] [,2]
+## [1,] &quot;i&quot;  &quot;k&quot; 
+## [2,] &quot;j&quot;  &quot;j&quot; 
+## [3,] &quot;k&quot;  &quot;i&quot;</code></pre>
+</div>
+<div id="but-why" class="section level2">
+<h2>But Why?</h2>
+<p>You might be wondering… why do we need to know these details about data structure? Here are two reasons.</p>
+<p>First, whether you collect your own network data or receive data from someone else, you’ll need to store/wrangle the data into one of these formats. When you collect your own data, you can store it in this format right away. But if you receive a network you did not collect, knowing these data structures will help you understand what you are looking at.</p>
+<p>Second, understand data structure opens the door to simulation. Put differently, you don’t need to collect data to begin learning about and visualizing networks. You can simulate synthetic data. Here is a brief example.</p>
+<div id="bernouli-graph-simulation" class="section level3">
+<h3>Bernouli Graph Simulation</h3>
+<p>In our example matrix above there were <code>3</code> nodes and a matrix with <code>9</code> possible edges. These means that for <span class="math inline">\(N\)</span> nodes, there are <span class="math inline">\(N^2\)</span> possible edges. We can use this information to simulate a random network.</p>
+<pre class="r"><code>set.seed(777)
+# How many nodes? 
+N &lt;- 7 
+
+# How many edges? 
+N_edges &lt;- N^2
+
+# Use binomial distribution to simulate edges (coin flip)
+simM &lt;- matrix(rbinom(N_edges, 
+                   size=1,
+                   prob=0.5),
+            nrow = N)
+# No loops
+diag(simM) &lt;- 0
+simM</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+## [1,]    0    0    1    1    1    0    1
+## [2,]    0    0    0    1    1    1    0
+## [3,]    0    0    0    0    1    0    0
+## [4,]    1    1    1    0    1    1    1
+## [5,]    1    1    0    1    0    1    1
+## [6,]    0    1    0    0    0    0    1
+## [7,]    0    1    0    1    0    0    0</code></pre>
+<p>We can use a similar procedure to simulate an edgelist. We just need to create a third column to simulate the edges, then filter out the zeros.</p>
+<pre class="r"><code>set.seed(777)
+N &lt;- letters[1:5]
+simE &lt;- expand.grid(N,N)
+
+simE$Edge &lt;- rbinom(nrow(simE), 
+                 size = 1, 
+                 prob = 0.5)
+
+simE &lt;- simE[!simE$Edge == 0 &amp; !simE$Var1 == simE$Var2, 1:2]
+head(simE)</code></pre>
+<pre><code>##    Var1 Var2
+## 4     d    a
+## 5     e    a
+## 9     d    b
+## 11    a    c
+## 12    b    c
+## 14    d    c</code></pre>
+</div>
+</div>
+</div>
+<div id="network-objects-in-igraph" class="section level1">
+<h1>Network objects in <code>igraph</code></h1>
+<p>Now we will turn these data structures into <code>igraph</code> network objects. First, install and load the <code>igraph</code> package.</p>
+<pre class="r"><code>install.packages(&#39;igraph&#39;)
+library(igraph)</code></pre>
+<p>First let’s create some attributes for our <code>3</code> node network. They don’t need to be fancy; just some sizes and colors.</p>
+<pre class="r"><code>att &lt;- data.frame(
+    name = c(&quot;i&quot;,&quot;j&quot;,&quot;k&quot;), 
+    size = c(20,27,34),
+    color = c(&#39;tomato&#39;, 
+              &#39;cornflowerblue&#39;, 
+              &#39;darkorchid&#39;)
+)
+att</code></pre>
+<pre><code>##   name size          color
+## 1    i   20         tomato
+## 2    j   27 cornflowerblue
+## 3    k   34     darkorchid</code></pre>
+<div id="matrix-rightarrow-network" class="section level2">
+<h2>Matrix <span class="math inline">\(\rightarrow\)</span> network</h2>
+<p>To create a network object using a matrix, we use the <code>graph.adjacency</code> function. In graph theory, relational matrices are often referred to as adjacency matrices. Use the <code>M</code> matrix that we created before.</p>
+<pre class="r"><code>gM &lt;- graph.adjacency(M)
+gM</code></pre>
+<pre><code>## IGRAPH 43a8562 DN-- 3 3 -- 
+## + attr: name (v/c)
+## + edges from 43a8562 (vertex names):
+## [1] i-&gt;j i-&gt;k k-&gt;i</code></pre>
+<p>When we call the object, we receive a summary of the network. <code>DN</code> means this is a <em>directed network</em> with <code>3</code> nodes and <code>3</code> edges. There is just one attributes, the <code>name</code> of the vertices. We can tell that this is a categorical vertex attribute by the notation <code>(v/c)</code>. The edges are listen at the bottom.</p>
+<p>Manually add vertex attributes to the network <code>gM</code> from out <code>att</code> data frame.</p>
+<pre class="r"><code>gM &lt;- set_vertex_attr(gM, name = &#39;size&#39;, value = att$size)
+gM &lt;- set_vertex_attr(gM, name = &#39;color&#39;, value = att$color)
+gM</code></pre>
+<pre><code>## IGRAPH 43a8562 DN-- 3 3 -- 
+## + attr: name (v/c), size (v/n), color (v/c)
+## + edges from 43a8562 (vertex names):
+## [1] i-&gt;j i-&gt;k k-&gt;i</code></pre>
+</div>
+<div id="edgelist-rightarrow-network" class="section level2">
+<h2>Edgelist <span class="math inline">\(\rightarrow\)</span> network</h2>
+<p>To create an object using an edgelist, we use the <code>graph.data.frame</code> function. Using edgelists is nice because you can add the vertex attribute table in directly.</p>
+<pre class="r"><code>gE &lt;- graph.data.frame(E, vertices = att)
+gE</code></pre>
+<pre><code>## IGRAPH 43b988c DN-- 3 4 -- 
+## + attr: name (v/c), size (v/n), color (v/c)
+## + edges from 43b988c (vertex names):
+## [1] i-&gt;k j-&gt;j k-&gt;i i-&gt;j</code></pre>
+<p>Once you have an <code>igraph</code> network object, you can extract vertex and edge attributes.</p>
+<pre class="r"><code>V(gE)$color</code></pre>
+<pre><code>## [1] &quot;tomato&quot;         &quot;cornflowerblue&quot; &quot;darkorchid&quot;</code></pre>
+<p>We don’t have any edge attributes in this network, but if we did, we would use <code>E(object)$attr</code> syntax.</p>
+</div>
+<div id="visualize-igraph-objects" class="section level2">
+<h2>Visualize <code>igraph</code> objects</h2>
+<p>There are many aesthetic properties of network graph. But you can generally think of them as <strong>vertex</strong> (or node) aesthetics, <strong>edge</strong> aesthetics, and <strong>network</strong> aesthetics. To learn more about all of the ways to specify these in <code>igraph</code>, called <code>??igraph.plotting</code>.</p>
+<p>Let’s visualize our object <code>gE</code>. Here is a generic plot.</p>
+<pre class="r"><code>plot(gE)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>By default, <code>igraph</code> labels each node with the <code>$name</code> attribute, and, if they exist, it will choose the sizes and colors using the <code>$color</code> and <code>$size</code> attributes. Since we set <code>size</code> and <code>color</code> in our <code>att</code> data frame, we replaced the defaults. But we can easily override them.</p>
+<pre class="r"><code>plot(gE, 
+     vertex.color = &#39;#2a00fa&#39;, 
+     vertex.size = 30)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>Let’s also change the color of the label to make it easier to read, change the edge colors to black, and make the arrow heads a bit smaller.</p>
+<pre class="r"><code>plot(gE, 
+     vertex.color = &#39;#2a00fa&#39;,
+     vertex.size = 30,
+     vertex.label.color = &#39;white&#39;, 
+     edge.color = &#39;black&#39;,
+     edge.arrow.size = 0.681)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>Finally, let’s set the layout to <code>layout.circle</code> and add some curve to the edges.</p>
+<pre class="r"><code>plot(gE, 
+     vertex.color = &#39;#2a00fa&#39;,
+     vertex.size = 30,
+     vertex.label.color = &#39;white&#39;, 
+     edge.color = &#39;black&#39;,
+     edge.arrow.size = 0.681, 
+     edge.curved = 0.1,
+     layout = layout.circle)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+</div>
+</div>
+<div id="network-objects-in-statnet" class="section level1">
+<h1>Network objects in <code>statnet</code></h1>
+<p>Create network objects in <code>statnet</code> is pretty intuitive. First, install and load the <code>statnet</code> suite of packages.</p>
+<pre class="r"><code>install.packages(&#39;statnet&#39;, dependencies=T)
+library(statnet)</code></pre>
+<p>To create network objects, use the <code>network</code> function. When using an edgelist, tell the function you are using one in the <code>matrix.type</code> parameter.</p>
+<pre class="r"><code>netM &lt;- network(M, vertex.attr = att)
+netE &lt;- network(E, vertex.attr = att, 
+                matrix.type = &quot;edgelist&quot; )
+netE</code></pre>
+<pre><code>##  Network attributes:
+##   vertices = 3 
+##   directed = TRUE 
+##   hyper = FALSE 
+##   loops = FALSE 
+##   multiple = FALSE 
+##   bipartite = FALSE 
+##   total edges= 4 
+##     missing edges= 0 
+##     non-missing edges= 4 
+## 
+##  Vertex attribute names: 
+##     color name size vertex.names 
+## 
+## No edge attributes</code></pre>
+<p>Like the <code>igraph</code> object, when we call the <code>network</code> object, we get a summary of some important network details.</p>
+<p>To extract variables from the <code>network</code> object, we use one of three operators:</p>
+<ul>
+<li><code>%v%</code> – extract vertex attributes</li>
+<li><code>%e%</code> – extract edge attributes</li>
+<li><code>%n%</code> – extract network attributes</li>
+</ul>
+<p>For example, we can see the values for color by extracting the attribute from the network by calling the network object, the appropriate operator, and the name of the attribute.</p>
+<pre class="r"><code>netE %v% &#39;color&#39;</code></pre>
+<pre><code>## [1] &quot;tomato&quot;         &quot;cornflowerblue&quot; &quot;darkorchid&quot;</code></pre>
+<div id="visualize-network-objects" class="section level2">
+<h2>Visualize <code>network</code> objects</h2>
+<p>Rather than working with the same old triadic network as we did before, let’s load a network from the <code>ergm.count</code> library that is part if <code>statnet</code>.</p>
+<pre class="r"><code>data(zach)</code></pre>
+<p>This is a network known as Zachary’s karate club. Here is the description from the package:</p>
+<blockquote>
+<p><em>Zachary (1977) reported observations of social relations in a university karate club, with membership that varied between 50 and 100, of whom 34 individuals: 32 ordinary club members and officers, the club president (“John A.”), and the part-time instructor (“Mr. Hi”); consistently interacted outside of the club. Over the course of the study, the club divided into two factions, and, ultimately, split into two clubs, one led by Hi and the other by John and the original club’s officers. The split was driven by a disagreement over whether Hi could unilaterally change the level of compensation for his services.</em></p>
+</blockquote>
+<p>Call the <code>zach</code> object and see the description.</p>
+<pre class="r"><code>zach</code></pre>
+<pre><code>##  Network attributes:
+##   vertices = 34 
+##   directed = FALSE 
+##   hyper = FALSE 
+##   loops = FALSE 
+##   multiple = FALSE 
+##   bipartite = FALSE 
+##   total edges= 78 
+##     missing edges= 0 
+##     non-missing edges= 78 
+## 
+##  Vertex attribute names: 
+##     club faction faction.id role vertex.names 
+## 
+##  Edge attribute names: 
+##     contexts</code></pre>
+<p>Generate a generic plot of <code>zach</code> using the <code>gplot</code> function specific to the <code>sna</code> package.</p>
+<pre class="r"><code>par(mar=c(0,0,0,0)) # make margins smaller
+gplot(zach, usearrows = F)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p>There are appear to be some individuals who have many more connections than any of the others. Let’s add an attribute to each node that shows the count of their connections. This is called <strong>degree centrality</strong>, and we can calculate it using the function <code>degree</code>.</p>
+<pre class="r"><code># set gmode to &#39;graph&#39; for undirected graphs 
+set.vertex.attribute(zach, 
+                     attrname = &#39;degree&#39;, 
+                     value = degree(zach, gmode = &#39;graph&#39;))</code></pre>
+<p>Now we have a vertex attribute that we can use to rescale the size of each node.</p>
+</div>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p>Zachary, WW (1977). An Information Flow Model for Conflict and Fission in Small Groups. Journal of Anthropological Research, 33(4), 452-473.</p>
+</div>
+
+    </div>
+  </article>
+  
+  <aside> 
+  
+  </aside>
+
+  
+
+
+</main>
+
+<footer class="footer">
+        <ul class="footer-links">
+          
+          <h1> <strong> Social Ecological Networks Group </strong> </h1>
+          <img src = "/images/SENG_Circle_NoOutline.png" alt = "SENG logo" width = "270" height = "240">
+          <br>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
+            
+             
+            <a href="https://bookdown.org/yihui/blogdown/" class="footer-links-kudos">Via <img src="/images/blogdown.png" width="22" height="22"></a>
+          </li>
+          
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Social Ecological Networks Group</title>
+    <link>https://seng.netlify.app/post/</link>
+    <description>Recent content in Posts on Social Ecological Networks Group</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 11 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What is SENG?</title>
+      <link>https://seng.netlify.app/2021/01/11/what-is-seng/</link>
+      <pubDate>Mon, 11 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2021/01/11/what-is-seng/</guid>
+      <description>Welcome to the Social Ecological Networks Group. For brevity, we use SENG (sen-jee) as a mnemonic that you’ll find throughout this website and our social media handles. SENG is a graduate student led working group that uses the network concept to think about and study social and ecological processes. You can learn more about us and our research interests by checking out the People tab.
+We were motivated to create SENG for numerous reasons.</description>
+    </item>
+    
+  </channel>
+</rss>

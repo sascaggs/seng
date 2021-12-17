@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>graphs on Social Ecological Networks Group</title>
+    <link>https://seng.netlify.app/tags/graphs/</link>
+    <description>Recent content in graphs on Social Ecological Networks Group</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 26 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/graphs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Introduction to Networks in R</title>
+      <link>https://seng.netlify.app/meetings/introduction-to-networks-in-r/</link>
+      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/introduction-to-networks-in-r/</guid>
+      <description>Data StructuresThe Square MatrixThe EdgelistBut Why?Bernouli Graph SimulationNetwork objects in igraphMatrix \(\rightarrow\) networkEdgelist \(\rightarrow\) networkVisualize igraph objectsNetwork objects in statnetVisualize network objectsReferencesIn this meeting, we cover the basics of working with networks in R. By the end of the workshop, you will be acquainted with three packages – igraph, statnet, and tidygraph – and you will be able to create a network from scratch, turn it into a network object, create vertex and edge attributes, and genereate a basic visualization.</description>
+    </item>
+    
+  </channel>
+</rss>
