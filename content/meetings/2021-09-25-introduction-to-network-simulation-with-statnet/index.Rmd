@@ -1,5 +1,5 @@
 ---
-title: 'Network simulation using statnet'  
+title: 'Network Simulation using {statnet}'  
 author: Shane A. Scaggs
 date: '2021-09-25'
 slug: introduction-to-network-simulation-with-statnet
