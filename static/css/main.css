@@ -36,7 +36,7 @@ code {
 
 .header {
   padding: 20px 0;
-  height: 150px;
+  height: 100px;
   position: relative;
   background: url('../images/wide.png');
   border-bottom: 1px solid #eaeaea;
@@ -59,7 +59,7 @@ code {
 
 .nav-logo {
   float: left;
-  margin-top: -60px;
+  margin-top: -11px;
   transition: transform 150ms ease-out;
 }
 
