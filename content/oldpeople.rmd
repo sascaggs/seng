@@ -1,15 +1,12 @@
 ---
-title: "Contributors"
-output:
-    blogdown::html_page:
-        toc: true
+title: Contributors
 ---
 
 <br> 
 
-## Shane A. Scaggs
-
 ![](/./people_files/SAS_amanita.jpg)
+
+## Shane A. Scaggs
 
 [Contact Shane](mailto: scaggs.32@osu.edu) (he/him)
 
@@ -23,9 +20,9 @@ I have a master of science in Applied Anthropology from Oregon State University 
 
 <br>
 
-## Harrison Fried 
-
 ![](/./people_files/Headshot.jpg){width=280px}
+
+## Harrison Fried 
 
 [Contact Harrison](mailto: fried.64@osu.edu) (he/his)
 
@@ -33,9 +30,9 @@ I am a graduate research fellow in the School of Environment and Natural Resourc
 
 <br>
 
-## Chelsea E. Hunter 
-
 ![](/./people_files/CEH.jpg){width=40% height=40%}
+
+## Chelsea E. Hunter 
 
 [Contact Chelsea](mailto: chelseaehunter@gmail.com) (she/her)
 
@@ -45,9 +42,9 @@ Chelsea joined Ohio State’s Anthropology PhD program in 2019. Prior to joining
 
 <br>
 
-## Drew Gerkey 
-
 ![](/./people_files/Drew Gerkey-Photo Smallest.jpg){width=40% height=40%}
+
+## Drew Gerkey 
 
 [Contact Drew](mailto: drew.gerkey@oregonstate.edu)
 
@@ -69,11 +66,10 @@ Prior to joining Oregon State, I was a postdoctoral fellow at the University of 
 
 I have a bachelor's degree in commerce and have two master's degree in business administration and environmental science. Currently I am working on my research for PhD under Dr. Sayeed Mehmood. The topics are Reasonable Person Model and valuation of coal mine restoration efforts using the Stated Preference Method. 
 
+![](/./people_files/AndrewM.jpg){width=280px}
 <br>
 
 ## Andrew Mitchel 
-
-![](/./people_files/AndrewM.jpg){width=280px}
 
 [Contact Mitchel](mailto: mitchel.13@osu.edu) (he/him/his)
 
@@ -81,11 +77,11 @@ I have a bachelor's degree in commerce and have two master's degree in business 
 
 I am a first-year PhD student in Cultural Anthropology working with Professor Jeffrey Cohen. I received my BA from the University of Michigan in Anthropology and Spanish, and my MA in Latin American Studies from University of California, Los Angeles. My MA thesis concerned the Dominican academy system run by Major League Baseball, to which young Latin American baseball players are recruited and signed at sixteen years old in their first step toward potential major league stardom. My current dissertation plan is to study Latinx foodways around the Midwest. I hope to learn about how food traditions, as well as jobs in food service and food production, play into livelihoods for Latinx folks in this part of the country.
 
+![](/./people_files/Matthew.jpg){width=280px} 
+
 <br>
 
 ## Matthew Walker 
-
-![](/./people_files/Matthew.jpg){width=280px} 
 
 [Contact Matthew](mailto: walker.2035@osu.edu) (He/Him)
 
