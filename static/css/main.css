@@ -36,7 +36,7 @@ code {
 
 .header {
   padding: 20px 0;
-  height: 100px;
+  height: 150px;
   position: relative;
   background: url('../images/wide.png');
   border-bottom: 1px solid #eaeaea;
@@ -44,7 +44,7 @@ code {
 
 .header-img{
   width: 100%;
-  height: 100px;
+  height: 400px;
   background: url("../images/wide.PNG");
   background-size: cover;
 }
