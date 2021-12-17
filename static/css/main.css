@@ -36,7 +36,7 @@ code {
 
 .header {
   padding: 20px 0;
-  height: 100px;
+  height: 80px;
   position: relative;
   background: url('../images/wide.png');
   border-bottom: 1px solid #eaeaea;
@@ -61,6 +61,7 @@ code {
   float: left;
   margin-top: -11px;
   transition: transform 150ms ease-out;
+  position: center;
 }
 
 .nav-logo:hover {
@@ -72,11 +73,12 @@ code {
   max-height: 40px;
   width: auto;
   border-radius: 50%;
+  padding: 24px;
 }
 
 .nav-links {
   margin: 0;
-  padding: 0;
+  padding: 24px;
   font-size: 14px;
   list-style: none;
 }
@@ -92,11 +94,11 @@ code {
 
 .nav-links a {
   text-decoration: none;
-  color: #111;
+  color: #f4ffe8;
 }
 
 .nav-links a:hover {
-  color: #000;
+  color: #78efff;
 }
 
 .content {
@@ -137,15 +139,15 @@ code {
 .article-content a {
   text-decoration: none;
   color: inherit;
-  border-bottom: 3px solid #CBF8DF;
-  box-shadow: inset 0 -4px 0 #CBF8DF;
+  border-bottom: 3px solid #78efff;
+  /*box-shadow: inset 0 -4px 0 #78efff;*/
   background: transparent;
   transition: background 150ms ease;
 }
 
 .article-content a:hover,
 .article-content a:focus {
-  background: #CBF8DF;
+  background: #78efff33;
 }
 
 .article-content hr {
@@ -188,7 +190,7 @@ code {
 }
 
 .archive-item-date {
-  color: #ccc;
+  color: #aaa;
   font-size: 14px;
   padding: 5px 0;
   margin-top: 5px;
@@ -202,11 +204,11 @@ code {
   font-weight: bold;
   color: #222;
   padding: 5px 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 2px solid #ddd;
 }
 
 .archive-item-link:hover {
-  border-bottom-color: #222;
+  border-bottom-color: #78efff;
 }
 
 .footer {

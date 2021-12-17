@@ -177,11 +177,11 @@ body {
   font-family: 'Barlow', sans-serif;
   font-weight: 500;
 }
-h1, h2, h3, h4, h5, h6, {
+h1, h2, h3, h4, h5, h6, , .archive-item-link {
   font-family: 'Titillium Web', sans-serif;
   font-weight: 900;
 } 
 
-.nav, .article-duration, .archive-item-link, .footer {
+.nav, .article-duration, .archive-item-date, .footer {
   font-family: 'Roboto Mono', monospace;
 }
