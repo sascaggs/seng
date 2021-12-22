@@ -102,23 +102,17 @@ code {
 }
 
 
+.terms a:hover,
+.terms a:focus, 
 .terms {
-  font-size: 10px;
-}
-
-.terms-link{
+  font-size: 12px;
   display: inline-block;
   text-decoration: none;
-  font-size: 21px;
-  font-weight: bold;
   color: #222;
   padding: 5px 0;
   border-bottom: 2px solid #ddd;
 }
 
-.terms-link:hover {
-  border-bottom-color: #78efff;
-}
 
 .content {
   max-width: 700px;
