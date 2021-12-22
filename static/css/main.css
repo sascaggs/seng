@@ -101,16 +101,19 @@ code {
   color: #78efff;
 }
 
-
 .terms a:hover,
-.terms a:focus, 
+.terms a:focus {
+  color: #78efff;
+} 
+
 .terms {
   font-size: 12px;
   display: inline-block;
   text-decoration: none;
-  color: #222;
-  padding: 5px 0;
+  color: #111;
+  padding: 1px 0;
   border-bottom: 2px solid #ddd;
+  margin:0 auto;
 }
 
 
