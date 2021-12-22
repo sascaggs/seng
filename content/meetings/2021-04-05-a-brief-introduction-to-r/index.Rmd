@@ -1,6 +1,6 @@
 ---
 title: A Brief Introduction to R 
-author: Harrison Fried
+author: "Harrison Fried"
 date: '2021-04-05'
 slug: a-brief-introduction-to-r
 categories:

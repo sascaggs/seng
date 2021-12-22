@@ -182,6 +182,6 @@ h1, h2, h3, h4, h5, h6, , .archive-item-link {
   font-weight: 900;
 } 
 
-.nav, .article-duration, .archive-item-date, .footer {
+.nav, .author, .terms, .article-duration, .archive-item-date, .article-date, .footer {
   font-family: 'Roboto Mono', monospace;
 }

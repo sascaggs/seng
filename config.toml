@@ -53,6 +53,9 @@ enableEmoji = true
     # path to the favicon, under "static"
     favicon = "images/SENG_Circle_NoOutline.png"
     
+    # authorship
+    author = "authors"
+    
     [params.logo]
     url = "SENG_Circle_NoOutline.png"
     width = 50

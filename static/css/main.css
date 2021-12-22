@@ -101,6 +101,25 @@ code {
   color: #78efff;
 }
 
+
+.terms {
+  font-size: 10px;
+}
+
+.terms-link{
+  display: inline-block;
+  text-decoration: none;
+  font-size: 21px;
+  font-weight: bold;
+  color: #222;
+  padding: 5px 0;
+  border-bottom: 2px solid #ddd;
+}
+
+.terms-link:hover {
+  border-bottom-color: #78efff;
+}
+
 .content {
   max-width: 700px;
   margin: 40px auto 10px;
@@ -130,6 +149,10 @@ code {
   border-radius: 3px;
   background: #bbb;
   color: #fff
+}
+
+.author {
+  color: #3300ff;
 }
 
 .article-content p {
@@ -178,6 +201,7 @@ code {
   text-align: center;
   color: #111;
 }
+
 
 .archive-title {
   font-size: 32px;

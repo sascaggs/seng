@@ -1,6 +1,8 @@
 ---
 title: Introduction to Networks in R
-author: Shane A. scaggs
+author: 
+  - "Harrison Fried" 
+  - "Shane A. Scaggs"
 date: '2021-02-26'
 slug: introduction-to-networks-in-r
 categories:
@@ -20,9 +22,9 @@ output:
         toc: true
 ---
 
-<script src="index_files/header-attrs/header-attrs.js"></script>
-<script src="index_files/kePrint/kePrint.js"></script>
-<link href="index_files/lightable/lightable.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/kePrint/kePrint.js"></script>
+<link href="{{< blogdown/postref >}}index_files/lightable/lightable.css" rel="stylesheet" />
 
 <div id="TOC">
 <ul>
@@ -292,18 +294,18 @@ att</code></pre>
 <p>To create a network object using a matrix, we use the <code>graph.adjacency</code> function. In graph theory, relational matrices are often referred to as adjacency matrices. Use the <code>M</code> matrix that we created before.</p>
 <pre class="r"><code>gM &lt;- graph.adjacency(M)
 gM</code></pre>
-<pre><code>## IGRAPH 43a8562 DN-- 3 3 -- 
+<pre><code>## IGRAPH b399b2a DN-- 3 3 -- 
 ## + attr: name (v/c)
-## + edges from 43a8562 (vertex names):
+## + edges from b399b2a (vertex names):
 ## [1] i-&gt;j i-&gt;k k-&gt;i</code></pre>
 <p>When we call the object, we receive a summary of the network. <code>DN</code> means this is a <em>directed network</em> with <code>3</code> nodes and <code>3</code> edges. There is just one attributes, the <code>name</code> of the vertices. We can tell that this is a categorical vertex attribute by the notation <code>(v/c)</code>. The edges are listen at the bottom.</p>
 <p>Manually add vertex attributes to the network <code>gM</code> from out <code>att</code> data frame.</p>
 <pre class="r"><code>gM &lt;- set_vertex_attr(gM, name = &#39;size&#39;, value = att$size)
 gM &lt;- set_vertex_attr(gM, name = &#39;color&#39;, value = att$color)
 gM</code></pre>
-<pre><code>## IGRAPH 43a8562 DN-- 3 3 -- 
+<pre><code>## IGRAPH b399b2a DN-- 3 3 -- 
 ## + attr: name (v/c), size (v/n), color (v/c)
-## + edges from 43a8562 (vertex names):
+## + edges from b399b2a (vertex names):
 ## [1] i-&gt;j i-&gt;k k-&gt;i</code></pre>
 </div>
 <div id="edgelist-rightarrow-network" class="section level2">
@@ -311,9 +313,9 @@ gM</code></pre>
 <p>To create an object using an edgelist, we use the <code>graph.data.frame</code> function. Using edgelists is nice because you can add the vertex attribute table in directly.</p>
 <pre class="r"><code>gE &lt;- graph.data.frame(E, vertices = att)
 gE</code></pre>
-<pre><code>## IGRAPH 43b988c DN-- 3 4 -- 
+<pre><code>## IGRAPH b3a8ea7 DN-- 3 4 -- 
 ## + attr: name (v/c), size (v/n), color (v/c)
-## + edges from 43b988c (vertex names):
+## + edges from b3a8ea7 (vertex names):
 ## [1] i-&gt;k j-&gt;j k-&gt;i i-&gt;j</code></pre>
 <p>Once you have an <code>igraph</code> network object, you can extract vertex and edge attributes.</p>
 <pre class="r"><code>V(gE)$color</code></pre>
@@ -325,12 +327,12 @@ gE</code></pre>
 <p>There are many aesthetic properties of network graph. But you can generally think of them as <strong>vertex</strong> (or node) aesthetics, <strong>edge</strong> aesthetics, and <strong>network</strong> aesthetics. To learn more about all of the ways to specify these in <code>igraph</code>, called <code>??igraph.plotting</code>.</p>
 <p>Let’s visualize our object <code>gE</code>. Here is a generic plot.</p>
 <pre class="r"><code>plot(gE)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <p>By default, <code>igraph</code> labels each node with the <code>$name</code> attribute, and, if they exist, it will choose the sizes and colors using the <code>$color</code> and <code>$size</code> attributes. Since we set <code>size</code> and <code>color</code> in our <code>att</code> data frame, we replaced the defaults. But we can easily override them.</p>
 <pre class="r"><code>plot(gE, 
      vertex.color = &#39;#2a00fa&#39;, 
      vertex.size = 30)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <p>Let’s also change the color of the label to make it easier to read, change the edge colors to black, and make the arrow heads a bit smaller.</p>
 <pre class="r"><code>plot(gE, 
      vertex.color = &#39;#2a00fa&#39;,
@@ -338,7 +340,7 @@ gE</code></pre>
      vertex.label.color = &#39;white&#39;, 
      edge.color = &#39;black&#39;,
      edge.arrow.size = 0.681)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <p>Finally, let’s set the layout to <code>layout.circle</code> and add some curve to the edges.</p>
 <pre class="r"><code>plot(gE, 
      vertex.color = &#39;#2a00fa&#39;,
@@ -348,7 +350,7 @@ gE</code></pre>
      edge.arrow.size = 0.681, 
      edge.curved = 0.1,
      layout = layout.circle)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 </div>
 </div>
 <div id="network-objects-in-statnet" class="section level1">
@@ -368,9 +370,9 @@ netE</code></pre>
 ##   loops = FALSE 
 ##   multiple = FALSE 
 ##   bipartite = FALSE 
-##   total edges= 4 
+##   total edges= 3 
 ##     missing edges= 0 
-##     non-missing edges= 4 
+##     non-missing edges= 3 
 ## 
 ##  Vertex attribute names: 
 ##     color name size vertex.names 
@@ -415,7 +417,7 @@ netE</code></pre>
 <p>Generate a generic plot of <code>zach</code> using the <code>gplot</code> function specific to the <code>sna</code> package.</p>
 <pre class="r"><code>par(mar=c(0,0,0,0)) # make margins smaller
 gplot(zach, usearrows = F)</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 <p>There are appear to be some individuals who have many more connections than any of the others. Let’s add an attribute to each node that shows the count of their connections. This is called <strong>degree centrality</strong>, and we can calculate it using the function <code>degree</code>.</p>
 <pre class="r"><code># set gmode to &#39;graph&#39; for undirected graphs 
 set.vertex.attribute(zach, 

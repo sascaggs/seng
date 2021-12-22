@@ -1,6 +1,6 @@
 ---
 title: Foundations of the Network Perspective
-author: Shane A. Scaggs
+author: ["Shane A. Scaggs"]
 date: '2021-02-12'
 bibliography: [seng_canon_update.bib]
 slug: foundations-of-the-network-perspective

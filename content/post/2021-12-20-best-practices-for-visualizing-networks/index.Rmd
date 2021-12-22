@@ -1,0 +1,47 @@
+---
+title: Best practices for visualizing networks
+author: Shane A. Scaggs
+date: '2021-12-20'
+slug: best-practices-for-visualizing-networks
+categories:
+  - methods
+tags:
+  - visualization
+  - simulation
+  - analysis
+  - workflow
+draft: yes
+---
+
+```{r, warning=F, message=F}
+library(statnet)
+library(igraph)
+library(tidygraph)
+library(ggraph)
+```
+
+# Introduction
+
+Networks can be challenging to visualize. 
+
+# Background 
+
+
+
+# Directed and undirected
+
+
+
+
+# Bipartite 
+
+# Multilevel  
+
+# Multilayered
+
+# Spatial 
+
+# Trees 
+
+# Dynamic 
+
