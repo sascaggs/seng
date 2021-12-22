@@ -49,6 +49,10 @@ code {
   background-size: cover;
 }
 
+a:link {
+  color: #3300ff;
+  text-decoration: none;
+}
 
 .nav {
   max-width: 800px;
