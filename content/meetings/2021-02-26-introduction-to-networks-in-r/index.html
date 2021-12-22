@@ -1,8 +1,6 @@
 ---
 title: Introduction to Networks in R
-author: 
-  - "Harrison Fried" 
-  - "Shane A. Scaggs"
+author: "Harrison Fried, Shane A. Scaggs"
 date: '2021-02-26'
 slug: introduction-to-networks-in-r
 categories:
@@ -294,18 +292,18 @@ att</code></pre>
 <p>To create a network object using a matrix, we use the <code>graph.adjacency</code> function. In graph theory, relational matrices are often referred to as adjacency matrices. Use the <code>M</code> matrix that we created before.</p>
 <pre class="r"><code>gM &lt;- graph.adjacency(M)
 gM</code></pre>
-<pre><code>## IGRAPH b399b2a DN-- 3 3 -- 
+<pre><code>## IGRAPH 67cb420 DN-- 3 3 -- 
 ## + attr: name (v/c)
-## + edges from b399b2a (vertex names):
+## + edges from 67cb420 (vertex names):
 ## [1] i-&gt;j i-&gt;k k-&gt;i</code></pre>
 <p>When we call the object, we receive a summary of the network. <code>DN</code> means this is a <em>directed network</em> with <code>3</code> nodes and <code>3</code> edges. There is just one attributes, the <code>name</code> of the vertices. We can tell that this is a categorical vertex attribute by the notation <code>(v/c)</code>. The edges are listen at the bottom.</p>
 <p>Manually add vertex attributes to the network <code>gM</code> from out <code>att</code> data frame.</p>
 <pre class="r"><code>gM &lt;- set_vertex_attr(gM, name = &#39;size&#39;, value = att$size)
 gM &lt;- set_vertex_attr(gM, name = &#39;color&#39;, value = att$color)
 gM</code></pre>
-<pre><code>## IGRAPH b399b2a DN-- 3 3 -- 
+<pre><code>## IGRAPH 67cb420 DN-- 3 3 -- 
 ## + attr: name (v/c), size (v/n), color (v/c)
-## + edges from b399b2a (vertex names):
+## + edges from 67cb420 (vertex names):
 ## [1] i-&gt;j i-&gt;k k-&gt;i</code></pre>
 </div>
 <div id="edgelist-rightarrow-network" class="section level2">
@@ -313,9 +311,9 @@ gM</code></pre>
 <p>To create an object using an edgelist, we use the <code>graph.data.frame</code> function. Using edgelists is nice because you can add the vertex attribute table in directly.</p>
 <pre class="r"><code>gE &lt;- graph.data.frame(E, vertices = att)
 gE</code></pre>
-<pre><code>## IGRAPH b3a8ea7 DN-- 3 4 -- 
+<pre><code>## IGRAPH 67dcc3a DN-- 3 4 -- 
 ## + attr: name (v/c), size (v/n), color (v/c)
-## + edges from b3a8ea7 (vertex names):
+## + edges from 67dcc3a (vertex names):
 ## [1] i-&gt;k j-&gt;j k-&gt;i i-&gt;j</code></pre>
 <p>Once you have an <code>igraph</code> network object, you can extract vertex and edge attributes.</p>
 <pre class="r"><code>V(gE)$color</code></pre>

@@ -1,8 +1,6 @@
 ---
 title: Introduction to Networks in R
-author: 
-  - "Harrison Fried" 
-  - "Shane A. Scaggs"
+author: "Harrison Fried, Shane A. Scaggs"
 date: '2021-02-26'
 slug: introduction-to-networks-in-r
 categories:
