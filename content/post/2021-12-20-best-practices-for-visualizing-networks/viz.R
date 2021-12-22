@@ -5,10 +5,9 @@ library(ggraph)
 library(tidyverse)
 library(ggprism)
 
-prickles <- theme(panel.border = element_rect(fill="#99999900",color='black',size=2),
-                  panel.background = element_rect(fill='white'),
-                  panel.grid = 
+prickles <- theme(panel.background = element_rect(fill='black'),
                   axis.ticks.length = unit(0.2, 'in'), 
+                  panel.grid = element_blank(),
                   prism.ticks.length = unit(0.15, 'in'), 
                   text = element_text(family='mono', size=13))
 
@@ -39,10 +38,10 @@ tibble(di = didens(Nseq), un = undens(Nseq), Nseq) %>%
                        breaks = seq(0,10000,1000)) + 
     scale_y_continuous(guide = 'prism_minor', 
                        breaks = seq(0,0.02,0.002)) + 
-    theme(legend.position = c(0.7,0.8), 
-          legend.box.background = element_rect(fill='white'), 
-          legend.key = element_rect(fill='white')) + 
-    scale_color_manual(values = c('#3300ff','magenta'), labels = c('directed','undirected')) + 
+    theme(
+        legend.box.background = element_rect(fill='white'), 
+        legend.key = element_rect(fill='white')) + 
+    scale_color_manual(values = c('cyan','magenta'), labels = c('directed','undirected')) + 
     labs(x='Vertices', y='Density', color=NULL)
 
 # Sparse graphs can be characterized by a greater number of components and isolates. But as the number vertices in a graph increases, the number of components in a graph diminishes, even for sparse graphs. For an graph larger than 1000 vertices, a visual inspection is not sufficient to determine whether it is sparse. 
@@ -50,29 +49,64 @@ tibble(di = didens(Nseq), un = undens(Nseq), Nseq) %>%
 set.seed(777)
 Nseq <- seq(100,1000, by=10)
 
-compcurve <- function(Nseq, D=0.01){ 
-    uL <- sapply(Nseq, network, directed = F, density = D, simplify = F)
-    uC <- lapply( lapply( lapply(uL, component.size.byvertex, connected = 'weak'), unique), length)
-    dL <- sapply(Nseq, network, directed = T, density = D, simplify = F)
-    dC <- lapply( lapply( lapply(dL, component.size.byvertex, connected = 'weak'), unique), length)
-    return(data.frame(undirected = unlist(uC), 
-                      directed = unlist(dC), 
-                      Nseq))
+compcurve <- function(Nseq, S=0.01, directed = F) { 
+    if ( directed == F ) {
+        
+        uL <- sapply(Nseq, network, directed = F, 
+                     density = S, simplify = F)
+        uC <- lapply( lapply( 
+            lapply(uL, component.size.byvertex, connected = 'weak'), unique), length)
+        
+        return(data.frame(components = unlist(uC), 
+                          vertices = Nseq, 
+                          density = S))
+    } else 
+        if ( directed == T ) {
+            dL <- sapply(Nseq, network, directed = T, 
+                         density = S, simplify = F)
+            dC <- lapply( lapply( 
+                lapply(uL, component.size.byvertex, connected = 'weak'), unique), length)
+            
+            return(data.frame(components = unlist(uC), 
+                              vertices = Nseq, 
+                              density = S))
+        }
+    
+}
+Nseq <- c(3,4,5)
+
+l <- list()
+testfun <- function(Nseq) {
+    for(i in seq_along(Nseq)) {
+        l[[i]] <- network(Nseq[i], directed = F, density = sparsepoint(Nseq[i], directed = F))
+    }
+    c <- lapply( lapply( 
+        lapply(l, component.size.byvertex, connected = 'weak'), unique), length)
+    return(data.frame(Nseq, components = unlist(c)))
 }
 
-tibble(compcurve(Nseq)) %>%
-    gather(key=key, value=value, -Nseq) %>%
+compcurve(Nseq, S=Nseq)
+
+cc <- compcurve(Nseq)
+
+head(cc)
+tibble(cc) %>%
+    gather(key=key, value=value, -Nvertices) %>%
     ggplot(aes(x=Nseq)) + 
     prickles + 
     geom_line(aes(y=value, color=key), lwd=0.8) +
     theme(legend.position = c(0.7,0.8), 
           legend.box.background = element_rect(fill='white'), 
           legend.key = element_rect(fill='white'))  +
-        scale_x_continuous(guide = 'prism_minor', 
-                           breaks = seq(0,1000,100)) + 
-        scale_y_continuous(guide = 'prism_minor', 
-                           breaks = seq(0,10,2)) + 
-    scale_color_manual(values = c('#3300ff','magenta'), labels = c('directed','undirected')) + 
+    scale_x_continuous(guide = 'prism_minor', 
+                       breaks = seq(0,1000,100)) + 
+    scale_y_continuous(guide = 'prism_minor', 
+                       breaks = seq(1,9,2)) + 
+    scale_color_manual(values = c('cyan','magenta'), labels = c('directed','undirected')) + 
     labs(x='Vertices', y='Components', color=NULL)
 
 
+
+
+
+degree(network(, density = 0.1))

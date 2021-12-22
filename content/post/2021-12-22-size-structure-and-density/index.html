@@ -1,5 +1,5 @@
 ---
-title: Size, structure, and density
+title: "Size dependent properties of undirected and directed networks"
 author: Shane A. Scaggs
 date: '2021-12-22'
 slug: size-structure-and-density
@@ -10,9 +10,73 @@ tags:
   - nodes
   - structure
   - simulation
-draft: yes
+  - scale
 ---
 
 <script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
+<p>The size of a network is determined by the number of vertices and edges within it, and different size networks have different structural properties. This is obviously true if social processes like homophily, preferential attachment, or triadic closure influence network size, but it is also true for randomly generated networks.</p>
+<p>How do properties like density, sparseness, degree distribution, or connectivity change as the number of vertices in a network increases? To find out, I set up a few computational experiments for directed and undirected networks.</p>
+<div id="sparse-networks" class="section level1">
+<h1>Sparse networks</h1>
+<p>A graph is considered sparse if the number of edges, <span class="math inline">\(m\)</span>, is less the number of vertices, <span class="math inline">\(n\)</span>; a value given by <span class="math inline">\(m &lt; O(n)\)</span>, the orthogonal group. As the number of vertices increase, so does the density at which a network is considered sparse. Additionally, the relationship differs between edge density and <span class="math inline">\(n\)</span> differs for undirected and directed networks, because the maximum edges in a directed graph is given by <span class="math inline">\(n(n-1)\)</span> whereas in an undirected graph, it is <span class="math inline">\(n(n-1)/2\)</span>.</p>
+<p>Generally speaking, the point at which any network becomes sparse (<span class="math inline">\(S\)</span>) is the ratio between the orthogonal set and the maximum number of possible edges. For a directed network, this is given by:</p>
+<p><span class="math display">\[S = \frac{O(n)}{n(n-1)}\]</span></p>
+<p>And for an undirected network:</p>
+<p><span class="math display">\[S = \frac{O(n)}{n(n-1)/2}\]</span></p>
+<p>So if we vary <span class="math inline">\(n\)</span> and plot the value of <span class="math inline">\(S\)</span>, we can see how this threshold changes for different size networks. Here is a function to do this:</p>
+<pre class="r"><code>sparsepoint &lt;- function(n, directed=F) {
+  if ( directed == F  )   { n / (n*(n-1)/2) }
+  else if ( directed == T ) { n / (n*(n-1))   }
+  else { 
+    print(&#39;Must be TRUE or FALSE.&#39;)
+  }
+}</code></pre>
+<pre class="r"><code>sparsepoint(100)</code></pre>
+<pre><code>## [1] 0.02020202</code></pre>
+<pre class="r"><code>sparsepoint(100, directed = T)</code></pre>
+<pre><code>## [1] 0.01010101</code></pre>
+<p>Now we can create a sequence of <span class="math inline">\(n\)</span> values and graph the results. Figure 1 shows what this function looks like as <span class="math inline">\(n\)</span> increases from <code>1</code> to <code>10000</code>. When a network is smaller than <code>1000</code> vertices, the sparsepoint is occurs between <code>0.5%</code> and <code>2%</code> density. The dropoff occurs more slowly for undirected networkss. Above <code>1000</code> vertices, the sparsepoint for both directed and undirected networks begins to converge on <code>0.01%</code> density.</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-4"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" alt="The density at which a network is considered sparse as a function of the number of vertices." width="576" />
+<p class="caption">
+Figure 1: The density at which a network is considered sparse as a function of the number of vertices.
+</p>
+</div>
+</div>
+<div id="degree-distribution" class="section level1">
+<h1>Degree distribution</h1>
+<p>For a network of any size, as the density of a network increases, the degree distribution is expect to become more uniformed. Just how smooth this transition to uniformity occurs across different levels of edge density happens depends greatly on the size of the network.</p>
+<p>To see how the distributions change, we can calculate degree for each node in a network at each level of edge density. Here I do this for networks with <code>10</code>, <code>75</code>, and <code>150</code> vertices, each ranging in density from <code>0.01</code> to <code>0.99</code>.</p>
+<pre class="r"><code>d &lt;- seq(0.01,0.99, length.out=11)
+l &lt;- list()
+for(i in seq_along(d)) {
+  l[[i]] &lt;- network(10, directed = F, density = d[i])
+  m &lt;- data.frame(lapply(l, degree))
+}
+colnames(m) &lt;- paste0(&#39;Density&#39;,d)
+head(m)</code></pre>
+<pre><code>##   Density0.01 Density0.108 Density0.206 Density0.304 Density0.402 Density0.5
+## 1           0            0            2            6            8         12
+## 2           0            0            4            8            8         10
+## 3           0            0            4           10            8          6
+## 4           0            2            4            8           10         10
+## 5           0            0            6            8            8         10
+## 6           0            0            2            6            6          6
+##   Density0.598 Density0.696 Density0.794 Density0.892 Density0.99
+## 1           10           16           16           14          18
+## 2           10           12           18           16          18
+## 3            4           12           18           14          18
+## 4           10           16           14           16          18
+## 5           14           10           14           14          12
+## 6           12           10           18           16          18</code></pre>
+<p>I do this for each network size and then plot the distributions to compare.</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-6"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" alt="A comparison of the degree distributions for three different size networks. Each line represents  levels of edge density." width="806.4" />
+<p class="caption">
+Figure 2: A comparison of the degree distributions for three different size networks. Each line represents levels of edge density.
+</p>
+</div>
+<p>The degree distributions of networks that have only a couple hundred vertices or less can overlap quite a bit across different levels of edge density. Large networks have a much more precise degree distribution. This makes it clear why descriptive statistics that depend on density cannot easily be compared between different networks, unless the networks are large.</p>
+</div>

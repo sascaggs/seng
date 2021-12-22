@@ -1,5 +1,5 @@
 ---
-title: Size, structure, and density
+title: "Size dependent properties of undirected and directed networks"
 author: Shane A. Scaggs
 date: '2021-12-22'
 slug: size-structure-and-density
@@ -10,6 +10,174 @@ tags:
   - nodes
   - structure
   - simulation
-draft: yes
+  - scale
 ---
+
+```{r, message=F, echo=F, warning=F}
+library(igraph)
+library(statnet)
+library(tidygraph)
+library(ggraph)
+library(tidyverse)
+library(ggprism)
+library(patchwork)
+
+prickles <- theme(panel.background = element_rect(fill='white', color='black', size=2),
+                  axis.ticks.length = unit(0.2, 'in'), 
+                  panel.grid = element_blank(),
+                  prism.ticks.length = unit(0.15, 'in'), 
+                  text = element_text(family='mono', size=13))
+
+set.seed(100)
+```
+
+
+The size of a network is determined by the number of vertices and edges within it, and different size networks have different structural properties. This is obviously true if social processes like homophily, preferential attachment, or triadic closure influence network size, but it is also true for randomly generated networks. 
+
+How do properties like density, sparseness, degree distribution, or connectivity change as the number of vertices in a network increases? To find out, I set up a few computational experiments for directed and undirected networks. 
+
+# Sparse networks 
+
+A graph is considered sparse if the number of edges, $m$, is less the number of vertices, $n$; a value given by $m < O(n)$, the orthogonal group. As the number of vertices increase, so does the density at which a network is considered sparse.  Additionally, the relationship differs between edge density and $n$ differs for undirected and directed networks, because the maximum edges in a directed graph is given by $n(n-1)$ whereas in an undirected graph, it is $n(n-1)/2$. 
+
+Generally speaking, the point at which any network becomes sparse ($S$) is the ratio between the orthogonal set and the maximum number of possible edges. For a directed network, this is given by:
+
+$$S = \frac{O(n)}{n(n-1)}$$ 
+
+And for an undirected network: 
+
+$$S = \frac{O(n)}{n(n-1)/2}$$
+
+So if we vary $n$ and plot the value of $S$, we can see how this threshold changes for different size networks. Here is a function to do this: 
+
+```{r}
+sparsepoint <- function(n, directed=F) {
+  if ( directed == F  )   { n / (n*(n-1)/2) }
+  else if ( directed == T ) { n / (n*(n-1))   }
+  else { 
+    print('Must be TRUE or FALSE.')
+  }
+}
+```
+```{r}
+sparsepoint(100)
+sparsepoint(100, directed = T)
+```
+
+Now we can create a sequence of $n$ values and graph the results. Figure 1 shows what this function looks like as $n$ increases from `1` to `10000`. When a network is smaller than `1000` vertices, the sparsepoint is occurs  between `0.5%` and `2%` density. The dropoff occurs more slowly for undirected networkss. Above `1000` vertices, the sparsepoint for both directed and undirected networks begins to converge on `0.01%` density.
+
+```{r, echo=F, fig.height=4, fig.width=6, fig.cap='The density at which a network is considered sparse as a function of the number of vertices.'}
+Nseq <- seq(1,10000, by=99)
+tibble(di = sparsepoint(Nseq, directed = T), 
+       un = sparsepoint(Nseq), 
+       Nseq) %>%
+  gather(key=key, value=value, -Nseq) %>%
+  ggplot(aes(x=Nseq)) + 
+  prickles + 
+  geom_line(aes(y=value, color=key), lwd=0.8) + 
+  scale_x_continuous(guide = 'prism_minor', 
+                     breaks = seq(0,10000,2000)) + 
+  scale_y_continuous(guide = 'prism_minor', 
+                     breaks = seq(0,0.02,0.005)) + 
+  theme(legend.key = element_rect(fill='white')) + 
+  scale_color_manual(values = c('cyan','magenta'), labels = c('directed','undirected')) + 
+  labs(x='n', y='S', color=NULL)
+```
+
+# Degree distribution
+
+For a network of any size, as the density of a network increases, the degree distribution is expect to become more uniformed. Just how smooth this transition to uniformity occurs across different levels of edge density happens depends greatly on the size of the network. 
+
+To see how the distributions change, we can calculate degree for each node in a network at each level of edge density. Here I do this for networks with `10`, `75`, and `150` vertices, each ranging in density from `0.01` to `0.99`. 
+
+```{r}
+d <- seq(0.01,0.99, length.out=11)
+l <- list()
+for(i in seq_along(d)) {
+  l[[i]] <- network(10, directed = F, density = d[i])
+  m <- data.frame(lapply(l, degree))
+}
+colnames(m) <- paste0('Density',d)
+head(m)
+```
+I do this for each network size and then plot the distributions to compare.
+
+```{r, echo=F, message=F, warning=F, fig.height=9.6, fig.width=8.4, fig.cap='A comparison of the degree distributions for three different size networks. Each line represents  levels of edge density.'}
+d <- seq(0.01,0.99, length.out=11)
+l <- list()
+for(i in seq_along(d)) {
+  l[[i]] <- network(10, directed = F, density = d[i])
+  m <- data.frame(lapply(l, degree))
+}
+colnames(m) <- paste0('Density',d)
+
+p1 <- m %>% gather() %>%
+  ggplot(aes(value)) + 
+  stat_ecdf(aes(color=key), size=2, alpha=0.5) + 
+  prickles  + theme(legend.position = 'none') +
+  labs(x='Degree',y='Cumulative density', title='10 vertices') + 
+  scico::scale_color_scico_d(palette = 'hawaii', end=0.9, 
+                             labels = paste(d))  
+  
+
+p2 <- m %>% gather() %>%
+  ggplot(aes(value)) + 
+  geom_density(aes(color=key), size=1.2, alpha=0.5) +
+  prickles + theme(legend.position = 'none') + 
+  labs(x='Degree', y='Density', color='Edge\ndensity') + 
+  scico::scale_color_scico_d(palette = 'hawaii', end=0.9, 
+                             labels = paste(d))  
+
+l <- list()
+for(i in seq_along(d)) {
+  l[[i]] <- network(75, directed = F, density = d[i])
+  m <- data.frame(lapply(l, degree))
+}
+colnames(m) <- paste0('Density',d)
+
+p3 <- m %>% gather() %>%
+  ggplot(aes(value)) + 
+  stat_ecdf(aes(color=key), size=2, alpha=0.5) + 
+  prickles  + theme(legend.position = 'none') +
+    labs(x='Degree',y='Cumulative density', title='75 vertices') + 
+  scico::scale_color_scico_d(palette = 'hawaii', end=0.9)  
+  
+
+p4 <- m %>% gather() %>%
+  ggplot(aes(value)) + 
+  geom_density(aes(color=key), size=1.2, alpha=0.5) + 
+  prickles  + 
+  labs(x='Degree', y='Density', color='Edge\ndensity') + 
+  scico::scale_color_scico_d(palette = 'hawaii', end=0.9, 
+                             labels = paste(round(d, digits = 2)))  
+
+
+l <- list()
+for(i in seq_along(d)) {
+  l[[i]] <- network(150, directed = F, density = d[i])
+  m <- data.frame(lapply(l, degree))
+}
+colnames(m) <- paste0('Density',d)
+
+p5 <- m %>% gather() %>%
+  ggplot(aes(value)) + 
+  stat_ecdf(aes(color=key), size=2, alpha=0.5) + 
+  prickles  + theme(legend.position = 'none') +
+  labs(x='Degree',y='Cumulative density', title='150 vertices') + 
+  scico::scale_color_scico_d(palette = 'hawaii', end=0.9)  
+  
+
+p6 <- m %>% gather() %>%
+  ggplot(aes(value)) + 
+  geom_density(aes(color=key), size=1.2, alpha=0.5) + 
+  prickles  + theme(legend.position = 'none') +
+  labs(x='Degree', y='Density', color='Edge\ndensity') + 
+  scico::scale_color_scico_d(palette = 'hawaii', end=0.9, 
+                             labels = paste(d))  
+
+(p1 + p2) / (p3 + p4) / (p5 + p6)
+
+```
+
+The degree distributions of networks that have only a couple hundred vertices or less can overlap quite a bit across different levels of edge density. Large networks have a much more precise degree distribution. This makes it clear why descriptive statistics that depend on density cannot easily be compared between different networks, unless the networks are large.
 
