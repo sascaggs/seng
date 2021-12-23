@@ -177,7 +177,7 @@ p6 <- m %>% gather() %>%
 
 ```
 
-The degree distributions of networks that have only a couple hundred vertices or less can overlap quite a bit across different levels of edge density. Large networks have a much more precise degree distribution. This makes it clear why descriptive statistics that depend on density cannot easily be compared between different networks, unless the networks are large.
+The degree distributions of networks that have only a couple hundred vertices or less can overlap quite a bit across different levels of edge density. Large networks have a much more precise degree distribution. This makes it clear *why descriptive statistics that depend on density cannot easily be compared between different networks, unless the networks are large*.
 
 # Average Path Length 
 
@@ -228,7 +228,7 @@ df %>% ggplot(aes(d, mD)) +
   labs(x='Edge density (d)',y='Mean degree (mD)', color='n')
 ```
 
-Average path length should also systematically vary with density, but it is unclear what the shape of this relationship will look like. For instance, at low density, many paths = `0` because the many vertices are isolated. However, density networks should have short paths, as most vertices are directly connected to each other. 
+Average path length should also systematically vary with density, but it is unclear what the shape of this relationship will look like. For instance, at low density, many paths = `0` because  many vertices are isolated. However, dense networks should have short paths, as most vertices are directly connected to each other. 
 
 ```{r, echo=F, fig.height=3.3, fig.width=4.8, fig.cap='Explosive percolation of average path length'}
 df %>% ggplot(aes(d, apl)) + 
@@ -238,8 +238,8 @@ df %>% ggplot(aes(d, apl)) +
   labs(x='Edge density (d)',y='Average path length (apl)', color='n')
 ```
 
-At very low density (`0.01`), the average path length is essentially `0`, but just a small increase in density leads to explosive increase in the average path length. This phenomenon is known as *explosive percolation*, and it occurs because even randomly added edges have a chance of connected isolate vertices to one large component. 
+At very low density (`0.01`), the average path length is essentially `0`, but just a small increase in density leads to explosive increase in the average path length. This phenomenon is an example of *explosive percolation*, and it occurs because even randomly added edges have a chance of connecting isolated vertices to a large component. 
 
-This explosion happens even sooner for networks with a greater number of vertices. But, exactly when does this percolation happen? At the `sparsepoint` (!) which we know varies systematically as a function of $n$. Because the density at which a network goes from being sparse to not sparse decreases as a function of network size, we see explosive changes in average path length sooner and sooner as network size increases. 
+This explosion happens even sooner for networks with a greater number of vertices. Exactly when does this percolation happen? At the `sparsepoint` (!) which we know varies systematically as a function of $n$. Because the density at which a network goes from being sparse to not sparse decreases as a function of network size, we see explosive changes in average path length sooner and sooner as network size increases. 
 
 As we continue to increase density, the average path length decreases because the number of direct paths between vertices that are part of the largest component continues to increase, and this drives down the average path length. Eventually the average path length for networks of all sizes converges on `1`. 

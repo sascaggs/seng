@@ -77,7 +77,7 @@ head(m)</code></pre>
 Figure 2: A comparison of the degree distributions at increasing levels of density for three different size networks.
 </p>
 </div>
-<p>The degree distributions of networks that have only a couple hundred vertices or less can overlap quite a bit across different levels of edge density. Large networks have a much more precise degree distribution. This makes it clear why descriptive statistics that depend on density cannot easily be compared between different networks, unless the networks are large.</p>
+<p>The degree distributions of networks that have only a couple hundred vertices or less can overlap quite a bit across different levels of edge density. Large networks have a much more precise degree distribution. This makes it clear <em>why descriptive statistics that depend on density cannot easily be compared between different networks, unless the networks are large</em>.</p>
 </div>
 <div id="average-path-length" class="section level1">
 <h1>Average Path Length</h1>
@@ -108,14 +108,14 @@ DegApl &lt;- function(n, directed = F, d, seed=777) {
 Figure 3: The association between edge density and mean degree is approximately linear.
 </p>
 </div>
-<p>Average path length should also systematically vary with density, but it is unclear what the shape of this relationship will look like. For instance, at low density, many paths = <code>0</code> because the many vertices are isolated. However, density networks should have short paths, as most vertices are directly connected to each other.</p>
+<p>Average path length should also systematically vary with density, but it is unclear what the shape of this relationship will look like. For instance, at low density, many paths = <code>0</code> because many vertices are isolated. However, dense networks should have short paths, as most vertices are directly connected to each other.</p>
 <div class="figure"><span style="display:block;" id="fig:unnamed-chunk-10"></span>
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" alt="Explosive percolation of average path length" width="460.8" />
 <p class="caption">
 Figure 4: Explosive percolation of average path length
 </p>
 </div>
-<p>At very low density (<code>0.01</code>), the average path length is essentially <code>0</code>, but just a small increase in density leads to explosive increase in the average path length. This phenomenon is known as <em>explosive percolation</em>, and it occurs because even randomly added edges have a chance of connected isolate vertices to one large component.</p>
-<p>This explosion happens even sooner for networks with a greater number of vertices. But, exactly when does this percolation happen? At the <code>sparsepoint</code> (!) which we know varies systematically as a function of <span class="math inline">\(n\)</span>. Because the density at which a network goes from being sparse to not sparse decreases as a function of network size, we see explosive changes in average path length sooner and sooner as network size increases.</p>
+<p>At very low density (<code>0.01</code>), the average path length is essentially <code>0</code>, but just a small increase in density leads to explosive increase in the average path length. This phenomenon is an example of <em>explosive percolation</em>, and it occurs because even randomly added edges have a chance of connecting isolated vertices to a large component.</p>
+<p>This explosion happens even sooner for networks with a greater number of vertices. Exactly when does this percolation happen? At the <code>sparsepoint</code> (!) which we know varies systematically as a function of <span class="math inline">\(n\)</span>. Because the density at which a network goes from being sparse to not sparse decreases as a function of network size, we see explosive changes in average path length sooner and sooner as network size increases.</p>
 <p>As we continue to increase density, the average path length decreases because the number of direct paths between vertices that are part of the largest component continues to increase, and this drives down the average path length. Eventually the average path length for networks of all sizes converges on <code>1</code>.</p>
 </div>
