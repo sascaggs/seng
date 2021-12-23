@@ -1,5 +1,5 @@
 ---
-title: "Size dependent properties of undirected and directed networks"
+title: "Network size and structure"
 author: Shane A. Scaggs
 date: '2021-12-22'
 slug: size-structure-and-density
@@ -102,7 +102,7 @@ head(m)
 ```
 I do this for each network size and then plot the distributions to compare.
 
-```{r, echo=F, message=F, warning=F, fig.height=9.6, fig.width=8.4, fig.cap='A comparison of the degree distributions for three different size networks. Each line represents  levels of edge density.'}
+```{r, echo=F, message=F, warning=F, fig.height=9.6, fig.width=8.4, fig.cap='A comparison of the degree distributions at increasing levels of density for three different size networks.'}
 d <- seq(0.01,0.99, length.out=11)
 l <- list()
 for(i in seq_along(d)) {
