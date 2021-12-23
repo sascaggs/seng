@@ -38,7 +38,7 @@ How do properties like density, sparseness, degree distribution, or connectivity
 
 # Sparse networks 
 
-A graph is considered sparse if the number of edges, $m$, is less the number of vertices, $n$; a value given by $m < O(n)$, the orthogonal group. As the number of vertices increase, so does the density at which a network is considered sparse.  Additionally, the relationship differs between edge density and $n$ differs for undirected and directed networks, because the maximum edges in a directed graph is given by $n(n-1)$ whereas in an undirected graph, it is $n(n-1)/2$. 
+A graph is considered sparse if the number of edges, $m$, is less the number of vertices, $n$; a value given by $m < O(n)$, the orthogonal group. As the number of vertices increases, the density at which a network is considered sparse decreases.  Additionally, this negative relationship   differs for undirected and directed networks, because the maximum edges in a directed graph is given by $n(n-1)$ whereas in an undirected graph, it is $n(n-1)/2$. 
 
 Generally speaking, the point at which any network becomes sparse ($S$) is the ratio between the orthogonal set and the maximum number of possible edges. For a directed network, this is given by:
 
@@ -178,4 +178,17 @@ p6 <- m %>% gather() %>%
 ```
 
 The degree distributions of networks that have only a couple hundred vertices or less can overlap quite a bit across different levels of edge density. Large networks have a much more precise degree distribution. This makes it clear why descriptive statistics that depend on density cannot easily be compared between different networks, unless the networks are large.
+
+# Average Path Length 
+
+The length of a path between two vertices is determined by the number of vertices that lie between them. A direct path between two vertices is equal to `1`. 
+
+```{r}
+
+net <- network(100, directed = F, density = sparsepoint(100, directed = F))
+plot(net)
+
+mean(geodist(net, count.paths = T, inf.replace = 0)$gdist)
+```
+
 

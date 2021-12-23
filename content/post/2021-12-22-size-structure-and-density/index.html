@@ -20,7 +20,7 @@ tags:
 <p>How do properties like density, sparseness, degree distribution, or connectivity change as the number of vertices in a network increases? To find out, I set up a few computational experiments for directed and undirected networks.</p>
 <div id="sparse-networks" class="section level1">
 <h1>Sparse networks</h1>
-<p>A graph is considered sparse if the number of edges, <span class="math inline">\(m\)</span>, is less the number of vertices, <span class="math inline">\(n\)</span>; a value given by <span class="math inline">\(m &lt; O(n)\)</span>, the orthogonal group. As the number of vertices increase, so does the density at which a network is considered sparse. Additionally, the relationship differs between edge density and <span class="math inline">\(n\)</span> differs for undirected and directed networks, because the maximum edges in a directed graph is given by <span class="math inline">\(n(n-1)\)</span> whereas in an undirected graph, it is <span class="math inline">\(n(n-1)/2\)</span>.</p>
+<p>A graph is considered sparse if the number of edges, <span class="math inline">\(m\)</span>, is less the number of vertices, <span class="math inline">\(n\)</span>; a value given by <span class="math inline">\(m &lt; O(n)\)</span>, the orthogonal group. As the number of vertices increases, the density at which a network is considered sparse decreases. Additionally, this negative relationship differs for undirected and directed networks, because the maximum edges in a directed graph is given by <span class="math inline">\(n(n-1)\)</span> whereas in an undirected graph, it is <span class="math inline">\(n(n-1)/2\)</span>.</p>
 <p>Generally speaking, the point at which any network becomes sparse (<span class="math inline">\(S\)</span>) is the ratio between the orthogonal set and the maximum number of possible edges. For a directed network, this is given by:</p>
 <p><span class="math display">\[S = \frac{O(n)}{n(n-1)}\]</span></p>
 <p>And for an undirected network:</p>
@@ -78,4 +78,13 @@ Figure 2: A comparison of the degree distributions at increasing levels of densi
 </p>
 </div>
 <p>The degree distributions of networks that have only a couple hundred vertices or less can overlap quite a bit across different levels of edge density. Large networks have a much more precise degree distribution. This makes it clear why descriptive statistics that depend on density cannot easily be compared between different networks, unless the networks are large.</p>
+</div>
+<div id="average-path-length" class="section level1">
+<h1>Average Path Length</h1>
+<p>The length of a path between two vertices is determined by the number of vertices that lie between them. A direct path between two vertices is equal to <code>1</code>.</p>
+<pre class="r"><code>net &lt;- network(100, directed = F, density = sparsepoint(100, directed = F))
+plot(net)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>mean(geodist(net, count.paths = T, inf.replace = 0)$gdist)</code></pre>
+<pre><code>## [1] 2.6618</code></pre>
 </div>
