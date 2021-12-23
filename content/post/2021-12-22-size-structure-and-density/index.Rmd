@@ -86,7 +86,7 @@ tibble(di = sparsepoint(Nseq, directed = T),
 
 # Degree distribution
 
-For a network of any size, as the edge density increases, the degree distribution is expected to become more uniform. To see how degree distribution changes with edge density, we can calculate degree for each node across a variety of density levels. Here I do this for networks with `10`, `75`, and `150` vertices, each ranging in density from `0.01` to `0.99`. 
+For a network of any size, as the edge density increases, the degree distribution is expected to become more uniform, with the mean degree starting to approximate $n$. To see how degree distribution changes with edge density, we can calculate degree for each node across a variety of density levels. Here I do this for networks with `10`, `75`, and `150` vertices, each ranging in density from `0.01` to `0.99`. 
 
 ```{r}
 d <- seq(0.01,0.99, length.out=11)
@@ -116,7 +116,7 @@ p1 <- m %>% gather() %>%
   labs(x='Degree',y='Cumulative density', title='10 vertices') + 
   scico::scale_color_scico_d(palette = 'hawaii', end=0.9, 
                              labels = paste(d))  
-  
+
 
 p2 <- m %>% gather() %>%
   ggplot(aes(value)) + 
@@ -137,9 +137,9 @@ p3 <- m %>% gather() %>%
   ggplot(aes(value)) + 
   stat_ecdf(aes(color=key), size=2, alpha=0.5) + 
   prickles  + theme(legend.position = 'none') +
-    labs(x='Degree',y='Cumulative density', title='75 vertices') + 
+  labs(x='Degree',y='Cumulative density', title='75 vertices') + 
   scico::scale_color_scico_d(palette = 'hawaii', end=0.9)  
-  
+
 
 p4 <- m %>% gather() %>%
   ggplot(aes(value)) + 
@@ -163,7 +163,7 @@ p5 <- m %>% gather() %>%
   prickles  + theme(legend.position = 'none') +
   labs(x='Degree',y='Cumulative density', title='150 vertices') + 
   scico::scale_color_scico_d(palette = 'hawaii', end=0.9)  
-  
+
 
 p6 <- m %>% gather() %>%
   ggplot(aes(value)) + 
@@ -183,12 +183,63 @@ The degree distributions of networks that have only a couple hundred vertices or
 
 The length of a path between two vertices is determined by the number of vertices that lie between them. A direct path between two vertices is equal to `1`. 
 
+We observed that as $m$ increases, mean degree approaches $n$. We can expect that when mean degree is approximately $n$, the average path length should be approximately `1`. 
+
+The function below accepts a sequence of densities and a number of vertices, and returns the mean degree and average path length at each level of density. 
+
 ```{r}
+l <- list()
+apl <- c()
 
-net <- network(100, directed = F, density = sparsepoint(100, directed = F))
-plot(net)
-
-mean(geodist(net, count.paths = T, inf.replace = 0)$gdist)
+DegApl <- function(n, directed = F, d, seed=777) {
+  for(i in seq_along(d)) {
+    l[[i]] <- network(n, directed = directed, 
+                      density = d[i], seed=seed)
+    m <- data.frame(lapply(l, degree))
+    k <- lapply(l, geodist, inf.replace = 0, count.paths = F)
+    apl[i] <- mean(k[[i]]$gdist)
+  }
+  remove(l,k) 
+  colnames(m) <- c(1:length(d))
+  mD <- apply(m, 2, mean)
+  return(cbind(apl,mD,n,d))
+}
 ```
 
+Now we can explore relationships between these variables by running this function on networks with different sizes. Here we use a long sequence of densities to better approximate relationships.
 
+```{r, echo=F, warning=F, message=F}
+dseq <- seq(0.01,0.99, length.out=20)
+
+df <- as.data.frame(rbind(
+  DegApl(10,  directed = F, d = dseq), 
+  DegApl(75,  directed = F, d = dseq), 
+  DegApl(150, directed = F, d = dseq)
+))
+```
+
+We can expect that mean degree and density are positively correlated. But what is the shape of this relationship? 
+
+```{r, echo=F, fig.height=3.3, fig.width=4.8, fig.cap='The association between edge density and mean degree is approximately linear.'}
+df %>% ggplot(aes(d, mD)) + 
+  geom_line(aes(color=as.factor(n)), size=1.2) + 
+  prickles + theme(legend.key = element_rect(fill='white')) + 
+  scico::scale_color_scico_d(palette = 'devon', end=.85) + 
+  labs(x='Edge density (d)',y='Mean degree (mD)', color='n')
+```
+
+Average path length should also systematically vary with density, but it is unclear what the shape of this relationship will look like. For instance, at low density, many paths = `0` because the many vertices are isolated. However, density networks should have short paths, as most vertices are directly connected to each other. 
+
+```{r, echo=F, fig.height=3.3, fig.width=4.8, fig.cap='Explosive percolation of average path length'}
+df %>% ggplot(aes(d, apl)) + 
+  geom_line(aes(color=as.factor(n)), size=1.2) + 
+  prickles + theme(legend.key = element_rect(fill='white')) + 
+  scico::scale_color_scico_d(palette = 'devon', end=.85) + 
+  labs(x='Edge density (d)',y='Average path length (apl)', color='n')
+```
+
+At very low density (`0.01`), the average path length is essentially `0`, but just a small increase in density leads to explosive increase in the average path length. This phenomenon is known as *explosive percolation*, and it occurs because even randomly added edges have a chance of connected isolate vertices to one large component. 
+
+This explosion happens even sooner for networks with a greater number of vertices. But, exactly when does this percolation happen? At the `sparsepoint` (!) which we know varies systematically as a function of $n$. Because the density at which a network goes from being sparse to not sparse decreases as a function of network size, we see explosive changes in average path length sooner and sooner as network size increases. 
+
+As we continue to increase density, the average path length decreases because the number of direct paths between vertices that are part of the largest component continues to increase, and this drives down the average path length. Eventually the average path length for networks of all sizes converges on `1`. 

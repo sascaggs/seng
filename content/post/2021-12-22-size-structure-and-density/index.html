@@ -47,7 +47,7 @@ Figure 1: The density at which a network is considered sparse as a function of t
 </div>
 <div id="degree-distribution" class="section level1">
 <h1>Degree distribution</h1>
-<p>For a network of any size, as the edge density increases, the degree distribution is expected to become more uniform. To see how degree distribution changes with edge density, we can calculate degree for each node across a variety of density levels. Here I do this for networks with <code>10</code>, <code>75</code>, and <code>150</code> vertices, each ranging in density from <code>0.01</code> to <code>0.99</code>.</p>
+<p>For a network of any size, as the edge density increases, the degree distribution is expected to become more uniform, with the mean degree starting to approximate <span class="math inline">\(n\)</span>. To see how degree distribution changes with edge density, we can calculate degree for each node across a variety of density levels. Here I do this for networks with <code>10</code>, <code>75</code>, and <code>150</code> vertices, each ranging in density from <code>0.01</code> to <code>0.99</code>.</p>
 <pre class="r"><code>d &lt;- seq(0.01,0.99, length.out=11)
 l &lt;- list()
 for(i in seq_along(d)) {
@@ -82,9 +82,40 @@ Figure 2: A comparison of the degree distributions at increasing levels of densi
 <div id="average-path-length" class="section level1">
 <h1>Average Path Length</h1>
 <p>The length of a path between two vertices is determined by the number of vertices that lie between them. A direct path between two vertices is equal to <code>1</code>.</p>
-<pre class="r"><code>net &lt;- network(100, directed = F, density = sparsepoint(100, directed = F))
-plot(net)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<pre class="r"><code>mean(geodist(net, count.paths = T, inf.replace = 0)$gdist)</code></pre>
-<pre><code>## [1] 2.6618</code></pre>
+<p>We observed that as <span class="math inline">\(m\)</span> increases, mean degree approaches <span class="math inline">\(n\)</span>. We can expect that when mean degree is approximately <span class="math inline">\(n\)</span>, the average path length should be approximately <code>1</code>.</p>
+<p>The function below accepts a sequence of densities and a number of vertices, and returns the mean degree and average path length at each level of density.</p>
+<pre class="r"><code>l &lt;- list()
+apl &lt;- c()
+
+DegApl &lt;- function(n, directed = F, d, seed=777) {
+  for(i in seq_along(d)) {
+    l[[i]] &lt;- network(n, directed = directed, 
+                      density = d[i], seed=seed)
+    m &lt;- data.frame(lapply(l, degree))
+    k &lt;- lapply(l, geodist, inf.replace = 0, count.paths = F)
+    apl[i] &lt;- mean(k[[i]]$gdist)
+  }
+  remove(l,k) 
+  colnames(m) &lt;- c(1:length(d))
+  mD &lt;- apply(m, 2, mean)
+  return(cbind(apl,mD,n,d))
+}</code></pre>
+<p>Now we can explore relationships between these variables by running this function on networks with different sizes. Here we use a long sequence of densities to better approximate relationships.</p>
+<p>We can expect that mean degree and density are positively correlated. But what is the shape of this relationship?</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-9"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" alt="The association between edge density and mean degree is approximately linear." width="460.8" />
+<p class="caption">
+Figure 3: The association between edge density and mean degree is approximately linear.
+</p>
+</div>
+<p>Average path length should also systematically vary with density, but it is unclear what the shape of this relationship will look like. For instance, at low density, many paths = <code>0</code> because the many vertices are isolated. However, density networks should have short paths, as most vertices are directly connected to each other.</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-10"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" alt="Explosive percolation of average path length" width="460.8" />
+<p class="caption">
+Figure 4: Explosive percolation of average path length
+</p>
+</div>
+<p>At very low density (<code>0.01</code>), the average path length is essentially <code>0</code>, but just a small increase in density leads to explosive increase in the average path length. This phenomenon is known as <em>explosive percolation</em>, and it occurs because even randomly added edges have a chance of connected isolate vertices to one large component.</p>
+<p>This explosion happens even sooner for networks with a greater number of vertices. But, exactly when does this percolation happen? At the <code>sparsepoint</code> (!) which we know varies systematically as a function of <span class="math inline">\(n\)</span>. Because the density at which a network goes from being sparse to not sparse decreases as a function of network size, we see explosive changes in average path length sooner and sooner as network size increases.</p>
+<p>As we continue to increase density, the average path length decreases because the number of direct paths between vertices that are part of the largest component continues to increase, and this drives down the average path length. Eventually the average path length for networks of all sizes converges on <code>1</code>.</p>
 </div>
