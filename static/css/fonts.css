@@ -258,10 +258,15 @@ body {
   font-family: 'Barlow', sans-serif;
   font-weight: 500;
 }
-h1, h2, h3, h4, h5, h6, .archive-item-link {
+h1, h2, h3, h4, h5, h6 {
   font-family: 'Righteous', display;
   font-weight: 400;
 } 
+
+.archive-item-link {
+  font-family: "Barlow", sans-serif;
+  font-weight: 900;
+}
 
 .nav, .author, .terms, .article-duration, .archive-item-date, .article-date, .footer {
   font-family: 'Roboto Mono', monospace;
