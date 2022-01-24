@@ -19,13 +19,55 @@ draft: yes
 <pre class="r"><code>library(statnet)
 library(igraph)
 library(tidygraph)
-library(ggraph)</code></pre>
+library(ggraph)
+library(patchwork)</code></pre>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>Networks can be challenging to visualize.</p>
+<p>Visualization is a standard practice in network analysis and an important way to communicate and interpret network patterns. Although there are technical instructions about network visualization (Krempel 2011; Luke 2015), fantastic blog posts on network visualization tools (Ogyanova), and topical and topological examples of how to visualize specific kinds of networks (e.g., epidemiology [Christakis and Fowler 2009]; dynamic networks [Moody, Farland, and Bender-deMoll 2005]), there are no general, peer-reviewed guides to the best practices for network visualization. Having such a guide is important for standardizing visualization practices across disciplines and creating a transdisciplinary foundation for innovators and reformers to critique and systematically improve visualization techniques.</p>
+<p>It is possible that no such guide exists because of the extreme flexibility of network analysis. Networks are used to study many kinds of complex systems that necessitate unique visualization techniques. Nevertheless, we feel there is a sufficient overlap in network topology across systems to require a general guide to visualization. To this end, we organize our paper in the following way. First, we outline the standard elements of network visualization. We summarize established ways to represent nodes and edges, and lay them out on a graphical plane. We also cover what we call “supergraph” elements – aesthetics that improve network visualizations, but are not a requirement for representing a network object. In the bulk of the paper, we illustrate specific use cases for different classes of networks, ranging from small and large one-mode networks to multilayered, spatial, and dynamic networks. Here our goal is to demonstrate network visualization on simulated networks, and highlight empirical cases that are exemplars of network visualization. We conclude by distilling our insights into a list of ~10 principles for data visualization.</p>
+<p>Our guiding principles for evaluating and developing a guide to network visualization is based on those delineated by Edward Tufte <span class="citation">[-@tufte: 13]</span>. Here is version of Tufte’s advice framed around networks:</p>
+<ul>
+<li>Show the <em>relational</em> data.</li>
+<li>Help the viewer recognize substance over design, methodology, or technology.</li>
+<li>Avoid distorting <em>network structure</em>.</li>
+<li>Present many <em>connections</em> in a small space.</li>
+<li>Make large <em>networks</em> coherent.</li>
+<li>Encourage comparison of different <em>positions or substructures</em>.</li>
+<li>Reveal <em>network patterns</em> at several levels of detail, <em>from dyads to triads to cliques and whole networks</em>.</li>
+<li>Serve a clear purpose: description, exploration, tabulation, or decoration.</li>
+<li>Be integrated with statistical and verbal descriptions of the data.</li>
+</ul>
+<p>Our purpose here is not to overcome Tufte’s recommendations, but rather to apply them rigorously to network data. While each principles applies to network visualization, some are pivotal to it. Network graphs, for example, are a powerful way to describe an interactive environment at “several levels of detail.” Likewise, choice of aesthetics and layouts can easily distort network data, or be used to showcasae technology and design over substance. Above all, network graphs are particularly important for <strong>showing the data</strong>. Just as you can obtain the same mean value from a variety of distributions, so too can you obtain the same network density from wildly different networks.</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-2"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" alt="A random network (A), preferential attachment network (B), and homophily network (C) that all have the same edge density (0.02)." width="672" />
+<p class="caption">
+Figure 1: A random network (A), preferential attachment network (B), and homophily network (C) that all have the same edge density (0.02).
+</p>
 </div>
-<div id="background" class="section level1">
-<h1>Background</h1>
+</div>
+<div id="standard-elements-of-network-visualization" class="section level1">
+<h1>Standard elements of network visualization</h1>
+<div id="node-and-edge-attributes" class="section level2">
+<h2>Node and edge attributes</h2>
+<p>A network is a particular application of graph theory to represent at least one set of entities and their interactions. The simplest cases is a unipartite graph, <span class="math inline">\(G\)</span>, in which these entities are typically referred to as vertices, <span class="math inline">\(v\)</span> (also called nodes), and their interactions as edges, <span class="math inline">\(E\)</span>, (also called ties, links, or relations). The formal notation for these elements is <span class="math inline">\(G = (V,E)\)</span>. The actual quantities of observed nodes and edges are represented as <span class="math inline">\(n\)</span> and <span class="math inline">\(m\)</span>, respectively. A bipartite graph, in which two sets of vertices, <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span>, are connected by edges <span class="math inline">\(E\)</span>, is formally represented using the notation <span class="math inline">\(G = (U,V,E)\)</span>. Together these notations imply two forms of adjacency matrices, <span class="math inline">\(V \times V\)</span> and <span class="math inline">\(V\times U\)</span>.</p>
+<p>We can continue to extend this notation to other network topologies. A multilayer graph, in which a set of vertices <span class="math inline">\(V\)</span> may have <span class="math inline">\(D\)</span> number of edges (i.e., dimensions), is represented as <span class="math inline">\(G = (V,E,D)\)</span>. Where unipartite and bipartite adjacency matrices are characterized by two dimensions, a multilayer graph has four dimensions: <span class="math inline">\((V \times D) \times (V \times D)\)</span>.</p>
+<p>When it comes to network visualization, formal network notation may seem beside the point. But in fact, these details point us directly to fundamental elements of visualization. For instance, a graph <span class="math inline">\((V,E)\)</span> will require one node and one edge aesthetic to visualize it, whereas a multidimensional graph will require <span class="math inline">\(D\)</span> edge aesthetics to distinguish each dimension. Likewise, a bipartite graph will require two node aesthetics to distinguish <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span> in the graph.</p>
+<div class="figure"><span style="display:block;" id="fig:threefig"></span>
+<img src="{{< blogdown/postref >}}index_files/figure-html/threefig-1.png" alt="A) Unipartite network represented with a single node shape (filled circle) and edge (solid line). B) Bipartite network using two shapes (filled circle, filled diamond) to represent each level, and single edge type (solid line). C) multilayered network with a single node shape and three colored edges." width="672" />
+<p class="caption">
+Figure 2: A) Unipartite network represented with a single node shape (filled circle) and edge (solid line). B) Bipartite network using two shapes (filled circle, filled diamond) to represent each level, and single edge type (solid line). C) multilayered network with a single node shape and three colored edges.
+</p>
+</div>
+<p>There are several node and edge aesthetics that can be used to represent node and edge attributes on a given network. We have already seen how node shape and edge color are necessary to visualize different classes of networks (Figure <a href="#fig:threefig">2</a>). In general, the type of aesthetics that are effect depend on the attribute class. For example, categorical node attributes are best represented using different colors or shapes. Ordinal and continuous node attributes, however, can be mapped onto node size. Similar rules apply to edge attributes, although great care should be taken when mapping edge attributes onto visual aesthetics, as any more than two attributes can greatly convolute a network visualization.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="graph-layouts" class="section level2">
+<h2>Graph layouts</h2>
+</div>
+<div id="supergraph-elements" class="section level2">
+<h2>Supergraph elements</h2>
+<p>Bubbles and ellipses, annotations, labels, and legends</p>
+</div>
 </div>
 <div id="directed-and-undirected" class="section level1">
 <h1>Directed and undirected</h1>
@@ -47,4 +89,7 @@ library(ggraph)</code></pre>
 </div>
 <div id="dynamic" class="section level1">
 <h1>Dynamic</h1>
+</div>
+<div id="conclusion-10-principles-of-network-visualization" class="section level1">
+<h1>Conclusion: 10 principles of network visualization</h1>
 </div>

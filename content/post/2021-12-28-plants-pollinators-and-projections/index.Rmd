@@ -1,0 +1,52 @@
+---
+title: Plants, Pollinators, and Projections
+author: Shane A. Scaggs
+date: '2021-12-28'
+slug: plants-pollinators-and-projections
+categories:
+  - methods
+tags:
+  - analysis
+  - igraph
+  - structure
+  - bipartite
+  - ecological network
+bibliography: ppp.bib
+draft: yes
+---
+
+# Preamble
+
+A bipartite network is a special kind of network. It contains two distinct sets of nodes, $U$ and $V$, and edges that only occur *between* $U$ and $V$. Bipartite networks are relatively common in network analysis because there are a variety of interactions that naturally fit the bipartite graph structure. 
+
+The example we'll focus on today is about plant-pollinator interactions. I am going to show you how to manage bipartite network data, visualize it, create bipartite projections, and make inferences about the structure of the bipartite network. Along the way we will answer some ecological questions about plants and pollinators. 
+
+You'll need the following R packages to follow along: 
+
+```{r, message=F, warning=F}
+library(igraph)
+library(tidygraph)
+library(ggraph)
+```
+
+
+# Imagine
+
+For this example, imagine you are an ecologist with a desire to understand the world of plants and pollinators. You have a few pollination questions that you are particularly keen to answer:
+
+1. Which plants host the greatest (and least) number of pollinators? 
+2. Do pollinators compete over some plant species? 
+3. Which plant-pollinator relationships are vulnerable to extinction if one or the other is lost?
+
+To answer these questions, you've decided to survey plants and pollinators in the region and painstakingly document which pollinators visit which plants over the course of your study period. With these raw data in hand, you can now represent plant-pollinator interactions as a bipartite network.  
+
+# Data 
+
+The data for this example was retrieved from the [Web of Life](https://www.web-of-life.es/) database, and was published in a 2002 paper by Dicks, Corbet, and Pywell [-@dicks2002compartmentalization]. You can download the data yourself using the Web of Life map tool by locating the data set in the United Kingdom and dowloading it as a `csv`. 
+
+Like other networks, this one is stored in a matrix. For bipartite networks, the rows represent one set of nodes, and the columns the other, making this a rectangular matrix rather than a square one. 
+
+
+
+# References 
+

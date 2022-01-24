@@ -105,22 +105,6 @@ a:link {
   color: #78efff;
 }
 
-.terms a:hover,
-.terms a:focus {
-  color: #78efff;
-  border-bottom: 2px solid;
-  border-bottom-color: #78efff;
-} 
-
-.terms {
-  font-size: 12px;
-  display: inline-block;
-  text-decoration: none;
-  color: #111;
-  padding: 1px 0;
-  border-bottom: 2px solid #ddd;
-  width: 100%;
-}
 
 
 .content {
@@ -150,7 +134,7 @@ a:link {
   padding: 1px 5px;
   font-weight: bold;
   border-radius: 3px;
-  background: #bbb;
+  background: #3300ff;
   color: #fff
 }
 

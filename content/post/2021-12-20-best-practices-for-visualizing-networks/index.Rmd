@@ -18,20 +18,141 @@ library(statnet)
 library(igraph)
 library(tidygraph)
 library(ggraph)
+library(patchwork)
 ```
 
 # Introduction
 
-Networks can be challenging to visualize. 
+Visualization is a standard practice in network analysis and an important way to communicate and interpret network patterns. Although there are technical instructions about network visualization (Krempel 2011; Luke 2015), fantastic blog posts on network visualization tools (Ogyanova),  and topical and topological examples of how to visualize specific kinds of networks (e.g., epidemiology [Christakis and Fowler 2009]; dynamic networks [Moody, Farland, and Bender-deMoll 2005]), there are no general, peer-reviewed guides to the best practices for network visualization. Having such a guide is important for standardizing visualization practices across disciplines and creating a transdisciplinary foundation for innovators and reformers to critique and systematically improve visualization techniques.
 
-# Background 
+It is possible that no such guide exists because of the extreme flexibility of network analysis. Networks are used to study many kinds of complex systems that necessitate unique visualization techniques. Nevertheless, we feel there is a sufficient overlap in network topology across systems to require a general guide to visualization. To this end, we organize our paper in the following way. First, we outline the standard elements of network visualization. We summarize established ways to represent nodes and edges, and lay them out on a graphical plane. We also cover what we call "supergraph" elements -- aesthetics that improve network visualizations, but are not a requirement for representing a network object. In the bulk of the paper, we illustrate specific use cases for different classes of networks, ranging from small and large one-mode networks to multilayered, spatial, and dynamic networks. Here our goal is to demonstrate network visualization on simulated networks, and highlight empirical cases that are exemplars of network visualization. We conclude by distilling our insights into a list of ~10 principles for data visualization. 
+
+Our guiding principles for evaluating and developing a guide to network visualization is based on those delineated by Edward Tufte [-@tufte: 13]. Here is version of Tufte's advice framed around networks: 
+
+- Show the *relational* data. 
+- Help the viewer recognize substance over design, methodology, or technology.
+- Avoid distorting *network structure*. 
+- Present many *connections* in a small space. 
+- Make large *networks* coherent. 
+- Encourage comparison of different *positions or substructures*. 
+- Reveal *network patterns* at several levels of detail, *from dyads to triads to cliques and whole networks*. 
+- Serve a clear purpose: description, exploration, tabulation, or decoration. 
+- Be integrated with statistical and verbal descriptions of the data.
+
+Our purpose here is not to overcome Tufte's recommendations, but rather to apply them rigorously to network data. While each principles applies to network visualization, some are pivotal to it. Network graphs, for example, are a powerful way to describe an interactive environment at "several levels of detail." Likewise, choice of aesthetics and layouts can easily distort network data, or be used to showcasae technology and design over substance. Above all, network graphs are particularly important for **showing the data**. Just as you can obtain the same mean value from a variety of distributions, so too can you obtain the same network density from wildly different networks. 
+
+```{r, echo=F, message=F, warning=F, fig.height=3, fig.width=7, fig.cap='A random network (A), preferential attachment network (B), and homophily network (C) that all have the same edge density (0.02).'}
+set.seed(66)
+n <- 100
+erg <- erdos.renyi.game(n,p=0.02)
+bg <- barabasi.game(n, 1, directed = F)
+net <- network(n, directed = F, density=0)
+net %v% 'group' <- sample(letters[1:3], size=n, replace = T)
+sim <- simulate(net ~ edges + nodematch('group'), coef = c(-5,2))
+
+g1 <- as_tbl_graph(erg) %>% 
+  ggraph('kk') + 
+  theme_graph() + theme(legend.position = 'none') + 
+  geom_edge_link0() + 
+  geom_node_point(size=1, shape=21, fill='white')
+
+g2 <- as_tbl_graph(bg) %>% 
+  ggraph('kk') + 
+  theme_graph() + theme(legend.position = 'none') + 
+  geom_edge_link0() + 
+  geom_node_point(size=1, shape=21, fill='white')
+
+g3 <- as_tbl_graph(intergraph::asIgraph(sim)) %>% 
+  ggraph('kk') + 
+  theme_graph() + theme(legend.position = 'none') + 
+  geom_edge_link0() + 
+  geom_node_point(size=1, shape=21, fill='white')
+
+(g1 + g2 + g3) + plot_annotation(tag_levels = 'A')
+```
 
 
+# Standard elements of network visualization  
+
+## Node and edge attributes 
+
+A network is a particular application of graph theory to represent at least one set of entities and their interactions. The simplest cases is a unipartite graph, $G$, in which these entities are typically referred to as vertices, $v$ (also called nodes), and their interactions as edges, $E$, (also called ties, links, or relations). The formal notation for these elements is $G = (V,E)$. The actual quantities of observed nodes and edges are represented as $n$ and $m$, respectively. A bipartite graph, in which two sets of vertices, $U$ and $V$, are connected by edges $E$, is formally represented using the notation $G = (U,V,E)$. Together these notations imply two forms of adjacency matrices, $V \times V$ and $V\times U$.
+
+We can continue to extend this notation to other network topologies. A multilayer graph, in which a set of vertices $V$ may have $D$ number of edges (i.e., dimensions), is represented as $G = (V,E,D)$.  Where unipartite and bipartite adjacency matrices are characterized by two dimensions, a multilayer graph has four dimensions: $(V \times D) \times (V \times D)$. 
+
+When it comes to network visualization, formal network notation may seem beside the point. But in fact, these details point us directly to fundamental elements of visualization. For instance, a graph $(V,E)$ will require one node and one edge aesthetic to visualize it, whereas a  multidimensional graph will require $D$ edge aesthetics to distinguish each dimension. Likewise, a bipartite graph will require two node aesthetics to distinguish $U$ and $V$ in the graph. 
+
+```{r threefig, echo=F, message=F, warning=F, fig.height=3, fig.width=7, fig.cap='A) Unipartite network represented with a single node shape (filled circle) and edge (solid line). B) Bipartite network using two shapes (filled circle, filled diamond) to represent each level, and single edge type (solid line). C) multilayered network with a single node shape and three colored edges.'}
+set.seed(11)
+V <- 10
+uni <- as.data.frame(t(combn(1:V, 2)))
+uni$Edge <- rbinom(nrow(uni), 1, prob = 0.4)
+uni <- uni[ uni$Edge == 1, ]
+
+U <- 7
+bip <- expand.grid(1:V, LETTERS[1:U])
+bip$Edge <- rbinom(nrow(bip), 1, prob = 0.4)
+bip <- bip[ bip$Edge==1, ]
+
+D <- 3
+mld <- expand.grid(1:V, 1:V, 100:102)
+mld$Edge <- NA 
+mld[ mld$Var3 == 100, 4] <- rbinom(100, 1, prob = 0.2)
+mld[ mld$Var3 == 101, 4] <- rbinom(100, 1, prob = 0.1)
+mld[ mld$Var3 == 102, 4] <- rbinom(100, 1, prob = 0.05)
+mld <- mld[ mld$Edge == 1, ]
+mld <- mld[ !mld$Var1 == mld$Var2, ]
+
+g1 <- as_tbl_graph(uni) %>% 
+  ggraph('sugiyama') + 
+  theme_graph() + theme(legend.position = 'none') + 
+  geom_edge_link0(strength = 0.1) + 
+  geom_node_point(size=3, shape=21, fill='white') 
+
+G_bip <- graph.data.frame(bip)
+V(G_bip)$Type <- ifelse(V(G_bip)$name %in% 1:V, T, F)
+
+g2 <- as_tbl_graph(G_bip) %>% 
+  ggraph('sugiyama') + 
+  theme_graph() + theme(legend.position = 'none') + 
+  geom_edge_link0() + 
+  geom_node_point(aes(shape=Type), fill='white', size=3 ) + 
+  scale_shape_manual(values = c(21,23))
+
+g3 <- as_tbl_graph(mld) %>% 
+  ggraph('sugiyama') + 
+  theme_graph() + theme(legend.position = 'none') + 
+  geom_edge_arc0( aes(color=as.factor(Var3)), strength = 0.1 ) + 
+  geom_node_point( size=3, shape=21, fill='white') 
+
+(g1 + g2 + g3) + plot_annotation(tag_levels = 'A')
+```
+
+There are several node and edge aesthetics that can be used to represent node and edge attributes on a given network. We have already seen how node shape and edge color are necessary to visualize different classes of networks (Figure \@ref(fig:threefig)). In general, the type of aesthetics that are effect depend on the attribute class. For example, categorical node attributes are best represented using different colors or shapes. Ordinal and continuous node attributes, however, can be mapped onto node size. Similar rules apply to edge attributes, although great care should be taken when mapping edge attributes onto visual aesthetics, as any more than two attributes can greatly convolute a network visualization. 
+
+```{r,  echo=F}
+n <- 60 
+net <- network(n, directed = F, density = 0.02)
+net %v% 'group' <- sample(colors()[c(10,100,150,50)], n, replace = T)
+net %v% 'rank' <- rpois(n,1) + 1
+net %e% 'weight' <- rpois(n,1) + 1
+net %e% 'type' <- sample(c(T,F), n, replace = T)
+g <- simulate(net ~ edges + nodematch('group') + nodecov('rank'), 
+              coef=c(-9,2,1))
+gplot(g, vertex.col = net %v% 'group', arrowhead.cex = 0, edge.lwd = net %e% 'weight')
+```
+
+
+
+## Graph layouts 
+
+
+
+## Supergraph elements
+
+Bubbles and ellipses, annotations, labels, and legends 
 
 # Directed and undirected
-
-
-
 
 # Bipartite 
 
@@ -44,4 +165,8 @@ Networks can be challenging to visualize.
 # Trees 
 
 # Dynamic 
+
+# Conclusion: 10 principles of network visualization 
+
+
 

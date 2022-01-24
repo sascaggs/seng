@@ -1,0 +1,52 @@
+---
+title: Plants, Pollinators, and Projections
+author: Shane A. Scaggs
+date: '2021-12-28'
+slug: plants-pollinators-and-projections
+categories:
+  - methods
+tags:
+  - analysis
+  - igraph
+  - structure
+  - bipartite
+  - ecological network
+bibliography: ppp.bib
+draft: yes
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="preamble" class="section level1">
+<h1>Preamble</h1>
+<p>A bipartite network is a special kind of network. It contains two distinct sets of nodes, <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span>, and edges that only occur <em>between</em> <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span>. Bipartite networks are relatively common in network analysis because there are a variety of interactions that naturally fit the bipartite graph structure.</p>
+<p>The example we’ll focus on today is about plant-pollinator interactions. I am going to show you how to manage bipartite network data, visualize it, create bipartite projections, and make inferences about the structure of the bipartite network. Along the way we will answer some ecological questions about plants and pollinators.</p>
+<p>You’ll need the following R packages to follow along:</p>
+<pre class="r"><code>library(igraph)
+library(tidygraph)
+library(ggraph)</code></pre>
+</div>
+<div id="imagine" class="section level1">
+<h1>Imagine</h1>
+<p>For this example, imagine you are an ecologist with a desire to understand the world of plants and pollinators. You have a few pollination questions that you are particularly keen to answer:</p>
+<ol style="list-style-type: decimal">
+<li>Which plants host the greatest (and least) number of pollinators?</li>
+<li>Do pollinators compete over some plant species?</li>
+<li>Which plant-pollinator relationships are vulnerable to extinction if one or the other is lost?</li>
+</ol>
+<p>To answer these questions, you’ve decided to survey plants and pollinators in the region and painstakingly document which pollinators visit which plants over the course of your study period. With these raw data in hand, you can now represent plant-pollinator interactions as a bipartite network.</p>
+</div>
+<div id="data" class="section level1">
+<h1>Data</h1>
+<p>The data for this example was retrieved from the <a href="https://www.web-of-life.es/">Web of Life</a> database, and was published in a 2002 paper by Dicks, Corbet, and Pywell <span class="citation">(<a href="#ref-dicks2002compartmentalization" role="doc-biblioref">2002</a>)</span>. You can download the data yourself using the Web of Life map tool by locating the data set in the United Kingdom and dowloading it as a <code>csv</code>.</p>
+<p>Like other networks, this one is stored in a matrix. For bipartite networks, the rows represent one set of nodes, and the columns the other, making this a rectangular matrix rather than a square one.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-dicks2002compartmentalization" class="csl-entry">
+Dicks, LV, SA Corbet, and RF Pywell. 2002. <span>“Compartmentalization in Plant-Insect Flower Visitor Webs.”</span> <em>Journal of Animal Ecology</em>, 32–43.
+</div>
+</div>
+</div>
