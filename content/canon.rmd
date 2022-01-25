@@ -1,12 +1,11 @@
 ---
-title: Canon
-bibliography: seng_canon_update.bib
-csl: american-journal-of-climate-change.csl
+title: "Canon"
 output:
     blogdown::html_page:
         toc: true
+biblography: seng_canon.bib
 ---
- 
+
 *This collection is always in progress*. 
 
 # General Network Theory 
