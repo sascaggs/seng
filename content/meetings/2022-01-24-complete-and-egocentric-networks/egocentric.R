@@ -12,20 +12,24 @@ library(patchwork)
 library(intergraph)
 
 
-egonetwork <- function(
+egonetworks <- function(
     
-    # SETTINGS
-    N=30, 
-    N_egos=3,
-    formula="net ~ edges + nodematch('group')", 
+    # SIMULATION SETTINGS
+    N=30,   
+    directed = F,
+    formula="net ~ edges + nodematch('group')",
+    params=c(-3.5,3),
     groups = 4,
-    params=c(-3.5,3), 
-    seed=777, 
-    directed = F, 
-    select_egos=F, 
-    egoIds) {
     
-    # SIMULATION
+    # EGONETWORK SETTINGS
+    select_egos=F,
+    N_egos=3,
+    egoIds,
+    seed=777) 
+
+{
+    
+    # SIMULATE A COMPLETE NETWORK
     set.seed(seed)
     n <- N 
     net <- network(n, directed = directed, density = 0)
@@ -50,31 +54,33 @@ egonetwork <- function(
     tg <- ig %>%
         as_tbl_graph() %>%
         activate(nodes) %>%
-        mutate(is.ego =  as.factor(ifelse( vertex.names %in% egos, 2, 
-                                           ifelse( vertex.names %in% unlist(first), 1, 0))), 
-               egolab = ifelse( vertex.names %in% egos, paste('Ego', vertex.names), '' )) %>% 
+        mutate(Neighborhood =  as.factor(ifelse( vertex.names %in% egos, 1, 
+                                                 ifelse( vertex.names %in% unlist(first) | vertex.names %in% unlist(second), 2, 'Unobserved'))), 
+               egolab = ifelse( vertex.names %in% egos, paste('Ego', vertex.names), '' ), 
+               IsEgo = ifelse(vertex.names %in% egos, 'Yes','No')) %>% 
         activate(edges) %>%
-        mutate(Neighborhood = as.factor(ifelse(from %in% egos, 2, 
-                                               ifelse(to %in% egos, 2, 
-                                                      ifelse( from %in% unlist(first), 1,
-                                                              ifelse( to %in% unlist(first), 1,  0 ))))))
+        mutate(Neighborhood = as.factor(ifelse(from %in% egos, 1, 
+                                               ifelse(to %in% egos, 1, 
+                                                      ifelse( from %in% unlist(first), 2,
+                                                              ifelse( to %in% unlist(first), 2,  'Unobserved' ))))))
     
     # SAVE EGO NETWORKS
     E(ig)$id <- seq_len(ecount(ig))
     V(ig)$vid <- seq_len(vcount(ig))
     egographs <- make_ego_graph(ig,order=2,nodes=egos)
     
+    # RETURN COMPLETE, TIDYGRAPH, AND EGONETWORKS IN A LIST
     return(list(g, tg, egographs))
     
 }
 
-
-egonetwork()
-
-egonetwork(N=80, 
+egonetworks(N=80, 
            params = c(-4,3),
            N_egos = 20) [[2]] %>%
     ggraph() + 
     geom_edge_link0(aes(color=Neighborhood)) + 
-    geom_node_point(aes(color=is.ego)) + 
-    geom_node_text(aes(label=egolab))
+    geom_node_point(aes(color=Neighborhood, shape=IsEgo), size=2) + 
+    geom_node_label(aes(label=egolab), repel = T) + 
+    theme_void() + #theme(legend.position = 'none') + 
+    scale_edge_color_manual(values=c('#3300ff','magenta','#00000033')) + 
+    scale_color_manual(values=c('#3300ff','magenta','#00000033'))
