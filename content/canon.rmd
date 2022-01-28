@@ -70,6 +70,8 @@ biblography: seng_canon.bib
 
 [Macrostructure from Microstructure: Generating Whole Systems from Ego Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4203462/) [@smith2012macrostructure]
 
+[Inference for Social Networks from Egocentrically Sampled Data](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5737754/pdf/nihms901911.pdf) [@krivitsky2017inference]
+
 # Methodology and Ethics
 
 [Whose results are these anyway? Reciprocity and the ethics of "giving back: after social network research](https://core.ac.uk/reader/265350790) [@tubaro2021whose]
@@ -92,4 +94,4 @@ biblography: seng_canon.bib
 
 # Full Reference List
 
-[Download current .bib file](/content/seng_canon_update.bib)
+[Download current .bib file](/content/seng_canon.bib)

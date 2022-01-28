@@ -1,5 +1,5 @@
 ---
-title: Complete and egocentric networks
+title: Egocentric patterns in homophilous networks
 author: Shane A. Scaggs
 date: '2022-01-24'
 slug: complete-and-egocentric-networks
@@ -11,10 +11,576 @@ tags:
   - sociocentric networks
   - sampling
   - tidygraph
+bibliography: comp_ego.bib
 draft: yes
 ---
 
+# Introduction
 
+```{r, echo=F, message=F, warning=F}
+library(statnet)
+library(igraph)
+library(tidygraph)
+library(ggraph)
+library(ggforce)
+library(patchwork)
+library(intergraph)
+```
+
+
+Researchers who work with smaller populations that have clearly defined boundaries [@laumann1989boundary] may be able to design survey instruments that can feasibly document an entire social network. These complete, *sociocentric* networks can exhibit some systematic biases [@ready2020comparing], but they typically do a better job of characterizing the full suite of direct and indirect connections within a population.
+
+Many researchers, however, work in larger populations that have fuzzy boundaries, if any. In these settings it is usually not feasible to construct a complete social network using only a survey or semi-structured interview. An alternative approach is to collect *egocentric* networks from a random sample of individuals.
+
+In this post, I will describe what an egocentric network is, and provide some simulation and sampling tools that can be used to understand the structural implications of an egocentric approach. 
+
+# Egocentric networks
+
+An egocentric network contains all of the alters connected to a particular *ego* (a single node), as well as all of the people to whom those ego's alters are also connected. These two degrees of separation are sometimes referred to as the $1^{st}$ and $2^{nd}$ order neighborhoods of ego. 
+
+```{r, echo=FALSE, fig.cap='An example of an egocentric network.'}
+set.seed(7)
+g <- expand.grid('Ego', sample(LETTERS[1:10], 3, replace = F))
+
+nei <- g$Var2
+
+el <- rbind(g, 
+            expand.grid(nei[1], sample(LETTERS[1:7], 3, replace = F)), 
+            expand.grid(nei[2], sample(letters[2:10], 3, replace = F)), 
+            expand.grid(nei[3], sample(LETTERS[3:10], 3, replace = F)))
+
+as_tbl_graph(el) %>%
+  activate(nodes) %>%
+  mutate(
+    IsEgo = ifelse(name == 'Ego', 'Ego',
+                   ifelse(name %in% nei, '1st order neighbor', '2nd order neighbor')), 
+    egolab = ifelse(name == 'Ego', 'Ego',
+                    ifelse(name %in% nei, '', ''))) %>%
+  ggraph('stress') + 
+  geom_edge_link0() + 
+  geom_node_point(aes(fill=IsEgo, size=IsEgo), pch=21) + 
+  geom_node_text(aes(label=egolab), repel = T) + 
+  theme_void() + 
+  scale_fill_manual(values = c('magenta','white','#3300ff')) + 
+  scale_size_manual(values = c(3,3,5)) + 
+  labs(fill = '', size = '')
+```
+
+
+Put differently, an egocentric design attempts to: 
+
+> [observe] the network of interest from the point of view of a set of sampled actors, who provide information about themselves and anonymized information on their network neighbors [@krivitsky2017inference: 1]. 
+
+Look at the quote above, we can see that when we use an egocentric network design, we develop a survey instrument that asks survey respondents to do, at minimum, two network tasks. 
+
+First, we ask each ego to list the names of people with whom they have a particular relationship. In my work, I might ask people to list individuals with whom they have shared a meal in the past month. I might also ask them for details about the relationship, like how frequently they share meals, or how they are related to the person.
+
+This procedure yields a short edgelist that might look something like this: 
+
+```{r, echo=F}
+set.seed(777)
+g <- expand.grid('Ego', LETTERS[1:5])
+g <- cbind(g, rbinom(length(g$Var1), 5, 0.5), c('friend','parent','sibling','sibling','friend'))
+
+colnames(g) <- c('Node','Edge','Frequency','Relation')
+g
+```
+
+
+Once the respondent have listed their partners, the next steps is to ask them who those partners might also be connected with. For example, now that we know `Ego` has had a meal with person `A`, we will ask if they know who person `A` (and person `B`, etc.) has shared a meal with. We can also ask ego to estimate the frequency and how `A` is related to the person. In some cases, `Ego` might not know the answers to these questions. 
+
+```{r, echo=F}
+h <- rbind(
+  expand.grid('B', LETTERS[5:7]),
+  expand.grid('C', LETTERS[9:11]),
+  expand.grid('D', LETTERS[9:10]),
+  expand.grid('E', LETTERS[6:7]))
+
+h <- cbind(h, 
+           rbinom(length(h$Var1), 5, 0.5)+1, 
+           sample(c(unique(g$Relation), 'coworker'), length(h$Var1), replace = T))
+
+h[c(3,5,10), 4] <- NA
+
+colnames(h) <- names(g)
+h
+```
+
+These two edgelists represent the $1^{st}$ and $2^{nd}$ order neighborhoods of ego. 
+
+```{r, echo=F, fig.cap='A graph of the hypothetical ego network described in the text above. Ego is shown in blue.'}
+as_tbl_graph(rbind(g,h)) %>%
+  activate(nodes) %>%
+  mutate(IsEgo = ifelse(name == 'Ego','Ego','')) %>%
+  ggraph('stress') + 
+  theme_void() + 
+  geom_edge_link(aes(width=Frequency, color=Relation)) + 
+  geom_node_point(aes(color=IsEgo), size=5) + 
+  scale_edge_width_continuous(range = c(0.5,2)) + 
+  scale_color_discrete(guide = 'none') 
+
+```
+
+
+# Limitations and benefits of egocentric networks 
+
+Observing a network through the lens of sampled egos presents has some limitations. Each respondent must be able to report information on themselves and all of their partners. For some relationships and details, this can be very challenging. The resulting network is also a biased representation of the complete network. This means that some centrality metrics -- e.g., betweenness and closeness -- are greatly affected by the incomplete network structure, while others -- e.g., degree centrality -- are less impacted [@marsden2002egocentric]. 
+
+But there are also some benefits that come from working with egocentric networks. A large amount of information can be obtained by only sampling a small number of people. This greatly reduces the amount of research effort needed to sample large populations. Egocentric networks also lend themselves to respondent driven sampling [@heckathorn1997respondent; @heckathorn2002respondent]. Together these approaches can be used to document senstive or stigmatized social relations. Egocentric networks can also be constructed using contact diaries, which lend themselves to longitudinal network documentation [@fu2007contact]. 
+
+# Egocentric sampling: A simulation study
+
+So if you do work in a large population, and you intend to use an egocentric approach, you will be faced with some design questions: 
+
+- How many egos do you need to sample? 
+- What kinds of metrics will be biased? 
+- Can you conduct valid inferential statistics? 
+
+These questions are the focus of this simulation study. Here, I provide some tools you can use to simulate and visualize a sample of egos from a complete network and immediately see the ramifications. There are several packges used.
+
+```{r, eval=F}
+library(statnet)
+library(igraph)
+library(tidygraph)
+library(ggraph)
+library(ggforce)
+library(patchwork)
+library(intergraph)
+```
+
+
+# `egonetworks` function
+
+To begin, I've created a function that has several settings that can help you understand the implications of an egonetwork design. This is superficially similar to a *power analysis* used in statistical research design. 
+
+The overall purpose of the function is to simulate a complete network to use as a reference, and then sample egos from this complete network. By sampling egos and looking at their neighborhoods, we can get a sense of how the collection of egonetworks compare to the complete network structure. 
+
+```{r}
+egonetworks <- function(
+  
+  # SIMULATION SETTINGS
+  N=30,   
+  directed = F,
+  formula="net ~ edges + nodematch('group')",
+  params=c(-3.5,3),
+  groups = 4,
+  
+  # EGONETWORK SETTINGS
+  select_egos=F,
+  N_egos=3,
+  egoIds,
+  seed=777) 
+
+{
+  
+  # SIMULATE A COMPLETE NETWORK
+  set.seed(seed)
+  n <- N 
+  net <- network(n, directed = directed, density = 0)
+  net %v% 'group' <- sample(1:groups, size = n, replace = T)
+  g <- simulate(as.formula(formula), coef=params, seed = seed) 
+  
+  # CONVERT TO IGRAPH
+  ig <- asIgraph(g)
+  
+  # SAMPLE EGOS, FIND NEIGHBORHOODS 
+  if (select_egos == F) {
+    egos <- sample(V(ig)$vertex.names, size=N_egos, replace = F)
+    first <- ego(ig, order=1, nodes=egos, mindist = 0)
+    second <- ego(ig, order=2, nodes=egos, mindist = 1) 
+  } else if (select_egos == T) { 
+    egos <- egoIds 
+    first <- ego(ig, order=1, nodes=egos, mindist = 0)
+    second <- ego(ig, order=2, nodes=egos, mindist = 1)
+  }
+  
+  # CREATE ATTRIBUTES 
+  tg <- ig %>%
+    as_tbl_graph() %>%
+    activate(nodes) %>%
+    mutate(Neighborhood =  as.factor(ifelse( vertex.names %in% egos, 1, 
+                                             ifelse( vertex.names %in% unlist(first) | vertex.names %in% unlist(second), 2, 'Unobserved'))), 
+           egolab = ifelse( vertex.names %in% egos, paste('Ego', vertex.names), '' ), 
+           IsEgo = ifelse(vertex.names %in% egos, 'Yes','No')) %>% 
+    activate(edges) %>%
+    mutate(Neighborhood = as.factor(ifelse(from %in% egos, 1, 
+                                           ifelse(to %in% egos, 1, 
+                                                  ifelse( from %in% unlist(first), 2,
+                                                          ifelse( to %in% unlist(first), 2,  'Unobserved' ))))))
+  
+  # SAVE EGO NETWORKS
+  E(ig)$id <- seq_len(ecount(ig))
+  V(ig)$vid <- seq_len(vcount(ig))
+  egographs <- make_ego_graph(ig,order=2,nodes=egos)
+  
+  # RETURN COMPLETE, TIDYGRAPH, AND EGONETWORKS IN A LIST
+  return(list(g, tg, egographs))
+  
+}
+
+```
+
+The `egonetworks` function generates the following: 
+
+1. One complete network. 
+2. Node and edge attributes to visualize each egonetwork within the complete network.
+3. A list of egonetworks. 
+
+## Simulation Settings
+
+The function has the following default settings: 
+
+```{r, eval=F}
+# SIMULATION SETTINGS
+N=30,
+directed = F,
+formula="net ~ edges + nodematch('group')",
+groups = 4,
+params=c(-3.5,3),
+
+# EGONETWORK SETTINGS
+select_egos=F, 
+N_egos=3,
+egoIds,
+seed=777) 
+```
+
+### Simulation settings
+
+`N` controls the number of nodes that are in the complete network simulation. `directed` controls whether the simulation generates a directed or undirected network.
+
+`egonetworks` accepts a ergm `formula` that determines the structure for the network simulation. We covered ergm formulae in a previous post on [network simulations with `statnet`](https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/). Currently, the default formula creates a network based on group membership homophily. The number of groups is controlled by the `groups` argument. But you can also include any ergm term in your formula, as long as the term does not require an attribute (see `?ergm-terms` for details). 
+
+The `params` argument is used to specify parameters values that are required by the `formula`. Since the default formula is `"net ~ edges + nodematch('group')"`, we need one parameter for network density (`edges`) and another for how strong the homophily is (`nodematch`). These parameters are specified in *log-odds*;  log-odds = `0` is the same as `0.5` probability. 
+
+## Egonetwork settings 
+
+Once a complete network is simulated from the settings above, we need to sample a number of egos from it.  Here you have two options. If `select_egos = FALSE`, then you can set the number of egos to sample using `N_egos`. The number of egos you choose will be randomly sampled from the nodes in the complete network (based `seed`). Alternatively, if `select_egos = TRUE`, you can provide a vector of `egoIds`. This is useful if you want to take a deep examinations of a specific node. 
+
+## Testing it out 
+
+You can run `egonetworks` with just the defaults and a list will be generated. The first element of the list is the complete network as a `network` object.
+
+```{r}
+test <- egonetworks()
+test[[1]]
+```
+
+The second element is a `tbl_graph` object with node and edge attributes that can be used for visualization. 
+
+```{r}
+test[[2]]
+```
+
+And the third element is a list of `igraph` objects based on all the ego graphs that were subset by `make_ego_graph`. 
+
+```{r}
+test[[3]]
+```
+
+## Visualization
+
+First, let's take a look at what the complete network looks like for a few different `seed` values.  
+
+```{r, message=F, echo=F, fig.cap='Complete undirected networks for four different seed values.'}
+mypal <- colorRampPalette(c('black','cyan','magenta','yellow'))
+
+p1 <- egonetworks(seed=777)[[2]] %>%
+  ggraph() + 
+  geom_edge_link0() + 
+  geom_node_point(aes(fill=factor(group)), pch=21, size=3) + 
+  theme_void() + theme(legend.position = 'none') + 
+  scale_fill_manual(values=mypal(4)) + 
+  ggtitle('seed = 777')
+
+p2 <- egonetworks(seed=27)[[2]] %>%
+  ggraph() + 
+  geom_edge_link0() + 
+  geom_node_point(aes(fill=factor(group)), pch=21, size=3) + 
+  theme_void() + theme(legend.position = 'none') + 
+  scale_fill_manual(values=mypal(4)) + 
+  ggtitle('seed = 27')
+
+p3 <- egonetworks(seed=420)[[2]] %>%
+  ggraph() + 
+  geom_edge_link0() + 
+  geom_node_point(aes(fill=factor(group)), pch=21, size=3) + 
+  theme_void() + theme(legend.position = 'none') + 
+  scale_fill_manual(values=mypal(4)) + 
+  ggtitle('seed = 420')
+
+p4 <- egonetworks(seed=72)[[2]] %>%
+  ggraph() + 
+  geom_edge_link0() + 
+  geom_node_point(aes(fill=factor(group)), pch=21, size=3) + 
+  theme_void() + 
+  scale_fill_manual(values=mypal(4)) + 
+  ggtitle('seed = 72')
+
+(p1 + p2) / (p3 + p4)
+
+```
+
+Coloring each node by group membership, we see how our simulation has generated a network based on group homophily. 
+
+The default settings draw three egos randomly out of the thirty used in the simulation. We can use the `Neighborhood` and `IsEgo` variables to color the edges and nodes. These variables tag which nodes and edges are part of the $1^{st}$ and $2^{nd}$ degree neighborhoods and which nodes are unobserved (`Neighborhood = 0`). The `egolab` variables can be used to label each ego. 
+
+Let's focus on `seed = 777` and `seed = 72`.
+
+```{r, message=F, fig.cap='Visualizing egocentric networks.', fig.width=7, fig.height=3}
+
+p1 <- egonetworks(seed = 777)[[2]] %>%
+  ggraph() +
+  geom_edge_link0(aes(color=Neighborhood)) + 
+  geom_node_point(aes(color=Neighborhood, shape=IsEgo), size=2) + 
+  geom_node_label(aes(label=egolab), repel = T) + 
+  theme_void() + theme(legend.position = 'none') + 
+  scale_edge_color_manual(values=c('#3300ff','magenta','#00000033')) + 
+  scale_color_manual(values=c('#3300ff','magenta','#00000033')) +
+  ggtitle('seed = 777') 
+
+p2 <- egonetworks(seed = 72)[[2]] %>%
+  ggraph() +
+  geom_edge_link0(aes(color=Neighborhood)) + 
+  geom_node_point(aes(color=Neighborhood, shape=IsEgo), size=2) + 
+  geom_node_label(aes(label=egolab), repel = T) + 
+  theme_void() + #theme(legend.position = 'none') + 
+  scale_edge_color_manual(values=c('#3300ff','magenta','#00000033')) + 
+  scale_color_manual(values=c('#3300ff','magenta','#00000033')) + 
+  ggtitle('seed = 72') 
+
+p1 + p2 
+```
+
+Looking at Figure 4, something clearly stands out. Can you tell what it is?  
+
+A sample of three egos is capable of recovering a lot of the complete network structure, but only if those egos occupy different structural positions in the network. This is somewhat true when we used `seed = 777`, but `seed = 72` happened to select three nodes that are all connected to each other. This greatly reduces the our ability to observe the complete network. 
+
+It is easy to notice this *when we have the complete network* already. But how would we know this if we haven't and cannot collect a complete network? 
+
+One approach is to used stratified random sampling instead of purely random sampling. This requires that we have some background, contextual knowledge of the populationwe are studying. For instance, if we know that there are a number of organization in the population, we need to be sure to sample egos from each of them. In our simulation study, this means we need to sample at least one ego from each of our homophily groups. 
+
+Similarly, if we have reason to believe that a person's position in a network is correlated with other personal attributes (e.g., wealth, age, location), then we can take stratified random samples of people who have different attributes. 
+
+## A larger network 
+
+Now that we have a sense of how this function behaves, let's take it up a notch. 
+
+In reality, you probably wouldn't use an egocentric approach for a population of `30`. More likely you'd what to use it for a much large population, say, `500` nodes. Let's parameterize this. 
+
+First, we need to build some intuition. Start by simulating a network with `500` nodes using the default `params` and then calculating the density on the complete network.  
+
+```{r}
+eg <- egonetworks(N = 500)
+graph.density(asIgraph(eg[[1]]))
+```
+
+This is much too dense. Most real world networks are more sparse -- a topic I discuss in [this blog post](https://seng.netlify.app/2021/12/22/size-structure-and-density/). The `sparsepoint` for a network with 500 nodes is: 
+
+```{r}
+sparsepoint <- function(n, directed=F) {
+  if ( directed == F  )   { n / (n*(n-1)/2) }
+  else if ( directed == T ) { n / (n*(n-1))   }
+  else { 
+    print('Must be TRUE or FALSE.')
+  }
+}
+
+sparsepoint(500, directed = F)
+```
+So to improve the simulation, we should set more extreme `params`. 
+
+```{r}
+eg <- egonetworks(N = 500, params = c(-8,4))
+graph.density(asIgraph(eg[[1]]))
+```
+Much better. The visual difference is striking.
+
+```{r}
+par(mfrow=c(1,2))
+gplot(egonetworks(500, params = c(-3.5,3))[[1]] )
+gplot(egonetworks(500, params = c(-8,4))[[1]])
+```
+
+Now that we have some more reasonable parameters, let's sample different quantities of `N_egos` and see how well we recover the complete network. We'll try `3`,`10`,`35`, and `60`. For brevity, I've omitted the plotting code, but an example is show below. 
+
+
+```{r, eval=F}
+params <- c(-8,4)
+mypal <- c('#3300ff','magenta','#00000033')
+
+p1 <- 
+  egonetworks(
+    N=500, 
+    params = params, 
+    N_egos = 3)[[2]] %>%
+  ggraph() +
+  geom_edge_link0(aes(color=Neighborhood)) + 
+  geom_node_point(aes(color=Neighborhood, shape=IsEgo), size=1.5) + 
+  theme_void() + theme(legend.position = 'none') + 
+  scale_edge_color_manual(values=mypal) + 
+  scale_color_manual(values=mypal) +
+  ggtitle('N_egos = 3') 
+```
+
+
+```{r, echo=F, message=F}
+params <- c(-8,4)
+mypal <- c('#3300ff','magenta','#00000022')
+
+p3 <- 
+  egonetworks(
+    N=500, 
+    params = params, 
+    N_egos = 3)[[2]] %>%
+  ggraph() +
+  geom_edge_link0(aes(color=Neighborhood)) + 
+  geom_node_point(aes(color=Neighborhood, shape=IsEgo), size=1.5) + 
+  theme_void() + theme(legend.position = 'none') + 
+  scale_edge_color_manual(values=mypal) + 
+  scale_color_manual(values=mypal) +
+  ggtitle('N_egos = 3') 
+
+p10 <- 
+  egonetworks(
+    N=500, 
+    params = params, 
+    N_egos = 10)[[2]] %>%
+  ggraph() +
+  geom_edge_link0(aes(color=Neighborhood)) + 
+  geom_node_point(aes(color=Neighborhood, shape=IsEgo), size=1.5) + 
+  theme_void() + theme(legend.position = 'none') + 
+  scale_edge_color_manual(values=mypal) + 
+  scale_color_manual(values=mypal) +
+  ggtitle('N_egos = 10') 
+
+p35 <- 
+  egonetworks(
+    N=500, 
+    params = params, 
+    N_egos = 35)[[2]] %>%
+  ggraph() +
+  geom_edge_link0(aes(color=Neighborhood)) + 
+  geom_node_point(aes(color=Neighborhood, shape=IsEgo), size=1.5) + 
+  theme_void() + theme(legend.position = 'none') + 
+  scale_edge_color_manual(values=mypal) + 
+  scale_color_manual(values=mypal) +
+  ggtitle('N_egos = 35') 
+
+p60 <- 
+  egonetworks(
+    N=500, 
+    params = params, 
+    N_egos = 60)[[2]] %>%
+  ggraph() +
+  geom_edge_link0(aes(color=Neighborhood)) + 
+  geom_node_point(aes(color=Neighborhood, shape=IsEgo), size=1.5) + 
+  theme_void() + theme(legend.position = 'none') + 
+  scale_edge_color_manual(values=mypal) + 
+  scale_color_manual(values=mypal) +
+  ggtitle('N_egos = 60') 
+
+(p3 + p10) / (p35 + p60)
+```
+
+As we increase the number of egos, we get much closer to the complete network. We also end up smapling some isolates by chance. But this qualitative approach isn't all that satisfying. We need to make some quanitative comparisons between the complette network and the merged egocentric networks. 
+
+To do this, we first need to take all of the egonetworks, (i.e., `egonetworks()[[3]]`) and combine them into a single network. Then we will look at how the structural characteristics compare between the complete and egocentric versions. 
+
+## Merging the egonetworks 
+
+There may be some fancy `igraph` ways to combine these networks, but I think the most straight forward approach is to get the edgelist for every network, using `rbind` to combine them, and then eliminate any duplicate edges. 
+
+I'm going to do this once with 10 egos and once with 60 egos. Since each egonetwork is stored in a list,  I'll use `lapply` to `get.edgelist` and converted all the edgelists into `data.frame` so that they can be unlisted using `dplyr::bind_rows`. 
+
+```{r}
+params <- c(-8,4)
+egonet10 <- egonetworks(N=500, params = params, N_egos = 10)[[3]]
+egonet60 <- egonetworks(N=500, params = params, N_egos = 60)[[3]]
+
+# add names to egonetworks 
+for(i in seq_along(egonet10)) { 
+  V(egonet10[[i]])$name <- V(egonet10[[i]])$vid 
+}
+for(i in seq_along(egonet60)) { 
+  V(egonet60[[i]])$name <- V(egonet60[[i]])$vid 
+}
+
+# get edgelists
+el10 <- dplyr::bind_rows( 
+  lapply( 
+    lapply(egonet10, get.edgelist), as.data.frame) )
+el60 <- dplyr::bind_rows( 
+  lapply( 
+    lapply(egonet60, get.edgelist), as.data.frame) )
+
+# graph the edgelist without duplicates 
+g10 <- graph.data.frame(el10[ !duplicated(el10), ])
+g60 <- graph.data.frame(el60[ !duplicated(el60), ])
+```
+
+```{r, echo=F, message=F, fig.height=5, fig.width=6}
+mypal <- c('#3300ff','magenta','#00000011')
+
+(egonetworks(N=500, params = params, N_egos = 10)[[2]] %>%
+   ggraph() + 
+   geom_edge_link0(aes(color=Neighborhood), width=1) + 
+   scale_edge_color_manual(values = mypal) + 
+   geom_node_point(aes(color=Neighborhood, alpha=Neighborhood), size=2) + 
+   scale_color_manual(values = mypal) +
+   scale_alpha_manual(values = c(0.5,0.5,0.01)) + 
+   theme_void() + 
+   ggtitle('N_egos = 10')) / 
+  (egonetworks(N=500, params = params, N_egos = 60)[[2]] %>%
+     ggraph() + 
+     geom_edge_link0(aes(color=Neighborhood), width=1) + 
+     scale_edge_color_manual(values = mypal) + 
+     geom_node_point(aes(color=Neighborhood, alpha=Neighborhood), size=2) + 
+     scale_color_manual(values = mypal) +
+     scale_alpha_manual(values = c(0.5,0.5,0.05)) + 
+     theme_void() + 
+     ggtitle('N_egos = 60')) 
+```
+
+## Network comparisons 
+
+How do network statistics calculated on the compiled egonetworks compared to the full network? 
+
+```{r, echo=F, message=F}
+g500 <- asIgraph(egonetworks(N=500, params = params, N_egos = 10)[[1]])
+
+df <- data.frame( 
+  Network = c('Complete','60Egos','10Egos'),
+  N_nodes = c(vcount(g500), vcount(g60), vcount(g10)),
+  Density = c(graph.density(g500), graph.density(g60), graph.density(g10)), 
+  AvgPathLength = c(average.path.length(g500), average.path.length(g60), average.path.length(g10)), 
+  #AvgDegree = c( mean(degree(g500)), mean(degree(g60)), mean(degree(g10)))  ,
+  #AvgCloseness = c( mean(closeness(g500)), mean(closeness(g60)), mean(closeness(g10))),
+  #AvgBetweeness = c( mean(betweenness(g500, directed = F)), 
+  #                   mean(betweenness(g60, directed = F)), 
+  #                   mean(betweenness(g10, directed = F))),
+  Connectedness = c(connectedness(asNetwork(g500)), connectedness(asNetwork(g60)), connectedness(asNetwork(g10)))
+  )
+
+df
+```
+```{r, fig.width=4.5, fig.height=4, message=F, warning=F, echo=F, fig.cap='Comparison of degree distributions for each network (Complete = dashed; 60Egos = orange; 10Egos = purple.'}
+
+plot(NULL, xlim=c(0,8), ylim=c(0,0.5), xlab='Degree centrality', ylab='Density')
+lines(density(graph.strength(g500)), lty=2)
+lines(density(graph.strength(g60)), col='tomato')
+lines(density(graph.strength(g10)), col='#3300ff') 
+
+```
+# Concluding thoughts 
+
+- Egocentric networks are capable of estimating the structure of large networks with much lower research effort. 
+- Network simulation and the `egonetworks` function are tools for anticipating how much research effort is needed. They can be used like a power analysis. 
+- Theory and ethnographic knowledge is necessary for adequate research design, but relatively little prior knowledge is needed to come up with useful simulations. 
+
+We have not touched on inferential statistics with `ego.ergm` but this package is very useful for developing statistically models on egocentrically sampled data. We will cover this in a future post. 
+
+# References
 
 
 
