@@ -12,7 +12,6 @@ tags:
   - sampling
   - tidygraph
 bibliography: comp_ego.bib
-draft: yes
 ---
 
 # Introduction
@@ -272,29 +271,29 @@ test[[3]]
 ```
 
     ## [[1]]
-    ## IGRAPH 06b9e2a U--- 20 37 -- 
+    ## IGRAPH 22e6c59 U--- 20 37 -- 
     ## + attr: group (v/n), na (v/l), vertex.names (v/c), vid (v/n), na (e/l),
     ## | id (e/n)
-    ## + edges from 06b9e2a:
+    ## + edges from 22e6c59:
     ##  [1]  1-- 5  1-- 8  1-- 9  1--11  1--17  1--20  2-- 8  2-- 9  2--10  2--15
     ## [11]  3-- 5  3-- 6  4-- 7  4--19  5-- 6  5-- 8  5--15  5--16  5--17  5--18
     ## [21]  6--12  6--17  6--18  7-- 8  7--12  7--19  8--14  8--18  9--16 10--11
     ## [31] 10--15 11--16 13--14 14--17 14--18 16--18 17--20
     ## 
     ## [[2]]
-    ## IGRAPH 06b9e2a U--- 14 26 -- 
+    ## IGRAPH 22e6c59 U--- 14 26 -- 
     ## + attr: group (v/n), na (v/l), vertex.names (v/c), vid (v/n), na (e/l),
     ## | id (e/n)
-    ## + edges from 06b9e2a:
+    ## + edges from 22e6c59:
     ##  [1]  1-- 4  1-- 5  3-- 5  4-- 5  1-- 6  3-- 6  2-- 7  6-- 7  2-- 8  3-- 8
     ## [11]  7-- 8  1-- 9  8-- 9  3--10  4--10  8--10  4--11  6--11  9--11  1--12
     ## [21]  4--12  4--13  5--13 11--13  1--14 12--14
     ## 
     ## [[3]]
-    ## IGRAPH 06b9e2a U--- 14 23 -- 
+    ## IGRAPH 22e6c59 U--- 14 23 -- 
     ## + attr: group (v/n), na (v/l), vertex.names (v/c), vid (v/n), na (e/l),
     ## | id (e/n)
-    ## + edges from 06b9e2a:
+    ## + edges from 22e6c59:
     ##  [1]  1-- 3  3-- 4  1-- 6  2-- 6  3-- 6  5-- 6  6-- 8  7-- 8  7-- 9  7--10
     ## [11]  9--10  3--11  1--12  3--12  4--12  8--12  3--13  4--13  6--13  8--13
     ## [21] 11--13  1--14 12--14
@@ -473,24 +472,29 @@ g60 <- graph.data.frame(el60[ !duplicated(el60), ])
 
 ## Network comparisons
 
-How do the samples egonetworks compare to the original complete network?
+How do network statistics calculated on the compiled egonetworks compared to the full network?
 
-    ##    Network     Density AvgPathLength AvgDegree Connectedness
-    ## 1 Complete 0.004857715      7.705835  2.424000     0.7498677
-    ## 2   60Egos 0.004060938      1.775687  2.339100     0.9793829
-    ## 3   10Egos 0.010866911      1.617834  1.956044     0.3789988
+    ##    Network N_nodes     Density AvgPathLength Connectedness
+    ## 1 Complete     500 0.004857715      7.705835     0.7498677
+    ## 2   60Egos     289 0.004060938      1.775687     0.9793829
+    ## 3   10Egos      91 0.010866911      1.617834     0.3789988
 
-``` r
-library(tidyverse)
-df %>% gather(key=key,value=value,-Network) %>%
-  ggplot() + 
-  geom_point(aes(value, key, color=Network, shape=Network)) + 
-  #facet_wrap(~key, scales = 'free') + 
-  scale_shape_manual(values = c(19,19,4)) + 
-  theme_classic()
-```
+<div class="figure">
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-23-1.png" width="576" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-23-1.png" alt="Comparison of degree distributions for each network (Complete = dashed; 60Egos = orange; 10Egos = purple." width="432" />
+<p class="caption">
+Figure 5: Comparison of degree distributions for each network (Complete = dashed; 60Egos = orange; 10Egos = purple.
+</p>
+
+</div>
+
+# Concluding thoughts
+
+-   Egocentric networks are capable of estimating the structure of large networks with much lower research effort.
+-   Network simulation and the `egonetworks` function are tools for anticipating how much research effort is needed. They can be used like a power analysis.
+-   Theory and ethnographic knowledge is necessary for adequate research design, but relatively little prior knowledge is needed to come up with useful simulations.
+
+We have not touched on inferential statistics with `ego.ergm` but this package is very useful for developing statistically models on egocentrically sampled data. We will cover this in a future post.
 
 # References
 
