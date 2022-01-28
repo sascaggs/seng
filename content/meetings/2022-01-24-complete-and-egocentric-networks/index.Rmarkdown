@@ -8,7 +8,7 @@ categories:
 tags:
   - simulation
   - egocentric networks
-  - sociocentric networksa
+  - sociocentric networks
   - sampling
   - tidygraph
 bibliography: comp_ego.bib
