@@ -1,5 +1,5 @@
 ---
-title: Egocentric patterns in homophilous networks
+title: Sampling egonetworks from a complete network
 author: Shane A. Scaggs
 date: '2022-01-24'
 slug: complete-and-egocentric-networks
@@ -70,7 +70,7 @@ Put differently, an egocentric design attempts to:
 
 > [observe] the network of interest from the point of view of a set of sampled actors, who provide information about themselves and anonymized information on their network neighbors [@krivitsky2017inference: 1]. 
 
-Look at the quote above, we can see that when we use an egocentric network design, we develop a survey instrument that asks survey respondents to do, at minimum, two network tasks. 
+Looking at the quote above, we can see that when we use an egocentric network design, we use a survey instrument that asks survey respondents to do, at minimum, two network tasks. 
 
 First, we ask each ego to list the names of people with whom they have a particular relationship. In my work, I might ask people to list individuals with whom they have shared a meal in the past month. I might also ask them for details about the relationship, like how frequently they share meals, or how they are related to the person.
 
@@ -86,7 +86,7 @@ g
 ```
 
 
-Once the respondent have listed their partners, the next steps is to ask them who those partners might also be connected with. For example, now that we know `Ego` has had a meal with person `A`, we will ask if they know who person `A` (and person `B`, etc.) has shared a meal with. We can also ask ego to estimate the frequency and how `A` is related to the person. In some cases, `Ego` might not know the answers to these questions. 
+Once the respondent has listed their partners, the next step is to ask them who those partners might also be connected with. For example, now that we know `Ego` has shared a meal with person `A`, we will ask if they know who person `A` (and person `B`, etc.) has shared a meal with. We can also ask ego to estimate edge details, although in some cases, `Ego` might not know the answers to these questions. 
 
 ```{r, echo=F}
 h <- rbind(
@@ -133,9 +133,8 @@ So if you do work in a large population, and you intend to use an egocentric app
 
 - How many egos do you need to sample? 
 - What kinds of metrics will be biased? 
-- Can you conduct valid inferential statistics? 
 
-These questions are the focus of this simulation study. Here, I provide some tools you can use to simulate and visualize a sample of egos from a complete network and immediately see the ramifications. There are several packges used.
+These questions are the focus of this simulation study. Here, I provide some tools you can use to simulate and visualize a sample of egos from a complete network and immediately see the ramifications. There are several packages used.
 
 ```{r, eval=F}
 library(statnet)
@@ -150,9 +149,9 @@ library(intergraph)
 
 # `egonetworks` function
 
-To begin, I've created a function that has several settings that can help you understand the implications of an egonetwork design. This is superficially similar to a *power analysis* used in statistical research design. 
+To begin, I've created a function that has several settings that can help you understand the implications of an egonetwork design. This is superficially similar to a *power analysis* used in statistical research design, although because it is a simulation, it assumes each ego has perfect knowledge. 
 
-The overall purpose of the function is to simulate a complete network to use as a reference, and then sample egos from this complete network. By sampling egos and looking at their neighborhoods, we can get a sense of how the collection of egonetworks compare to the complete network structure. 
+The overall purpose of the function is to simulate a complete network to use as a reference, and then sample egos from this complete network. By sampling egos and looking at their neighborhoods, we can get a sense of how the collection of egonetworks compares to the complete network structure. 
 
 ```{r}
 egonetworks <- function(
@@ -248,7 +247,7 @@ seed=777)
 
 `N` controls the number of nodes that are in the complete network simulation. `directed` controls whether the simulation generates a directed or undirected network.
 
-`egonetworks` accepts a ergm `formula` that determines the structure for the network simulation. We covered ergm formulae in a previous post on [network simulations with `statnet`](https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/). Currently, the default formula creates a network based on group membership homophily. The number of groups is controlled by the `groups` argument. But you can also include any ergm term in your formula, as long as the term does not require an attribute (see `?ergm-terms` for details). 
+`egonetworks` accepts a ergm `formula` that determines the structure for the network simulation. We covered ergm formulae in a previous post on [network simulations with `statnet`](https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/). Currently, the default formula creates a network based on group membership homophily. The number of groups is controlled by the `groups` argument. But you can also include any ergm term in your formula, as long as the term does not require a node or edge attribute (see `?ergm-terms` for details). 
 
 The `params` argument is used to specify parameters values that are required by the `formula`. Since the default formula is `"net ~ edges + nodematch('group')"`, we need one parameter for network density (`edges`) and another for how strong the homophily is (`nodematch`). These parameters are specified in *log-odds*;  log-odds = `0` is the same as `0.5` probability. 
 
@@ -357,7 +356,7 @@ A sample of three egos is capable of recovering a lot of the complete network st
 
 It is easy to notice this *when we have the complete network* already. But how would we know this if we haven't and cannot collect a complete network? 
 
-One approach is to used stratified random sampling instead of purely random sampling. This requires that we have some background, contextual knowledge of the populationwe are studying. For instance, if we know that there are a number of organization in the population, we need to be sure to sample egos from each of them. In our simulation study, this means we need to sample at least one ego from each of our homophily groups. 
+One approach is to used stratified random sampling instead of purely random sampling. This requires that we have some background, contextual knowledge of the populationwe are studying. For instance, if we know that there are a number of groups that structure the population, we need to be sure to sample egos from each group. In our simulation study, this means we need to sample at least one ego from each of our homophily groups. 
 
 Similarly, if we have reason to believe that a person's position in a network is correlated with other personal attributes (e.g., wealth, age, location), then we can take stratified random samples of people who have different attributes. 
 
@@ -367,7 +366,7 @@ Now that we have a sense of how this function behaves, let's take it up a notch.
 
 In reality, you probably wouldn't use an egocentric approach for a population of `30`. More likely you'd what to use it for a much large population, say, `500` nodes. Let's parameterize this. 
 
-First, we need to build some intuition. Start by simulating a network with `500` nodes using the default `params` and then calculating the density on the complete network.  
+First, we need to build some intuition. Start by simulating a network with `500` nodes using the default `params` and then calculate the density on the complete network.  
 
 ```{r}
 eg <- egonetworks(N = 500)
@@ -395,13 +394,13 @@ graph.density(asIgraph(eg[[1]]))
 ```
 Much better. The visual difference is striking.
 
-```{r}
+```{r, fig.cap='Two simulations, one with density ~0.03 (left) and another with density ~0.004 (right).'}
 par(mfrow=c(1,2))
 gplot(egonetworks(500, params = c(-3.5,3))[[1]] )
 gplot(egonetworks(500, params = c(-8,4))[[1]])
 ```
 
-Now that we have some more reasonable parameters, let's sample different quantities of `N_egos` and see how well we recover the complete network. We'll try `3`,`10`,`35`, and `60`. For brevity, I've omitted the plotting code, but an example is show below. 
+Now that we have more reasonable parameters, let's sample different quantities of `N_egos` and see how well we recover the complete network. We'll try `3`,`10`,`35`, and `60`. For brevity, I've omitted the plotting code, but an example is shown below. 
 
 
 ```{r, eval=F}
@@ -482,15 +481,15 @@ p60 <-
 (p3 + p10) / (p35 + p60)
 ```
 
-As we increase the number of egos, we get much closer to the complete network. We also end up smapling some isolates by chance. But this qualitative approach isn't all that satisfying. We need to make some quanitative comparisons between the complette network and the merged egocentric networks. 
+As we increase the number of egos, we get much closer to the complete network. We also end up sampling some isolates by chance. In practice you could avoid this. 
 
-To do this, we first need to take all of the egonetworks, (i.e., `egonetworks()[[3]]`) and combine them into a single network. Then we will look at how the structural characteristics compare between the complete and egocentric versions. 
+But this qualitative approach isn't all that satisfying. We need to make some quanitative comparisons between the complette network and the merged egocentric networks. To do this, we first need to take all of the egonetworks, (i.e., `egonetworks()[[3]]`) and combine them into a single network. Then we will look at how the structural characteristics compare between the complete and egocentric versions. 
 
 ## Merging the egonetworks 
 
 There may be some fancy `igraph` ways to combine these networks, but I think the most straight forward approach is to get the edgelist for every network, using `rbind` to combine them, and then eliminate any duplicate edges. 
 
-I'm going to do this once with 10 egos and once with 60 egos. Since each egonetwork is stored in a list,  I'll use `lapply` to `get.edgelist` and converted all the edgelists into `data.frame` so that they can be unlisted using `dplyr::bind_rows`. 
+I'm going to do this once with 10 egos and once with 60 egos. Since each egonetwork is stored in a list,  I'll use `lapply` to `get.edgelist` and converted all the edgelists into `data.frame` so that they can be unlisted using `dplyr::bind_rows`. It is very important to add the `name` attribute so that the vertex names are retained when we combine the networks. 
 
 ```{r}
 params <- c(-8,4)
@@ -543,7 +542,7 @@ mypal <- c('#3300ff','magenta','#00000011')
 
 ## Network comparisons 
 
-How do network statistics calculated on the compiled egonetworks compared to the full network? 
+How do network statistics calculated on the compiled egonetworks compare to the full network? Here are a few simple metrics. 
 
 ```{r, echo=F, message=F}
 g500 <- asIgraph(egonetworks(N=500, params = params, N_egos = 10)[[1]])
