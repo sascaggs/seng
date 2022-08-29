@@ -1,7 +1,7 @@
 ---
 title: Plants, Pollinators, and Projections
 author: Shane A. Scaggs
-date: '2021-12-28'
+date: '2022-08-01'
 slug: plants-pollinators-and-projections
 categories:
   - methods
@@ -17,18 +17,18 @@ draft: yes
 
 # Preamble
 
-A bipartite network is a special kind of network. It contains two distinct sets of nodes, $U$ and $V$, and edges that only occur *between* $U$ and $V$. Bipartite networks are relatively common in network analysis because there are a variety of interactions that naturally fit the bipartite graph structure. 
+A bipartite network is a special kind of network. It contains two distinct sets of nodes, often labeled $U$ and $V$, with edges that can only occur *between* $U$ and $V$. Bipartite networks are relatively common in network analysis because there are many interactions that naturally fit the bipartite graph structure. 
 
 The example we'll focus on today is about plant-pollinator interactions. I am going to show you how to manage bipartite network data, visualize it, create bipartite projections, and make inferences about the structure of the bipartite network. Along the way we will answer some ecological questions about plants and pollinators. 
 
-You'll need the following R packages to follow along: 
+You'll need these R packages to follow along: 
 
 ```{r, message=F, warning=F}
-library(igraph)
-library(tidygraph)
-library(ggraph)
+library(tidyverse)  # data wrangling 
+library(igraph)     # network objects 
+library(tidygraph)  # network wrangling
+library(ggraph)     # visualization 
 ```
-
 
 # Imagine
 
@@ -38,14 +38,69 @@ For this example, imagine you are an ecologist with a desire to understand the w
 2. Do pollinators compete over some plant species? 
 3. Which plant-pollinator relationships are vulnerable to extinction if one or the other is lost?
 
-To answer these questions, you've decided to survey plants and pollinators in the region and painstakingly document which pollinators visit which plants over the course of your study period. With these raw data in hand, you can now represent plant-pollinator interactions as a bipartite network.  
+To answer these questions, you've decided to observe plants and painstakingly document which pollinators visit the plants over the course of your study period. With these raw data in hand, you can now represent plant-pollinator interactions as a bipartite network.  
 
 # Data 
 
-The data for this example was retrieved from the [Web of Life](https://www.web-of-life.es/) database, and was published in a 2002 paper by Dicks, Corbet, and Pywell [-@dicks2002compartmentalization]. You can download the data yourself using the Web of Life map tool by locating the data set in the United Kingdom and dowloading it as a `csv`. 
+The data I'm using for this example was retrieved from the [Web of Life](https://www.web-of-life.es/) database, and was published in a 2002 paper by Dicks, Corbet, and Pywell [-@dicks2002compartmentalization]. You can download the data yourself using the Web of Life map tool by locating the data set in the United Kingdom and dowloading it as a `csv`. 
 
-Like other networks, this one is stored in a matrix. For bipartite networks, the rows represent one set of nodes, and the columns the other, making this a rectangular matrix rather than a square one. 
+Like other networks, this one is stored in a matrix. For bipartite networks, the rows represent one set of nodes, and the columns represent the other, making this a rectangular matrix rather than a square one. 
 
+```{r, echo=F, warning=F, message=F}
+d0 = read.csv('data/M_PL_062.csv')
+```
+
+This matrix is pretty big -- there are `r dim(d0)[2]` insects interacting with `r dim(d0)[1]` plants -- and it needs a bit of wrangling. First thing I'm going to do is `gather` this matrix into an edgelist and rename the columns. 
+
+```{r}
+d1 = d0 %>% 
+    gather(key=key, value=value, -X) %>%
+    select(Plant=X, Insect=key, Observed=value) 
+head(d1)
+```
+Now I want to filter out all of the rows where `Observed == 0`. This will greatly reduce the size of the data.frame, which currently has `r nrow(d1)` rows.  
+
+```{r}
+d2 = d1 %>% filter(!Observed == 0) %>% select(Plant, Insect)
+```
+
+Before I make this edgelist into an igraph object, I want to create a small tibble to store vertex attributes. Right now the only attributes I have are the species name and whether it is a plant or insect, which are analogous to the bipartite node *types*. Types are required for bipartite matrices and are coded as a Boolean `TRUE` or `FALSE`. 
+
+```{r}
+plants = unique(d2$Plant)
+insects = unique(d2$Insect)
+
+v = tibble(
+    name = c(plants, insects), 
+    type = ifelse(name %in% plants, TRUE, FALSE)
+)
+```
+
+Now we can make the bipartite graph. 
+
+```{r}
+b = graph.data.frame(d2, directed = F, vertices = v)
+b
+```
+
+Because I've already included the required `type` attribute, igraph uses the undirected bipartite network label, `UN-B`. If you don't already have a type attribute in a vertex table, you can add one after you make the network, like this: 
+
+```{r}
+b = graph.data.frame(d2, directed = F)
+V(b)$type = ifelse( V(b)$name %in% d2[,1], TRUE, FALSE)
+b
+```
+
+# Visualizing the bipartite network 
+
+Next, let's build up a decent visualization of the plant-pollinator network. This network has `r ecount(b)` edges. This will create some visualization challenges, but we'll see what we can do. First, let's plot a basic graph of the igraph object `b` and see how bad it is. 
+
+```{r}
+b %>% as_tbl_graph() %>%
+    ggraph() + 
+    geom_edge_link() + 
+    geom_node_point()
+```
 
 
 # References 

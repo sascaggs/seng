@@ -1,7 +1,7 @@
 ---
 title: Plants, Pollinators, and Projections
 author: Shane A. Scaggs
-date: '2021-12-28'
+date: '2022-08-01'
 slug: plants-pollinators-and-projections
 categories:
   - methods
@@ -15,17 +15,17 @@ bibliography: ppp.bib
 draft: yes
 ---
 
-<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="preamble" class="section level1">
 <h1>Preamble</h1>
-<p>A bipartite network is a special kind of network. It contains two distinct sets of nodes, <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span>, and edges that only occur <em>between</em> <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span>. Bipartite networks are relatively common in network analysis because there are a variety of interactions that naturally fit the bipartite graph structure.</p>
+<p>A bipartite network is a special kind of network. It contains two distinct sets of nodes, often labeled <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span>, with edges that can only occur <em>between</em> <span class="math inline">\(U\)</span> and <span class="math inline">\(V\)</span>. Bipartite networks are relatively common in network analysis because there are many interactions that naturally fit the bipartite graph structure.</p>
 <p>The example we’ll focus on today is about plant-pollinator interactions. I am going to show you how to manage bipartite network data, visualize it, create bipartite projections, and make inferences about the structure of the bipartite network. Along the way we will answer some ecological questions about plants and pollinators.</p>
-<p>You’ll need the following R packages to follow along:</p>
-<pre class="r"><code>library(igraph)
-library(tidygraph)
-library(ggraph)</code></pre>
+<p>You’ll need these R packages to follow along:</p>
+<pre class="r"><code>library(tidyverse)  # data wrangling 
+library(igraph)     # network objects 
+library(tidygraph)  # network wrangling
+library(ggraph)     # visualization </code></pre>
 </div>
 <div id="imagine" class="section level1">
 <h1>Imagine</h1>
@@ -35,12 +35,75 @@ library(ggraph)</code></pre>
 <li>Do pollinators compete over some plant species?</li>
 <li>Which plant-pollinator relationships are vulnerable to extinction if one or the other is lost?</li>
 </ol>
-<p>To answer these questions, you’ve decided to survey plants and pollinators in the region and painstakingly document which pollinators visit which plants over the course of your study period. With these raw data in hand, you can now represent plant-pollinator interactions as a bipartite network.</p>
+<p>To answer these questions, you’ve decided to observe plants and painstakingly document which pollinators visit the plants over the course of your study period. With these raw data in hand, you can now represent plant-pollinator interactions as a bipartite network.</p>
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
-<p>The data for this example was retrieved from the <a href="https://www.web-of-life.es/">Web of Life</a> database, and was published in a 2002 paper by Dicks, Corbet, and Pywell <span class="citation">(<a href="#ref-dicks2002compartmentalization" role="doc-biblioref">2002</a>)</span>. You can download the data yourself using the Web of Life map tool by locating the data set in the United Kingdom and dowloading it as a <code>csv</code>.</p>
-<p>Like other networks, this one is stored in a matrix. For bipartite networks, the rows represent one set of nodes, and the columns the other, making this a rectangular matrix rather than a square one.</p>
+<p>The data I’m using for this example was retrieved from the <a href="https://www.web-of-life.es/">Web of Life</a> database, and was published in a 2002 paper by Dicks, Corbet, and Pywell <span class="citation">(<a href="#ref-dicks2002compartmentalization" role="doc-biblioref">2002</a>)</span>. You can download the data yourself using the Web of Life map tool by locating the data set in the United Kingdom and dowloading it as a <code>csv</code>.</p>
+<p>Like other networks, this one is stored in a matrix. For bipartite networks, the rows represent one set of nodes, and the columns represent the other, making this a rectangular matrix rather than a square one.</p>
+<p>This matrix is pretty big – there are 1045 insects interacting with 456 plants – and it needs a bit of wrangling. First thing I’m going to do is <code>gather</code> this matrix into an edgelist and rename the columns.</p>
+<pre class="r"><code>d1 = d0 %&gt;% 
+    gather(key=key, value=value, -X) %&gt;%
+    select(Plant=X, Insect=key, Observed=value) 
+head(d1)</code></pre>
+<pre><code>##                         Plant                    Insect Observed
+## 1      Helianthus laetiflorus Spallanzania.hesperidarum        0
+## 2          Cirsium altissimum Spallanzania.hesperidarum        0
+## 3               Cornus amomum Spallanzania.hesperidarum        1
+## 4            Lepachys pinnata Spallanzania.hesperidarum        0
+## 5        Podophyllum peltatum Spallanzania.hesperidarum        0
+## 6 Houstonia purpurea calycosa Spallanzania.hesperidarum        0</code></pre>
+<p>Now I want to filter out all of the rows where <code>Observed == 0</code>. This will greatly reduce the size of the data.frame, which currently has 476064 rows.</p>
+<pre class="r"><code>d2 = d1 %&gt;% filter(!Observed == 0) %&gt;% select(Plant, Insect)</code></pre>
+<p>Before I make this edgelist into an igraph object, I want to create a small tibble to store vertex attributes. Right now the only attributes I have are the species name and whether it is a plant or insect, which are analogous to the bipartite node <em>types</em>. Types are required for bipartite matrices and are coded as a Boolean <code>TRUE</code> or <code>FALSE</code>.</p>
+<pre class="r"><code>plants = unique(d2$Plant)
+insects = unique(d2$Insect)
+
+v = tibble(
+    name = c(plants, insects), 
+    type = ifelse(name %in% plants, TRUE, FALSE)
+)</code></pre>
+<p>Now we can make the bipartite graph.</p>
+<pre class="r"><code>b = graph.data.frame(d2, directed = F, vertices = v)
+b</code></pre>
+<pre><code>## IGRAPH 022e8e4 UN-B 1500 15255 -- 
+## + attr: name (v/c), type (v/l)
+## + edges from 022e8e4 (vertex names):
+##  [1] Cornus amomum          --Spallanzania.hesperidarum
+##  [2] Brauneria pallida      --Spallanzania.hesperidarum
+##  [3] Castilleja coccinea    --Spallanzania.hesperidarum
+##  [4] Rosa setigera          --Spallanzania.hesperidarum
+##  [5] Eupatorium perfoliatum --Spallanzania.hesperidarum
+##  [6] Hypoxis hirsuta        --Spallanzania.hesperidarum
+##  [7] Polygonum lapathifolium--Spallanzania.hesperidarum
+##  [8] Amelanchier canadensis --Spallanzania.hesperidarum
+## + ... omitted several edges</code></pre>
+<p>Because I’ve already included the required <code>type</code> attribute, igraph uses the undirected bipartite network label, <code>UN-B</code>. If you don’t already have a type attribute in a vertex table, you can add one after you make the network, like this:</p>
+<pre class="r"><code>b = graph.data.frame(d2, directed = F)
+V(b)$type = ifelse( V(b)$name %in% d2[,1], TRUE, FALSE)
+b</code></pre>
+<pre><code>## IGRAPH 02379ca UN-B 1500 15255 -- 
+## + attr: name (v/c), type (v/l)
+## + edges from 02379ca (vertex names):
+##  [1] Cornus amomum          --Spallanzania.hesperidarum
+##  [2] Brauneria pallida      --Spallanzania.hesperidarum
+##  [3] Castilleja coccinea    --Spallanzania.hesperidarum
+##  [4] Rosa setigera          --Spallanzania.hesperidarum
+##  [5] Eupatorium perfoliatum --Spallanzania.hesperidarum
+##  [6] Hypoxis hirsuta        --Spallanzania.hesperidarum
+##  [7] Polygonum lapathifolium--Spallanzania.hesperidarum
+##  [8] Amelanchier canadensis --Spallanzania.hesperidarum
+## + ... omitted several edges</code></pre>
+</div>
+<div id="visualizing-the-bipartite-network" class="section level1">
+<h1>Visualizing the bipartite network</h1>
+<p>Next, let’s build up a decent visualization of the plant-pollinator network. This network has 1.5255^{4} edges. This will create some visualization challenges, but we’ll see what we can do. First, let’s plot a basic graph of the igraph object <code>b</code> and see how bad it is.</p>
+<pre class="r"><code>b %&gt;% as_tbl_graph() %&gt;%
+    ggraph() + 
+    geom_edge_link() + 
+    geom_node_point()</code></pre>
+<pre><code>## Using `stress` as default layout</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
