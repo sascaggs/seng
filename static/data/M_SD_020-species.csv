@@ -1,0 +1,59 @@
+Specie,Kingdom,Role,Degree,Sum(connections strength),Networks presence
+"Coccothraustes coccothraustes","Animals","Seed disperser",5,84,2
+"Columba palumbus","Animals","Seed disperser",5,77,4
+"Corvus corax","Animals","Seed disperser",1,2,2
+"Corvus corone","Animals","Seed disperser",5,36,3
+"Dendrocopos major","Animals","Seed disperser",1,21,2
+"Emberiza cia","Animals","Seed disperser",1,1,2
+"Erithacus rubecula","Animals","Seed disperser",12,207,7
+"Ficedula hypoleuca","Animals","Seed disperser",2,2,3
+"Fringilla coelebs","Animals","Seed disperser",7,876,5
+"Garrulus glandarius","Animals","Seed disperser",3,152,4
+"Loxia curvirostra","Animals","Seed disperser",2,6,2
+"Parus ater","Animals","Seed disperser",6,411,2
+"Parus caeruleus","Animals","Seed disperser",3,72,2
+"Parus cristatus","Animals","Seed disperser",2,40,2
+"Parus major","Animals","Seed disperser",5,78,4
+"Phoenicurus ochruros","Animals","Seed disperser",9,995,2
+"Phoenicurus phoenicurus","Animals","Seed disperser",3,114,4
+"Pica pica","Animals","Seed disperser",2,17,3
+"Serinus citinella","Animals","Seed disperser",1,6,1
+"Serinus serinus","Animals","Seed disperser",1,18,2
+"Sitta europaea","Animals","Seed disperser",2,34,3
+"Sylvia atricapilla","Animals","Seed disperser",7,177,8
+"Sylvia borin","Animals","Seed disperser",1,8,5
+"Sylvia cantillans","Animals","Seed disperser",1,32,3
+"Sylvia communis","Animals","Seed disperser",3,184,4
+"Sylvia conspicillata","Animals","Seed disperser",2,3,1
+"Sylvia melanocephala","Animals","Seed disperser",1,35,2
+"Turdus iliacus","Animals","Seed disperser",11,226,10
+"Turdus merula","Animals","Seed disperser",16,966,11
+"Turdus philomelos","Animals","Seed disperser",3,8,8
+"Turdus pilaris","Animals","Seed disperser",4,113,4
+"Turdus torquatus","Animals","Seed disperser",10,872,8
+"Turdus viscivorus","Animals","Seed disperser",13,1137,9
+"Amelanchier ovalis","Plants","Plant",3,9,2
+"Arum italicum","Plants","Plant",2,4,1
+"Berberis vulgaris","Plants","Plant",14,258,6
+"Cotoneaster granatensis","Plants","Plant",2,2,1
+"Crataegus monogyna","Plants","Plant",22,1079,6
+"Daphne laureola","Plants","Plant",4,17,2
+"Hedera helix","Plants","Plant",7,245,7
+"Juniperus communis","Plants","Plant",5,36,7
+"Juniperus oxycedrus","Plants","Plant",1,2,2
+"Juniperus phoenicea","Plants","Plant",9,336,4
+"Juniperus sabina","Plants","Plant",5,85,5
+"Lonicera arborea","Plants","Plant",9,95,4
+"Lonicera etrusca","Plants","Plant",1,1,1
+"Lonicera splendida","Plants","Plant",2,2,2
+"Paeonia officinalis","Plants","Plant",1,1,2
+"Polygonatum odoratum","Plants","Plant",1,1,1
+"Prunus mahaleb","Plants","Plant",25,4564,2
+"Prunus prostrata","Plants","Plant",2,3,2
+"Rhamnus myrtifolius","Plants","Plant",3,15,3
+"Rhamnus saxatilis","Plants","Plant",3,3,3
+"Rosa canina","Plants","Plant",8,165,7
+"Rubia peregrina","Plants","Plant",3,3,1
+"Rubus ulmifolius","Plants","Plant",9,13,4
+"Sorbus aria","Plants","Plant",1,11,3
+"Taxus baccata","Plants","Plant",8,60,5

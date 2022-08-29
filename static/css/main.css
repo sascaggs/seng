@@ -40,6 +40,7 @@ code {
   position: relative;
   background: url('../images/wide.png');
   border-bottom: 1px solid #eaeaea;
+  color: white;
 }
 
 .header-img{
@@ -341,3 +342,24 @@ a:link {
     box-shadow: none;
   }
 }
+
+/*table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px '#3300ff';
+  table-layout: fixed;
+}*/
+table {
+   margin: auto; 
+   border-top: 1px solid #666; 
+   border-bottom: 1px solid #666; 
+}
+
+
+table thead th {
+  color: white;
+  background: black;
+}
+
+th, td { padding: 5px; }
+tr:nth-child(even) { background: #eee; }
