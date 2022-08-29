@@ -17,7 +17,7 @@ tags:
 - **Passcode**: 002244
 - **Location**: TBD 
 
-Beginning in September and ending in August, SENG is holding seven hybrid meetings. 
+Beginning in September and ending in December, SENG is holding seven hybrid meetings. 
 
 The focus of our meetings this term is on building confidence in our network analysis methods. We will do this by workshopping a lot and hosting fewer seminar style talks. We want our members to end this term feeling even better about using and teaching network analysis in the future. 
 
