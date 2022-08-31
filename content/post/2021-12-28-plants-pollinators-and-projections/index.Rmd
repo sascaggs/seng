@@ -15,6 +15,9 @@ bibliography: ppp.bib
 draft: yes
 ---
 
+
+
+
 # Preamble
 
 A bipartite network is a special kind of network. It contains two distinct sets of nodes, often labeled $U$ and $V$, with edges that can only occur *between* $U$ and $V$. Bipartite networks are relatively common in network analysis because there are many interactions that naturally fit the bipartite graph structure. 
@@ -29,10 +32,17 @@ library(igraph)     # network objects
 library(tidygraph)  # network wrangling
 library(ggraph)     # visualization 
 ```
-
+```{r, echo=F, message=F, warning=F}
+source("~/Shane's Projects/visualization tools/color palettes.R")
+tallnwhite = theme(panel.background = element_rect(fill='white',color='black', size=1.6),
+          plot.background = element_rect(fill=NA, color=NA), 
+          strip.background = element_rect(fill='white', color='black', size=1.6),
+          strip.text.x = element_text(margin = margin(0.6,0,0.6,0, "cm")),
+          panel.grid = element_blank())
+```
 # Imagine
 
-For this example, imagine you are an ecologist with a desire to understand the world of plants and pollinators. You have a few pollination questions that you are particularly keen to answer:
+For this example, imagine you are an ecologist with a desire to understand the world of plants and pollinators. You have a few pollination questions that you are particularly keen to answer: 
 
 1. Which plants host the greatest (and least) number of pollinators? 
 2. Do pollinators compete over some plant species? 
@@ -91,17 +101,91 @@ V(b)$type = ifelse( V(b)$name %in% d2[,1], TRUE, FALSE)
 b
 ```
 
-# Visualizing the bipartite network 
+# Visualizing and describing the plant-pollinator network
 
 Next, let's build up a decent visualization of the plant-pollinator network. This network has `r ecount(b)` edges. This will create some visualization challenges, but we'll see what we can do. First, let's plot a basic graph of the igraph object `b` and see how bad it is. 
 
-```{r}
-b %>% as_tbl_graph() %>%
+```{r, eval=F}
+b %>% 
+    as_tbl_graph() %>%
     ggraph() + 
     geom_edge_link() + 
     geom_node_point()
 ```
 
+Whew, this is quite a hairball. In this situation, I find that the `"sugiyama"` layout provides better results, especially when the transparency of the edges is also increased (i.e, `alpha = 0.1`). I'm also going to color the nodes by their `type` and calculate their degree centrality so that I can map the node size onto degree centrality in the visualization. 
+
+```{r, include=F, eval=F}
+b %>% 
+    as_tbl_graph() %>%
+    activate(nodes) %>%
+    mutate(degree = centrality_degree()) %>%
+    ggraph('sugiyama') + 
+    geom_edge_link(alpha=0.1) + 
+    geom_node_point(aes(color=type, size=degree), show.legend = F) + 
+    theme(panel.background = element_rect(fill='white')) + 
+    scale_size_continuous(range = c(0.5,4)) + 
+    scale_color_manual(values = c('#3300ff',"#00F99F"))
+```
+Despite it's imperfections, this layout suggests that there are definitely some species that are more generalist than others. Let's look at this more explicitly by plotting the degree distributions. 
+
+```{r, echo=F, message=F, warning=F}
+vd = b %>% 
+    as_tbl_graph() %>%
+    activate(nodes) %>%
+    mutate(degree = centrality_degree(), 
+           role = ifelse(type == T, 'plant', 'pollinator')) %>%
+    data.frame() 
+
+
+above100 = vd[ vd$degree > 100, 'name' ]
+
+
+vd %>% 
+    filter(degree > 0) %>%
+    ggplot() + tallnwhite + 
+    geom_histogram(aes(x=degree, color=role, fill=role), 
+                   show.legend = F, alpha=0.5, binwidth = 1) + 
+    facet_wrap(~role, scales = 'free_x') + 
+    scale_fill_manual(values = c('#006644',"#3300ff")) + 
+    scale_color_manual(values = c('#006644',"#3300ff"))
+    
+```
+
+The number of insects that a plant is pollinated by ranges from around 20 to almost 60, with plants typically playing host to around 30 insects. The number of plants an insect pollinates has a heavy tail: 0.6% of the insects pollinate more than a combined `r length(unique(d2[ d2$Insect %in% above100, 'Plant']))` plants, which is nearly 40 \% of the dataset. The insect that is the most general -- a true fly (*Spallanzania hesperidarum*) -- pollinates 157 plants, which is `r round(157/1044, 2)`\% of all plants in the dataset. 
+
+# Projections 
+
+Each insect in this network has a specific set of direct and indirect edges to which it is connected. By looking at all of the direct connections, we can describe the extent of niche overlap between any two species. 
+
+Likewise, plants may share some pollinators in common. Shared pollinator partners manifest as triangle within the network, and these triangles provide information about which plants are vulnerable to the loss of specific pollinators. 
+
+We can retrieve this information by doing to bipartite projects. 
+
+```{r}
+bp = bipartite.projection(b)
+p_insect = bp$proj1
+p_plants = bp$proj2
+```
+
+A projection shows which species are connected to one another through a node in common. For example. if two bees pollinate the same plant, we can represent this affiliation with an edge between the two bees. Likewise, if two plants flower at the same time of year and are subsequently pollinated by a particular bee, we could draw an edge between the two plants who share the bee in common. Two plants/pollinators who share several of the same partners will have an edge between them that is more heavily weighted. 
+
+```{r}
+p_insect %>%
+    as_tbl_graph() %>%
+    ggraph() + tallnwhite + 
+    geom_edge_link(aes(x=weight)) + 
+    geom_node_point()
+
+
+p_plants %>%
+    as_tbl_graph() %>%
+    ggraph() + tallnwhite + 
+    geom_edge_link(aes(x=weight)) + 
+    geom_node_point()
+```
+
 
 # References 
+
 

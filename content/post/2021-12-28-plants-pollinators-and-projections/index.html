@@ -66,9 +66,9 @@ v = tibble(
 <p>Now we can make the bipartite graph.</p>
 <pre class="r"><code>b = graph.data.frame(d2, directed = F, vertices = v)
 b</code></pre>
-<pre><code>## IGRAPH 022e8e4 UN-B 1500 15255 -- 
+<pre><code>## IGRAPH 4b2cf26 UN-B 1500 15255 -- 
 ## + attr: name (v/c), type (v/l)
-## + edges from 022e8e4 (vertex names):
+## + edges from 4b2cf26 (vertex names):
 ##  [1] Cornus amomum          --Spallanzania.hesperidarum
 ##  [2] Brauneria pallida      --Spallanzania.hesperidarum
 ##  [3] Castilleja coccinea    --Spallanzania.hesperidarum
@@ -82,9 +82,9 @@ b</code></pre>
 <pre class="r"><code>b = graph.data.frame(d2, directed = F)
 V(b)$type = ifelse( V(b)$name %in% d2[,1], TRUE, FALSE)
 b</code></pre>
-<pre><code>## IGRAPH 02379ca UN-B 1500 15255 -- 
+<pre><code>## IGRAPH 4b34e71 UN-B 1500 15255 -- 
 ## + attr: name (v/c), type (v/l)
-## + edges from 02379ca (vertex names):
+## + edges from 4b34e71 (vertex names):
 ##  [1] Cornus amomum          --Spallanzania.hesperidarum
 ##  [2] Brauneria pallida      --Spallanzania.hesperidarum
 ##  [3] Castilleja coccinea    --Spallanzania.hesperidarum
@@ -95,15 +95,21 @@ b</code></pre>
 ##  [8] Amelanchier canadensis --Spallanzania.hesperidarum
 ## + ... omitted several edges</code></pre>
 </div>
-<div id="visualizing-the-bipartite-network" class="section level1">
-<h1>Visualizing the bipartite network</h1>
+<div id="visualizing-and-describing-the-plant-pollinator-network" class="section level1">
+<h1>Visualizing and describing the plant-pollinator network</h1>
 <p>Next, let’s build up a decent visualization of the plant-pollinator network. This network has 1.5255^{4} edges. This will create some visualization challenges, but we’ll see what we can do. First, let’s plot a basic graph of the igraph object <code>b</code> and see how bad it is.</p>
-<pre class="r"><code>b %&gt;% as_tbl_graph() %&gt;%
+<pre class="r"><code>b %&gt;% 
+    as_tbl_graph() %&gt;%
     ggraph() + 
     geom_edge_link() + 
     geom_node_point()</code></pre>
-<pre><code>## Using `stress` as default layout</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Whew, this is quite a hairball. In this situation, I find that the <code>"sugiyama"</code> layout provides better results, especially when the transparency of the edges is also increased (i.e, <code>alpha = 0.1</code>). I’m also going to color the nodes by their <code>type</code> and calculate their degree centrality so that I can map the node size onto degree centrality in the visualization.</p>
+<p>Despite it’s imperfections, this layout suggests that there are definitely some species that are more generalist than others. Let’s look at this more explicitly by plotting the degree distributions.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>The number of insects that a plant is pollinated by ranges from around 20 to almost 60, with plants typically playing host to around 30 insects. The number of plants an insect pollinates has a heavy tail: 0.6% of the insects pollinate more than a combined 408 plants, which is nearly 40 % of the dataset. The insect that is the most general – a true fly (<em>Spallanzania hesperidarum</em>) – pollinates 157 plants, which is 0.15 % of all plants in the dataset.</p>
+</div>
+<div id="projections" class="section level1">
+<h1>Projections</h1>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>

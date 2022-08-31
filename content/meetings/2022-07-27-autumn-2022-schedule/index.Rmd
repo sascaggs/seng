@@ -140,7 +140,7 @@ d %>%
     #geom_text_repel(aes(label=topic)) + 
     scale_fill_manual(values = c('#3300ff','#AD003f','#00c994','#00000011'), labels = c('SENG','Holiday','Weekend','None')) + 
     scale_color_manual(values = c('white','white','black', '#00000088'), labels = c('SENG','Holiday','Weekend','None')) + 
-    facet_wrap(~month, scales = 'free', ncol=2) + 
+    facet_wrap(~month, scales = 'free', ncol=1) + 
     theme(legend.position = 'top',
           panel.grid = element_blank(), 
           panel.border = element_blank(), 
