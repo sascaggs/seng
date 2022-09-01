@@ -61,7 +61,7 @@ md %>%
 
 The table above provides the dates, topics, and locations for each of these meetings this autumn. Below you'll find a calendar that shows our schedule this autumn and every Friday when we plan to hold a SENG meeting. For the most part, our meetings fall on the 1st and 3rd Friday each month. 
 
-```{r, echo=F, message=F, warning=F,fig.height=10, fig.width=5, fig.align='left'}
+```{r, echo=F, message=F, warning=F,fig.height=11, fig.width=5, fig.align='center'}
 library(tidyverse)
 
 library(showtext)
