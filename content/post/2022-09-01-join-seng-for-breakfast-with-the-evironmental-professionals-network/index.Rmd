@@ -1,0 +1,25 @@
+---
+title: Join SENG for breakfast with the Evironmental Professionals Network
+author: SENG
+date: '2022-09-01'
+slug: join-seng-for-breakfast-with-the-evironmental-professionals-network
+categories:
+  - general
+tags:
+  - informational
+---
+
+Once a month, the [Environmental Professionals Network](https://epn.osu.edu/getting-started) (EPN) hosts network events over breakfast. The EPN is a service of the School of Environment and Natural Resources at Ohio State University that works to help connect and grow environmental professionals both in-person and online. 
+
+This month's EPN event focuses on "[Advancing environmental justice in extreme head and adapting through collaborative networks](https://epn.osu.edu/events/epn-breakfast-september-13-2022-advancing-environmental-justice-extreme-heat-and-adapting)." As part of this September 13th event, SENG members Kimberly Ordonez and Harrison Fried will present their work developing a "Network of Stakeholders" website tool that harnesses the power of network science to help bring together environmentally focused organizations and individuals. 
+
+![](images/HarrisonKimberly.png){width=70%}
+
+Harrison Fried (left) and Kimberly Ordonez (right)
+
+After a series of speakers, an extended workshop will be held where Harrison and Kimberly will walk us through how to use their network tool to enhance collaboration, pursue environmental justice, and facilitate climate change adaptation here in Ohio. If you are interested in join this workshop in-person or virtually, please RSVP with [Kimberly](mailto:ordonez.33@osu.edu) or [Harrison](mailto:fried.64@osu.edu) in advance.
+
+EPN events can be attend in-person or virtually, and registration for the event is \$25 for non-students, \$5 for students, and free for virtual attendees. For in-person attendees, all EPN breakfest events are held at the Nationwide and Ohio Farm Bureau 4-H Center across the street from Schottenstein Area. 
+
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3056.017547925468!2d-83.02861109999999!3d40.0080556!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88388e858cd04485%3A0xdf89d75cd39fa5e7!2sNationwide%20%26%20Ohio%20Farm%20Bureau%204-H%20Center!5e0!3m2!1sen!2sus!4v1662055853118!5m2!1sen!2sus" width="450" height="337.5" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+

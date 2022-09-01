@@ -21,7 +21,11 @@ Beginning in September and ending in December, SENG is holding seven hybrid meet
 
 The focus of our meetings this term is on building confidence in our network analysis methods. We will do this by workshopping a lot and hosting fewer seminar style talks. We want our members to end this term feeling even better about using and teaching network analysis in the future. 
 
-After a welcome meeting on 9/9, we will meet to discuss *research methods and design*, focusing on methods used by social scientists to collect complete and personal networks. We will follow this meeting with a refresher on how to work with *networks in* `R`. The next two meetings will involve a deep dive into *Exponential Random Graph Models* (ERGMs). In these meetings we will work closely with the `statnet` suite of packages to fit, summarize, diagnose, and interpret ERGMs. In he final two meetings will explore some advanced topics including *Bayesian inference* for networks and *community detection* algorithms for identifying groups. 
+Our first meeting will be held entirely in-person. We will meet at **3PM under the Gazebo at Kottman Hall**! 
+
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3056.25320937694!2d-83.02905584880213!3d40.00279128853241!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88388e8e6c560027%3A0x1b78efad9ead3f9c!2sKottman%20Hall!5e0!3m2!1sen!2sus!4v1662055028728!5m2!1sen!2sus" width="400" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+After the welcome meeting on 9/9, we will meet to discuss *research methods and design*, focusing on methods used by social scientists to collect complete and personal networks. We will follow this meeting with a refresher on how to work with *networks in* `R`. The next two meetings will involve a deep dive into *Exponential Random Graph Models* (ERGMs). In these meetings we will work closely with the `statnet` suite of packages to fit, summarize, diagnose, and interpret ERGMs. In he final two meetings will explore some advanced topics including *Bayesian inference* for networks and *community detection* algorithms for identifying groups. 
 
 Date                                                 Topic              Location
 ------------------------  --------------------------------  --------------------
