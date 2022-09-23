@@ -82,7 +82,7 @@ biblography: seng_canon.bib
 
 [Measuring reciprocity: Double sampling, concordance, and network construction]() [@readymeasuring]
 
-# Research Design
+# Research Design   
 
 [Survey Methods for Social Network Research](https://onlinelibrary.wiley.com/doi/abs/10.1002/9781118594629.ch11)[@cornwell2014survey]
 
