@@ -82,6 +82,23 @@ biblography: seng_canon.bib
 
 [Measuring reciprocity: Double sampling, concordance, and network construction]() [@readymeasuring]
 
+# Research Design
+
+[Survey Methods for Social Network Research](https://onlinelibrary.wiley.com/doi/abs/10.1002/9781118594629.ch11)[@cornwell2014survey]
+
+[Respondent-Driven Sampling II: Deriving Valid Populations Estimates from Chain-Referral Samples of Hidden Populations](https://academic.oup.com/socpro/article-abstract/49/1/11/1664491?redirectedFrom=PDF&casa_token=Pm9tGjYDd2MAAAAA:jGWGg_pus3gdLYbidmfxm5hSzVq77oHT-mMScLAz_hn5jQomyjCpw2n550YFBZFb4J5aPqDw5s0X_A)[@heckathorn2002respondent]
+
+[Network Data and Measurement](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.1069.8580&rep=rep1&type=pdf)[@marsden1990network]
+
+[Doing social network research: Network-based research design for social scientists](https://books.google.com/books?hl=en&lr=&id=GsKICwAAQBAJ&oi=fnd&pg=PP1&dq=robins+research+design+networks&ots=WsMYTrpxWi&sig=4PtLCw1VHezWdPCcZnXkzI_OXh8#v=onepage&q=robins%20research%20design%20networks&f=false)[@robins2015doing]
+
+[Proximity data-loggers increase the quantity and quality of social network data](https://royalsocietypublishing.org/doi/full/10.1098/rsbl.2012.0536)[@ryder2012proximity]
+
+[The SAGE Handbook of Social Network Analysis](https://books.google.com/books?hl=en&lr=&id=2chSmLzClXgC&oi=fnd&pg=PP1&dq=scott+carrington+social+network&ots=GVSbP3qEwt&sig=rSdPe7Sh6CkdrtMZD_8fLk7PwyE#v=onepage&q=scott%20carrington%20social%20network&f=false)[scott2011sage]
+
+[Social Network Analysis: Methods and Applications](https://books.google.com/books?hl=en&lr=&id=CAm2DpIqRUIC&oi=fnd&pg=PR21&dq=wasserman+and+faust&ots=HxLprc3HOd&sig=nA2JZzYaM4c_wbdeEoWkHMD4-JM#v=onepage&q=wasserman%20and%20faust&f=false)[@wasserman1994social]
+
+
 # Empirical Cases 
 
 [Why wage earners hunt: food sharing, social structure, and influence in an arctic mixed economy](http://eprints.lse.ac.uk/86516/1/Power_Why%20wage%20earners%20hunt_2018.pdf) [@ready2018wage]

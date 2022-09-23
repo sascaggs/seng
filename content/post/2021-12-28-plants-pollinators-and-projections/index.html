@@ -66,9 +66,9 @@ v = tibble(
 <p>Now we can make the bipartite graph.</p>
 <pre class="r"><code>b = graph.data.frame(d2, directed = F, vertices = v)
 b</code></pre>
-<pre><code>## IGRAPH 4b2cf26 UN-B 1500 15255 -- 
+<pre><code>## IGRAPH 41012b1 UN-B 1500 15255 -- 
 ## + attr: name (v/c), type (v/l)
-## + edges from 4b2cf26 (vertex names):
+## + edges from 41012b1 (vertex names):
 ##  [1] Cornus amomum          --Spallanzania.hesperidarum
 ##  [2] Brauneria pallida      --Spallanzania.hesperidarum
 ##  [3] Castilleja coccinea    --Spallanzania.hesperidarum
@@ -82,9 +82,9 @@ b</code></pre>
 <pre class="r"><code>b = graph.data.frame(d2, directed = F)
 V(b)$type = ifelse( V(b)$name %in% d2[,1], TRUE, FALSE)
 b</code></pre>
-<pre><code>## IGRAPH 4b34e71 UN-B 1500 15255 -- 
+<pre><code>## IGRAPH 4108e7b UN-B 1500 15255 -- 
 ## + attr: name (v/c), type (v/l)
-## + edges from 4b34e71 (vertex names):
+## + edges from 4108e7b (vertex names):
 ##  [1] Cornus amomum          --Spallanzania.hesperidarum
 ##  [2] Brauneria pallida      --Spallanzania.hesperidarum
 ##  [3] Castilleja coccinea    --Spallanzania.hesperidarum
@@ -98,18 +98,32 @@ b</code></pre>
 <div id="visualizing-and-describing-the-plant-pollinator-network" class="section level1">
 <h1>Visualizing and describing the plant-pollinator network</h1>
 <p>Next, let’s build up a decent visualization of the plant-pollinator network. This network has 1.5255^{4} edges. This will create some visualization challenges, but we’ll see what we can do. First, let’s plot a basic graph of the igraph object <code>b</code> and see how bad it is.</p>
-<pre class="r"><code>b %&gt;% 
-    as_tbl_graph() %&gt;%
-    ggraph() + 
-    geom_edge_link() + 
-    geom_node_point()</code></pre>
 <p>Whew, this is quite a hairball. In this situation, I find that the <code>"sugiyama"</code> layout provides better results, especially when the transparency of the edges is also increased (i.e, <code>alpha = 0.1</code>). I’m also going to color the nodes by their <code>type</code> and calculate their degree centrality so that I can map the node size onto degree centrality in the visualization.</p>
 <p>Despite it’s imperfections, this layout suggests that there are definitely some species that are more generalist than others. Let’s look at this more explicitly by plotting the degree distributions.</p>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p>The number of insects that a plant is pollinated by ranges from around 20 to almost 60, with plants typically playing host to around 30 insects. The number of plants an insect pollinates has a heavy tail: 0.6% of the insects pollinate more than a combined 408 plants, which is nearly 40 % of the dataset. The insect that is the most general – a true fly (<em>Spallanzania hesperidarum</em>) – pollinates 157 plants, which is 0.15 % of all plants in the dataset.</p>
+<p>The number of insects that a plant is pollinated by ranges from around 20 to almost 60, with plants typically playing host to around 30 insects. The number of plants an insect pollinates has a heavy tail: 0.6% of the insects pollinate a combined 408 plants, which is nearly 40% of the dataset. The insect that is the most general – a true fly (<em>Spallanzania hesperidarum</em>) – pollinates 157 plants, which is 0.15% of all plants in the dataset.</p>
 </div>
 <div id="projections" class="section level1">
 <h1>Projections</h1>
+<p>Each insect in this network has a specific set of direct and indirect edges to which it is connected. By looking at all of the direct connections, we can describe the extent of niche overlap between any two species.</p>
+<p>Likewise, plants may share some pollinators in common. Shared pollinator partners manifest as triangle within the network, and these triangles provide information about which plants are vulnerable to the loss of specific pollinators.</p>
+<p>We can retrieve this information by doing to bipartite projects.</p>
+<pre class="r"><code>bp = bipartite.projection(b)
+p_insect = bp$proj1
+p_plants = bp$proj2</code></pre>
+<p>A projection shows which species are connected to one another through a node in common. For example. if two bees pollinate the same plant, we can represent this affiliation with an edge between the two bees. Likewise, if two plants flower at the same time of year and are subsequently pollinated by a particular bee, we could draw an edge between the two plants who share the bee in common. Two plants/pollinators who share several of the same partners will have an edge between them that is more heavily weighted.</p>
+<pre class="r"><code>p_insect %&gt;%
+    as_tbl_graph() %&gt;%
+    ggraph() + tallnwhite + 
+    geom_edge_link(aes(x=weight)) + 
+    geom_node_point()
+
+
+p_plants %&gt;%
+    as_tbl_graph() %&gt;%
+    ggraph() + tallnwhite + 
+    geom_edge_link(aes(x=weight)) + 
+    geom_node_point()</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
