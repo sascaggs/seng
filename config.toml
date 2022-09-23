@@ -25,7 +25,7 @@ enableEmoji = true
     
 [[menu.main]]
     name = "Canon"
-    url = "/canon2/"
+    url = "/canon/"
     weight=4
 
 [[menu.main]]
