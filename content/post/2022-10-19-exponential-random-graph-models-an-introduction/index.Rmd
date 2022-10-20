@@ -1,0 +1,56 @@
+---
+title: Exponential Random Graph Models, An Introduction
+author: Shane A. Scaggs, Harrison Fried
+date: '2022-10-19'
+slug: exponential-random-graph-models-an-introduction
+categories:
+  - methods
+tags:
+  - analysis
+  - coding
+  - statnet
+  - workflow
+draft:yes
+---
+
+# Introduction
+
+We can a learn a lot about a network using visualization tools and descriptive statistics. But many researchers would like to make inferences about how specific variables influence the probability of a network connection. There are multiple ways to do this -- latent network modeling, multilevel Bayesian models, quadratic assignment procedures -- but one of the most common and versatile methods is to build Exponential Random Graph Models (ERGMs). 
+
+To start learning ERGMs, we will use the [`statnet`](https://statnet.org/packages/) suite of packages, one of which is the `ergm` package. Let's begin by installing `statnet`. 
+
+```{r}
+#install statnet suite
+#install.packages('network', dependencies = T)
+#install.packages('statnet', dependencies = T)
+library(statnet)
+```
+
+# What is an ERGM?
+
+ERGMs are used to model the structural dependencies in a relational data object. For our purposes, these dependencies are the edges between the nodes and we can use an ERGM to estimate both the probability and uncertainty that such an edge exists in a given graph. More conventional statistical approaches fail in this endeavor because they assume that observations are independent, and we are specifically interested in the dependence of our observations. 
+
+In essence, an ERGM is used to model the likelihood of an edge between each pair of nodes. In this sense, it is an ERGM is a dyadic model (Morris, Handcock, and Hunter 2008). There are many different types of ERGMs. Each variation is used to model networks with different kinds of edges, for instance: 
+
+- Binary ERGMs are for edges that are present or absent.
+- Valued ERGMs (VERGMs) are for weighted networks; edges > 1. 
+- Temporal ERGMs (TERGMs) for longitudinal networks; edges turn on and off over time. 
+- Bayesian ERGMs (BERGMs) for probabilistic networks; edges are probabilities. 
+
+# Why use ERGMs? 
+
+There are many other approaches for studying data structures in which the observations are not independent of each other. So why should we use ergms? One of the greatest advantages of ERGMs is the ability to include structural elements of networks as predictive terms in a model. 
+
+For instance, we have discussed the role of triadic closure in the formation of networks. Using ERGMs we can include a triangle predictor that will tell us how well triangles described the pattern of connections in a network. 
+
+There are many ERGM terms, each representing a different configurations of links in a network. You can learn about them by calling `?ergm-terms`. We will use some of these today, but we will focus on them more in our next meeting. We also encourage to read the "Specification of Exponential-Family Random Graph Models: Terms and Computational Aspects" by Morris, Handcock, and Hunter (2008). A link to this paper is located on our website [Canon](https://seng.netlify.app/canon/#network-modeling) under Network Modeling. 
+
+# Getting started 
+
+Today we are going to be analyzing how fishing households share their catch with other households. Let's start by loading in the edgelist and the household attributes. These files are available as `.csv` on the SENG github page. But for simplicity, we will recreate the data set here for you. 
+
+```{r}
+#load edgelist
+
+```
+

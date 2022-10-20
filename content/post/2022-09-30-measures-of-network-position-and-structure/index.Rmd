@@ -1,0 +1,53 @@
+---
+title: 'Measures of network position and structure '
+author: Shane A. Scaggs
+date: '2022-09-30'
+slug: measures-of-network-position-and-structure
+categories:
+  - methods
+tags:
+  - structure
+  - nodes
+  - matrix
+  - analysis
+---
+
+Many networks that we find interesting are large and structurally complex. This makes them difficult to visually understand. And although coming up with ways to visualize such networks is a kind of fun, most of the time we need practical ways to describe the position and structure of complex networks without dealing with the tangled hairball. 
+
+This post covers some a variety of ways to measure network position and structure. By position, I mean properties at the node level, such as how many connections a node has (degree centrality) or how often it lies on the shortest path (betweenness). By structure, I mean properties of subgraphs that are found within the network as whole, such as triads, communities, or spectra. 
+
+# Prerequistes 
+
+To start, we need to generate some networks to work with. Let's use the three canonical network models: the Erdos-Renyi random graph, the Watts-Strogatz small world, and the Albert-Barbasi preferential attachment network. We can simulate these using `igraph`.
+
+```{r}
+library(igraph)
+```
+
+Let each network have 500 nodes. 
+
+```{r}
+n = 500
+```
+
+Each model has different parameters. The random graph is simplest -- we define the number of nodes and the probability that they are connected. 
+
+```{r}
+rg = erdos.renyi.game(n=n, p=0.02)
+rg
+```
+
+The small world model has more parameters. To make our graphs somewhat comparable, we will keep the size equal to n. The `nei` parameter controls how many neighbors a node is connected to. The parameter `p` controls the probability that the a connection is rewired. When `p` is 0, the graph forms a circlular chain. 
+
+```{r}
+sw = watts.strogatz.game(dim=1, size=n, nei = 5, p=0.2)
+sw
+```
+
+Finally the prefernential attachment network has 
+
+```{r}
+barabasi.game(n=n, power=1, m=5)
+```
+
+
