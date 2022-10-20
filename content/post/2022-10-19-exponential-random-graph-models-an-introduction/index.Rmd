@@ -10,7 +10,7 @@ tags:
   - coding
   - statnet
   - workflow
-draft:yes
+draft: yes 
 ---
 
 # Introduction
@@ -19,7 +19,7 @@ We can a learn a lot about a network using visualization tools and descriptive s
 
 To start learning ERGMs, we will use the [`statnet`](https://statnet.org/packages/) suite of packages, one of which is the `ergm` package. Let's begin by installing `statnet`. 
 
-```{r}
+```{r, warning=F, message=F}
 #install statnet suite
 #install.packages('network', dependencies = T)
 #install.packages('statnet', dependencies = T)
@@ -37,6 +37,8 @@ In essence, an ERGM is used to model the likelihood of an edge between each pair
 - Temporal ERGMs (TERGMs) for longitudinal networks; edges turn on and off over time. 
 - Bayesian ERGMs (BERGMs) for probabilistic networks; edges are probabilities. 
 
+In the examples to follow, we will be working with a binary ERGM. 
+
 # Why use ERGMs? 
 
 There are many other approaches for studying data structures in which the observations are not independent of each other. So why should we use ergms? One of the greatest advantages of ERGMs is the ability to include structural elements of networks as predictive terms in a model. 
@@ -47,10 +49,349 @@ There are many ERGM terms, each representing a different configurations of links
 
 # Getting started 
 
-Today we are going to be analyzing how fishing households share their catch with other households. Let's start by loading in the edgelist and the household attributes. These files are available as `.csv` on the SENG github page. But for simplicity, we will recreate the data set here for you. 
+```{r, message=F, warning=F, echo=F}
+set.seed(777)
+N = 67
+net = network(N, density=0)
+net %v% 'owner'   = sample(c(0,1), size=N, prob = c(0.8,0.2), replace = T)
+net %v% 'family'  = sample(LETTERS[1:4], size=N, prob = c(0.2,0.25,0.25,0.3), replace = T)
+net %v% 'harvest' = ifelse( net %v% 'owner' == 1, rnorm(N, 2,1), rnorm(N,0,2))
+net %v% 'hhsize'  = rnorm(N)
+
+simnet = simulate(net ~ edges + 
+                      nodeofactor('owner') + 
+                      nodematch('family') + 
+                      nodeocov('harvest') + 
+                      nodeicov('harvest') + 
+                      gwesp(decay=0.1, fixed=T) + 
+                      mutual + 
+                      isolates, 
+                  coef = c(-6,       # density
+                            1.5,     # ownership effect
+                            3.5,     # family homophily
+                            0,     # large harvest giving
+                            0.5,     # small harvest receiving
+                            0,     # shared partnerships
+                            2,       # reciprocity 
+                           -2),      # isolates 
+                  seed = 777)
+
+saveRDS(simnet, file = 'fishing_network.Rdata')
+```
+
+
+Today we are going to be analyzing how fishing households share their catch with other households. Let's start by loading in the edgelist and the household attributes. This file is available on the [SENG github](https://github.com/sascaggs/seng/tree/main/content/post/2022-10-19-exponential-random-graph-models-an-introduction). 
 
 ```{r}
-#load edgelist
+net = readRDS('fishing_network.Rdata')
+```
+
+
+```{r, include=F}
+e = read.csv('sharing.csv', row.names = 1)
+v = read.csv('hh_attributes.csv', row.names = 1)
+```
+
+This is a binary, directed network. An directed edge between two nodes in this network indicates that one household has shared a portion of their catch with another household. Let's examine the network object. 
+
+```{r}
+net
+```
+
+We see that there are `67` households in this network with a total of `272` edges between them. The density of this network is `r network.density(net)`, which indicates that it is relatively sparse. 
+
+This network has five vertex attributes that we added to the network using the `hh_attributes.csv` file. One of these in an id used for each vertex name. The second variable, `harvest`, is a standardized measure of the size of the households catch. The third column is a standardized measure of the household size. These variables have been standardized so that they can be compared directly in our models. 
+
+Finally, The `owner` variable indicates whether or not that household owns a boat to use for fishing,  and the final column is a grouping variable which indicates which family the household is a part of; these families are coded as `A` through `D`. 
+
+# Research questions 
+
+Before we dig into the ERGMs, let's state some clear question that we will use to guide our analysis. Based on previous studies of fishing communities, we should ask the following questions:
+
+1. **Kinship** -- Are households from the same family more likely to share with each other? 
+2. **Reciprocity** -- Are sharing connections more likely whether the relationship is reciprocal? 
+3. **Surplus and productivity** -- Do households with large harvests tend to have more sharing relationships? Are households with small harvests likely to be recipients? 
+
+Visualizing the network might give us some qualitative clues about the answers of these questions. Let's create a graph where each node is colored by it's family group. Then we will resize each node according to the size of it's harvest, and highlight reciprocity edges. 
+
+A full description of visualization techniques is beyond the scope of this meeting, so for brevity I'll just say that I am going to use `igraph`, `tidygraph`, and `ggraph` to create this visual. The code is shown below. 
+
+```{r, message=F, warning=F, fig.height=6, fig.width=8}
+library(igraph)
+library(tidygraph)
+library(ggraph)
+
+gnet = intergraph::asIgraph(net)
+E(gnet)$mutual = is.mutual(gnet)
+
+as_tbl_graph(gnet) %>%
+    ggraph() + 
+    theme_void() + 
+    geom_edge_link(aes(color=mutual), width=0.9, alpha=0.75, 
+                   arrow = arrow(length=unit(2, 'mm')), end_cap=circle(3,'mm')) + 
+    geom_node_point(aes(fill=family, size=harvest), pch=21) + 
+    scale_size_continuous(range = c(0.5,8)) + 
+    scale_fill_viridis_d() + 
+    scale_edge_color_manual(values = c('grey50','tomato'))
+```
+
+The graph above seems to suggest that there are some family clusters and possibly that reciprocity is more common between family members. But other than that, there is little else that we can understand from just looking at the graph. *This is why we need ERGMs*!
+
+# ERGM syntax 
+
+When you run a linear regression in R, the typical syntax looks something like this: 
+
+> y ~ 1 + x1 + x2 
+
+In this syntax, the tilde indicates that we modeling the outcome variable `y` as a function of the intercept `1` and the variables `x1` and `x2`. The output of a model like this will be an estimate of the `Intercept` and a two beta coefficients that represent the effect that `x1` and `x2` have on `y`. 
+
+In a ERGM, we using a simlar syntax: 
+
+> net ~ edges + ... 
+
+In this syntax, our network object is the outcome, and we model it as a function of the `edges` term and some other `ergm-terms` ... The edges term behavior very similarly to the intercept in a regression, although the interpretation is slightly different. Whereas an intercept provides an estimate of the mean value of `y` when all variables are set to `0`, the `edges` term tells us the network density when all terms are set to `0`. 
+
+Let's run our first ergm to show that this is true. 
+
+```{r}
+fit0 = ergm(net ~ edges)
+summary(fit0)
+```
+
+Our estimate for the density is `r coef(fit0)`. This seems pretty different from the network density we calculated above: `r network.density(net)`.  This is because binary ERGMs report coefficient on the log-odds scale. On this scale, a value of `0` is the same as a `0.5` probability. 
+
+To check our density estimates, we need to convert log-odds to probability. We do this by converting log-odds to an odds-ratio... 
+
+```{r}
+odds = exp(coef(fit0))
+odds
+```
+and then dividing the odds by (1 + odds).
+
+```{r}
+odds / (1 + odds)
+```
+
+Compare this to the network density 
+
+```{r}
+network.density(net)
+```
+
+To simplify this process for later on, let's write a function. 
+
+```{r}
+logit2prob = function(x) {
+    odds = exp(x)
+    prob = odds / (1 + odds)
+    return(prob)
+}
+```
+
+Now that we are equipped with an understanding of log-odds and probability, let's starting tackling question 1. 
+
+# Question 1 
+
+In this question, we want to know if households from the same family are more likely to share with one another. This is a form of family homophily. We can model this process by including a `nodematch` term from the archive of `ergm-terms`. 
+
+`nodematch` calculates the log-odds of an edge when two nodes match on a particular attributes. The syntax looks like this: 
+
+> net ~ edges + nodematch('family'). 
+
+We include the name of the variables within the parenthesis following `nodematch`. This is a common structure in other `ergm-terms` as well. Let's run it. 
+
+```{r}
+fit1.1 = ergm(net ~ edges + nodematch('family'))
+```
+From the read out, we learn that this ERGM is using maximum pseudolikelihood estimation to estimate this effect. Let's examine the model summary. 
+
+```{r}
+summary(fit1.1)
+```
+
+Just like a regression, we get an estimate of the Standard Error. When the Std. Error is greater than the estimate, this is an indication that the effect is uncertain. However, in this case we have a clear positive effect of family homophily. This is reinforced by the low p-value. 
+
+Let's calculate the odds. 
+
+```{r}
+exp(coef(fit1.1))
+```
+
+This tells us that an edge is `r exp(coef(fit1.1))[2]` times more likely if two nodes come from the same family. That is a strong effect. If we want to express this in probability, then we need to add the coefficients together. 
+
+```{r}
+# multiply coef[2] by 1 for nodematch = T
+logit2prob(coef(fit1.1)[1] + coef(fit1.1)[2]*1)
+```
+
+Taking the low density into account, an edge between two households in the same family is `r logit2prob(coef(fit1.1)[1] + coef(fit1.1)[2]*1)`. A somewha low probability, but not nearly as low as it is for two nodes from different families. 
+
+```{r}
+# multiply coef[2] by 0 for nodematch = F
+logit2prob(coef(fit1.1)[1] + coef(fit1.1)[2]*0 )
+```
+
+## Goodness-of-fit
+
+One way that we can test how well this model describe our data is by assessing the Goodness-of-fit. `ergm` comes with a convenient `gof` function that does this. If we plat it within the `plot` function, we receive some diagnostic plots. 
+
+```{r}
+plot(gof(fit1.1))
+```
+
+The `gof` function uses our `ergm` coefficients to simulate thousands of networks. It then calculates a set of descriptive statistics on each simulated network and compares the distribution of these statistics to the observed values. The observed values on plotted on each graph as a black line. 
+
+Looking at the diagnostics, we see that our model does not capture the distribution of in-degree and out-degree very well (plots 2 and 3). However, this model closely resembles values of edgewise shared partners and slightly overestimates values of minimum geodesic distance. 
+
+These mismatches are likely because there are other aspects of the network formation process beyond homophily. 
+
+# Question 2 
+
+This brings us to our second question: is sharing more likely if relationships are reciprocated? To test this, we need to use the `mutual` term. The `mutual` term estimates the log-odds of an edge from `i` to `j` if there is an existing edge from `j` to `i`. 
+
+The mutual term has some other options. We can estimate reciprocity for specific attributes. For now, we will look at reciprocity in general.
+
+```{r}
+fit2.1 = ergm(net ~ edges + mutual)
+```
+
+Right away you will notice that there are many other details printed out. This is because the ERGM cannot only use MLPE to estimate the `mutual` term. Instead it has to also use a Markov Chain Monte Carlo (MCMC) procedure to explore a large, complex parameter space. 
+
+We can discuss more about MCMC in future meetings. What is important right now is determining whether our model converged or not. Convergence indicates that the parameter space has been sufficiently explored and that the estimates are reliable. We haven't gotten any warnings (that is good!) but let's check the MCMC chains using the `mcmc.diagnostics` function. 
+
+```{r}
+mcmc.diagnostics(fit2.1)
+```
+
+We want to see that the chains have a "fuzzy caterpillar" effect and do not have any obvious pattern to them. These chains look okay, but we might be better off if we increase the number of iterations (i.e., explore the parameter space for longer). 
+
+We can do this by adjusting the sampler controls. There are many, MANY controls for the sampler -- which can be very overwhelming -- so we will save those details for an advanced meeting. 
+
+```{r}
+fit2.1 = ergm(net ~ edges + mutual, 
+              control = control.ergm(MPLE.maxit = 10000))
+
+mcmc.diagnostics(fit2.1)
+```
+
+That looks a bit better. Now we can examine the ERGM summary. 
+
+```{r}
+summary(fit2.1)
+```
+
+We see from the output that indeed, there is strong effect of reciprocity within this network. An edge from `i` to `j` is `r round(exp(coef(fit2.1))[2],2)` time more likely if there exists an edge from `j` to `i`. 
+
+```{r}
+exp(coef(fit2.1))
+```
+
+This leads to the question of whether reciprocity is common between households from the same family. One way to test this is by creating a new model with both `nodematch` and `mutual`. It is possible that reciprocity arrise merely because of family dynamics. If this is true, we should see a change in the coefficient estimates. If they both remain the same, or get stronger, then perhaps reciprocity and family dynamics are different independent influences on sharing. 
+
+```{r}
+fit2.2 = ergm(net ~ edges + nodematch('family') + mutual)
+summary(fit2.2)
+exp(coef(fit2.2))
+```
+Looking at the summary and odds-ratios (OR), we see that when both terms are included together, the strength of the `mutual` effect is reduced. This suggests that family homophily -- kinship -- is driving the reciprocity. That said, there are still some distinct reciprocity effects since the effect remains positive and significant. 
+
+## GOF
+
+Let's take another look at the goodness-of-fit. 
+
+```{r}
+plot(gof(fit2.2))
+```
+
+Based on these diagnostics, it seems we have improved our understanding of in-degree, but we are still missing the mark on out-degree minimum geodesic distance. Perhaps question three will help. 
+
+# Question 3
+
+In this question, we want to know understand how harvest productivity influences sharing and receiving. We might expect, for example, that individuals with large harvests are able to share with more people. We can test this with the `nodeocov` term. 
+
+The `nodeocov` term stands for node, out-degree covariance. It tests whether a nodes out-degree covaries with some vertex attribute. In our case we will use `harvest`. There is also a `nodeicov` term which tests the same thing but for in-degree. 
+
+If harvest plays a role as we expect it does, then `nodeocov` should be positive and `nodeicov` should be positive.
+
+```{r}
+fit3.1 = ergm(net ~ edges + nodeocov('harvest') + nodeicov('harvest'))
+summary(fit3.1)
+```
+
+The estimates show us that both out-degree and in-degree covary with harvest size, although the effects a rather small. In-degree has a stronger covariance. Since out-degree is a rather small effect, one follow up question we might ask is how `owner` influences out-degree. Perhaps it is harvest size, per se, that influences sharing connections, but rather who owns a boat. In many places, boats are the location of sharing events. 
+
+To examine the effect of boat ownership, we will use the term `nodeofactor`. This is similar to `nodeocov` except that it is designed for factors. For those who are familiar with dummy variables, a node factor behave similarly. 
+
+```{r}
+fit3.2 = ergm(net ~ edges + nodeocov('harvest') + nodeicov('harvest') + nodeofactor('owner'))
+summary(fit3.2)
+```
+
+When we include ownership, we find that the effect of harvest size is diminished and becomes less signifcant, while boat ownership itself is a much stronger effect. 
+
+Even so, it seems that households with large harvest still tend to share more often, even if they don't have a boat. We can test this explicitly. What is the probably of edge if a household has a large harvest but no boat vs. the same household with a boat? 
+
+To do this, I am saving the log-odds coefficients, then I plug them into the `logit2prob` function and multiply them by the harvest size and boat ownership values. Here I am compare harvest of size `4`, which is about 4,000 lbs. 
+
+```{r}
+coef3.2 = coef(fit3.2) 
+
+# no boat
+logit2prob( coef3.2[1] + coef3.2[2]*4 + coef3.2[4]*0 )
+logit2prob( coef3.2[1] + coef3.2[2]*4 + coef3.2[4]*1 )
 
 ```
 
+
+# Combined models 
+
+We have three conclusions so far: 
+
+1. Kinship and family groups have a strong positive influence on sharing relationships. 
+2. Reciprocity also has a strong positive effect, although it is partly driven by kinship and partly driven by reciprocity between non-kin. 
+3. Owning a boat is assocated with more sharing connections, while having a small harvest is assocaited with being on the receiving end of more partnerships.
+
+Let's combine each of these hypotheses into a single model and see if there are any obvious changes to these conclusions. The main reason for doing this is so that we can determine the relative strengths of each effect against the others. 
+
+```{r}
+fit4.1 = ergm(net ~ edges + nodematch('family') + mutual + nodeocov('harvest') + nodeicov('harvest') + nodeofactor('owner'))
+summary(fit4.1)
+```
+
+When all of these effects are combined, we find that many of the estimates are the same as before. One key difference is that harvest size no longer has any effect on the number of giving relationships. We also see that boat ownership is a stronger effect in the presence of family ties and reciprocity. This suggests that people may reciprocate outside of their family with people who own boats. 
+
+## Goodness-of-fit
+
+Let's examine the gof function again and see how well we capture the observed structural values of the network. Recall that previous models had a difficult time capturing the degree distributions.
+
+```{r}
+plot(gof(fit4.1))
+```
+It appears that we are still have some issues but overall there fit is reasonable. We can further fine tune this model by include some additional structural parameters. 
+
+Instead of looking at graphs, we can also use the gof hypothesis testing approach. 
+
+```{r}
+gof(fit4.1, GOF = ~model)
+```
+
+The resulting table tells us statistically how well these terms fit our data. In this case, p-values closer to 1 are better. We find that of all of the terms, ownership is the worst fit, but it is still relatively high. 
+
+# Bonus: triangles 
+
+Perhaps we should control for the tends for families to close triads within them. We can do this by explicit including terms for certain types of triads (e.g., cycles) or we can use the `gwesp` term. The gwesp term estimates the tendency for triadic closure within a network (for more details, see [this workshop](https://eehh-stanford.github.io/SNA-workshop/ergm-predictions.html#dealing-with-triangles)). 
+
+GWESP stands for geometrics weighted edgewise shared partners. This terms described the tendency for a triangle to close when two individuals have a shared partners. If the values is high, then there is a tendency for closure. It small networks, it is often the case that adding a single tie can closure several triangles. 
+
+Some analysts use gwesp as a control parameters that helps them get clearer estimates for other variables of interest. Others may be testing competing hypotheses: for example, is a network driven more by homophily or triadic closure? In our case, we want to know if closure within families leads to a more even degree distribution. 
+
+In `?ergm-terms` there is also a `triangles` term. This estimates how much more likely a tie is based on the number of shared partners. In other words, each additional shared partner continues to additively increase the probability. In contrast, the `gwesp` term uses a `decay` parameter with discounts each additional partner, making it a more conservative estimate of triadic closure. 
+
+```{r}
+fit4.2 = ergm(net ~ edges + nodematch('family') + mutual + nodeocov('harvest') + nodeicov('harvest') + nodeofactor('owner') + gwesp(0.5, fixed=T))
+summary(fit4.2)
+```
+
+This estimate indicates that there are not many edges that would close triangles which suggests that there are relatively few shared partners in this network. This makes sense since the network itself is somewhat cluster into family groups. Were these groups not present, there may be a stronger triangle effect. 
+
+# Model Comparison 

@@ -1,0 +1,199 @@
+---
+title: Exponential Random Graph Models, An Introduction
+author: Shane A. Scaggs, Harrison Fried
+date: '2022-10-19'
+slug: exponential-random-graph-models-an-introduction
+categories:
+  - methods
+tags:
+  - analysis
+  - coding
+  - statnet
+  - workflow
+draft: yes 
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>We can a learn a lot about a network using visualization tools and descriptive statistics. But many researchers would like to make inferences about how specific variables influence the probability of a network connection. There are multiple ways to do this – latent network modeling, multilevel Bayesian models, quadratic assignment procedures – but one of the most common and versatile methods is to build Exponential Random Graph Models (ERGMs).</p>
+<p>To start learning ERGMs, we will use the <a href="https://statnet.org/packages/"><code>statnet</code></a> suite of packages, one of which is the <code>ergm</code> package. Let’s begin by installing <code>statnet</code>.</p>
+<pre class="r"><code>#install statnet suite
+#install.packages(&#39;network&#39;, dependencies = T)
+#install.packages(&#39;statnet&#39;, dependencies = T)
+library(statnet)</code></pre>
+</div>
+<div id="what-is-an-ergm" class="section level1">
+<h1>What is an ERGM?</h1>
+<p>ERGMs are used to model the structural dependencies in a relational data object. For our purposes, these dependencies are the edges between the nodes and we can use an ERGM to estimate both the probability and uncertainty that such an edge exists in a given graph. More conventional statistical approaches fail in this endeavor because they assume that observations are independent, and we are specifically interested in the dependence of our observations.</p>
+<p>In essence, an ERGM is used to model the likelihood of an edge between each pair of nodes. In this sense, it is an ERGM is a dyadic model (Morris, Handcock, and Hunter 2008). There are many different types of ERGMs. Each variation is used to model networks with different kinds of edges, for instance:</p>
+<ul>
+<li>Binary ERGMs are for edges that are present or absent.</li>
+<li>Valued ERGMs (VERGMs) are for weighted networks; edges &gt; 1.</li>
+<li>Temporal ERGMs (TERGMs) for longitudinal networks; edges turn on and off over time.</li>
+<li>Bayesian ERGMs (BERGMs) for probabilistic networks; edges are probabilities.</li>
+</ul>
+<p>In the examples to follow, we will be working with a binary ERGM.</p>
+</div>
+<div id="why-use-ergms" class="section level1">
+<h1>Why use ERGMs?</h1>
+<p>There are many other approaches for studying data structures in which the observations are not independent of each other. So why should we use ergms? One of the greatest advantages of ERGMs is the ability to include structural elements of networks as predictive terms in a model.</p>
+<p>For instance, we have discussed the role of triadic closure in the formation of networks. Using ERGMs we can include a triangle predictor that will tell us how well triangles described the pattern of connections in a network.</p>
+<p>There are many ERGM terms, each representing a different configurations of links in a network. You can learn about them by calling <code>?ergm-terms</code>. We will use some of these today, but we will focus on them more in our next meeting. We also encourage to read the “Specification of Exponential-Family Random Graph Models: Terms and Computational Aspects” by Morris, Handcock, and Hunter (2008). A link to this paper is located on our website <a href="https://seng.netlify.app/canon/#network-modeling">Canon</a> under Network Modeling.</p>
+</div>
+<div id="getting-started" class="section level1">
+<h1>Getting started</h1>
+<p>Today we are going to be analyzing how fishing households share their catch with other households. Let’s start by loading in the edgelist and the household attributes. These files are available as <code>.csv</code> on the SENG github page. But for simplicity, we will recreate the data set here for you.</p>
+<pre class="r"><code>e = read.csv(&#39;sharing.csv&#39;, row.names = 1)
+v = read.csv(&#39;hh_attributes.csv&#39;, row.names = 1)</code></pre>
+<p>We’ll now create a <code>network</code> object.</p>
+<pre class="r"><code>net = network(e, vertex.attr = v)</code></pre>
+<p>This is a binary, directed network. An directed edge between two nodes in this network indicates that one household has shared a portion of their catch with another household. Let’s examine the network object.</p>
+<pre class="r"><code>net</code></pre>
+<pre><code>##  Network attributes:
+##   vertices = 67 
+##   directed = TRUE 
+##   hyper = FALSE 
+##   loops = FALSE 
+##   multiple = FALSE 
+##   bipartite = FALSE 
+##   total edges= 195 
+##     missing edges= 0 
+##     non-missing edges= 195 
+## 
+##  Vertex attribute names: 
+##     family harvest hhsize owner vertex.names 
+## 
+## No edge attributes</code></pre>
+<p>We see that there are <code>67</code> households in this network with a total of <code>195</code> edges between them. The density of this network is 0.0440977, which indicates that it is relatively sparse.</p>
+<p>This network has five vertex attributes that we added to the network using the <code>hh_attributes.csv</code> file. Let’s take a look at these variables briefly.</p>
+<pre class="r"><code>head(v)</code></pre>
+<pre><code>##   vertex.names    harvest      hhsize owner family
+## 1            1  2.0520658 -1.20724742     1      C
+## 2            2  1.5901083  0.45527493     0      C
+## 3            3  0.6032451 -1.02711205     0      C
+## 4            4 -4.0425118 -0.06519111     0      C
+## 5            5  2.2444802  0.05727293     0      B
+## 6            6 -0.2756777 -1.22575179     0      D</code></pre>
+<p>The first column is the id used for each vertex. The second variable, <code>harvest</code>, is a standardized measure of the size of the households catch. The third column is a standardized measure of the household size. These variables have been standardized so that they can be compared directly in our models.</p>
+<p>Finally, The <code>owner</code> variable indicates whether or not that household owns a boat to use for fishing, and the final column is a grouping variable which indicates which family the household is a part of; these families are coded as <code>A</code> through <code>D</code>.</p>
+</div>
+<div id="research-questions" class="section level1">
+<h1>Research questions</h1>
+<p>Before we dig into the ERGMs, let’s state some clear question that we will use to guide our analysis. Based on previous studies of fishing communities, we should ask the following questions:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Kinship</strong> – Are households from the same family more likely to share with each other?</li>
+<li><strong>Reciprocity</strong> – Are sharing connections more likely whether the relationship is reciprocal?</li>
+<li><strong>Surplus and productivity</strong> – Do households with large harvests tend to have more sharing relationships? Are households with small harvests likely to be recipients?</li>
+</ol>
+<p>Visualizing the network might give us some qualitative clues about the answers of these questions. Let’s create a graph where each node is colored by it’s family group. Then we will resize each node according to the size of it’s harvest, and highlight reciprocity edges.</p>
+<p>A full description of visualization techniques is beyond the scope of this meeting, so for brevity I’ll just say that I am going to use <code>igraph</code>, <code>tidygraph</code>, and <code>ggraph</code> to create this visual. The code is shown below.</p>
+<pre class="r"><code>library(igraph)
+library(tidygraph)
+library(ggraph)
+
+gnet = intergraph::asIgraph(net)
+E(gnet)$mutual = is.mutual(gnet)
+
+as_tbl_graph(gnet) %&gt;%
+    ggraph() + 
+    theme_void() + 
+    geom_edge_link(aes(color=mutual), width=0.9, alpha=0.75, 
+                   arrow = arrow(length=unit(2, &#39;mm&#39;)), end_cap=circle(3,&#39;mm&#39;)) + 
+    geom_node_point(aes(fill=family, size=harvest), pch=21) + 
+    scale_size_continuous(range = c(0.5,8)) + 
+    scale_fill_viridis_d() + 
+    scale_edge_color_manual(values = c(&#39;grey50&#39;,&#39;tomato&#39;))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
+<p>The graph above seems to suggest that there are some family clusters and possibly that reciprocity is more common between family members. But other than that, there is little else that we can understand from just looking at the graph. <em>This is why we need ERGMs</em>!</p>
+</div>
+<div id="ergm-syntax" class="section level1">
+<h1>ERGM syntax</h1>
+<p>When you run a linear regression in R, the typical syntax looks something like this:</p>
+<blockquote>
+<p>y ~ 1 + x1 + x2</p>
+</blockquote>
+<p>In this syntax, the tilde indicates that we modeling the outcome variable <code>y</code> as a function of the intercept <code>1</code> and the variables <code>x1</code> and <code>x2</code>. The output of a model like this will be an estimate of the <code>Intercept</code> and a two beta coefficients that represent the effect that <code>x1</code> and <code>x2</code> have on <code>y</code>.</p>
+<p>In a ERGM, we using a simlar syntax:</p>
+<blockquote>
+<p>net ~ edges + …</p>
+</blockquote>
+<p>In this syntax, our network object is the outcome, and we model it as a function of the <code>edges</code> term and some other <code>ergm-terms</code> … The edges term behavior very similarly to the intercept in a regression, although the interpretation is slightly different. Whereas an intercept provides an estimate of the mean value of <code>y</code> when all variables are set to <code>0</code>, the <code>edges</code> term tells us the network density when all terms are set to <code>0</code>.</p>
+<p>Let’s run our first ergm to show that this is true.</p>
+<pre class="r"><code>fit0 = ergm(net ~ edges)</code></pre>
+<pre><code>## Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+<pre><code>## Evaluating the predictor and response matrix.</code></pre>
+<pre><code>## Maximizing the pseudolikelihood.</code></pre>
+<pre><code>## Finished MPLE.</code></pre>
+<pre><code>## Stopping at the initial estimate.</code></pre>
+<pre><code>## Evaluating log-likelihood at the estimate.</code></pre>
+<pre class="r"><code>summary(fit0)</code></pre>
+<pre><code>## Call:
+## ergm(formula = net ~ edges)
+## 
+## Maximum Likelihood Results:
+## 
+##       Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges -3.07625    0.07324      0     -42   &lt;1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 6130  on 4422  degrees of freedom
+##  Residual Deviance: 1599  on 4421  degrees of freedom
+##  
+## AIC: 1601  BIC: 1607  (Smaller is better. MC Std. Err. = 0)</code></pre>
+<p>Our estimate for the density is -3.0762482. This seems pretty different from the network density we calculated above: 0.0440977. This is because binary ERGMs report coefficient on the log-odds scale. On this scale, a value of <code>0</code> is the same as a <code>0.5</code> probability.</p>
+<p>To check our density estimates, we need to convert log-odds to probability. We do this by converting log-odds to an odds-ratio…</p>
+<pre class="r"><code>odds = exp(coef(fit0))
+odds</code></pre>
+<pre><code>##      edges 
+## 0.04613201</code></pre>
+<p>and then dividing the odds by (1 + odds).</p>
+<pre class="r"><code>odds / (1 + odds)</code></pre>
+<pre><code>##      edges 
+## 0.04409769</code></pre>
+<p>Compare this to the network density</p>
+<pre class="r"><code>network.density(net)</code></pre>
+<pre><code>## [1] 0.04409769</code></pre>
+<p>To simplify this process for later on, let’s write a function.</p>
+<pre class="r"><code>logit2prob = function(x) {
+    odds = exp(x)
+    prob = odds / (1 + odds)
+    return(prob)
+}</code></pre>
+<p>Now that we are equipped with an understanding of log-odds and probability, let’s starting tackling question 1.</p>
+</div>
+<div id="question-1" class="section level1">
+<h1>Question 1</h1>
+<p>In this question, we want to know if households from the same family are more likely to share with one another. This is a form of family homophily. We can model this process by including a <code>nodematch</code> term from the archive of <code>ergm-terms</code>.</p>
+<p><code>nodematch</code> calculates the log-odds of an edge when two nodes match on a particular attributes. The syntax looks like this:</p>
+<blockquote>
+<p>net ~ edges + nodematch(‘family’).</p>
+</blockquote>
+<p>We include the name of the variables within the parenthesis following <code>nodematch</code>. This is a common structure in other <code>ergm-terms</code> as well. Let’s run it.</p>
+<pre class="r"><code>fit1.1 = ergm(net ~ edges + nodematch(&#39;family&#39;))</code></pre>
+<pre><code>## Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+<pre><code>## Evaluating the predictor and response matrix.</code></pre>
+<pre><code>## Maximizing the pseudolikelihood.</code></pre>
+<pre><code>## Finished MPLE.</code></pre>
+<pre><code>## Stopping at the initial estimate.</code></pre>
+<pre><code>## Evaluating log-likelihood at the estimate.</code></pre>
+<p>From the read out, we learn that this ERGM is using maximum pseudolikelihood estimation to estimate this effect. Let’s examine the model summary.</p>
+<pre class="r"><code>summary(fit1.1)</code></pre>
+<pre><code>## Call:
+## ergm(formula = net ~ edges + nodematch(&quot;family&quot;))
+## 
+## Maximum Likelihood Results:
+## 
+##                  Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges            -3.11087    0.08547      0 -36.399   &lt;1e-04 ***
+## nodematch.family  0.13652    0.16588      0   0.823    0.411    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 6130  on 4422  degrees of freedom
+##  Residual Deviance: 1598  on 4420  degrees of freedom
+##  
+## AIC: 1602  BIC: 1615  (Smaller is better. MC Std. Err. = 0)</code></pre>
+</div>
