@@ -10,7 +10,6 @@ tags:
   - coding
   - statnet
   - workflow
-draft: yes 
 ---
 
 
@@ -44,11 +43,8 @@ library(statnet)</code></pre>
 </div>
 <div id="getting-started" class="section level1">
 <h1>Getting started</h1>
-<p>Today we are going to be analyzing how fishing households share their catch with other households. Let’s start by loading in the edgelist and the household attributes. These files are available as <code>.csv</code> on the SENG github page. But for simplicity, we will recreate the data set here for you.</p>
-<pre class="r"><code>e = read.csv(&#39;sharing.csv&#39;, row.names = 1)
-v = read.csv(&#39;hh_attributes.csv&#39;, row.names = 1)</code></pre>
-<p>We’ll now create a <code>network</code> object.</p>
-<pre class="r"><code>net = network(e, vertex.attr = v)</code></pre>
+<p>Today we are going to be analyzing how fishing households share their catch with other households. Let’s start by loading in the edgelist and the household attributes. This file is available on the <a href="https://github.com/sascaggs/seng/tree/main/content/post/2022-10-19-exponential-random-graph-models-an-introduction">SENG github</a>.</p>
+<pre class="r"><code>net = readRDS(&#39;fishing_network.Rdata&#39;)</code></pre>
 <p>This is a binary, directed network. An directed edge between two nodes in this network indicates that one household has shared a portion of their catch with another household. Let’s examine the network object.</p>
 <pre class="r"><code>net</code></pre>
 <pre><code>##  Network attributes:
@@ -58,25 +54,16 @@ v = read.csv(&#39;hh_attributes.csv&#39;, row.names = 1)</code></pre>
 ##   loops = FALSE 
 ##   multiple = FALSE 
 ##   bipartite = FALSE 
-##   total edges= 195 
+##   total edges= 272 
 ##     missing edges= 0 
-##     non-missing edges= 195 
+##     non-missing edges= 272 
 ## 
 ##  Vertex attribute names: 
 ##     family harvest hhsize owner vertex.names 
 ## 
 ## No edge attributes</code></pre>
-<p>We see that there are <code>67</code> households in this network with a total of <code>195</code> edges between them. The density of this network is 0.0440977, which indicates that it is relatively sparse.</p>
-<p>This network has five vertex attributes that we added to the network using the <code>hh_attributes.csv</code> file. Let’s take a look at these variables briefly.</p>
-<pre class="r"><code>head(v)</code></pre>
-<pre><code>##   vertex.names    harvest      hhsize owner family
-## 1            1  2.0520658 -1.20724742     1      C
-## 2            2  1.5901083  0.45527493     0      C
-## 3            3  0.6032451 -1.02711205     0      C
-## 4            4 -4.0425118 -0.06519111     0      C
-## 5            5  2.2444802  0.05727293     0      B
-## 6            6 -0.2756777 -1.22575179     0      D</code></pre>
-<p>The first column is the id used for each vertex. The second variable, <code>harvest</code>, is a standardized measure of the size of the households catch. The third column is a standardized measure of the household size. These variables have been standardized so that they can be compared directly in our models.</p>
+<p>We see that there are <code>67</code> households in this network with a total of <code>272</code> edges between them. The density of this network is 0.0615106, which indicates that it is relatively sparse.</p>
+<p>This network has five vertex attributes that we added to the network using the <code>hh_attributes.csv</code> file. One of these in an id used for each vertex name. The second variable, <code>harvest</code>, is a standardized measure of the size of the households catch. The third column is a standardized measure of the household size. These variables have been standardized so that they can be compared directly in our models.</p>
 <p>Finally, The <code>owner</code> variable indicates whether or not that household owns a boat to use for fishing, and the final column is a grouping variable which indicates which family the household is a part of; these families are coded as <code>A</code> through <code>D</code>.</p>
 </div>
 <div id="research-questions" class="section level1">
@@ -135,27 +122,27 @@ as_tbl_graph(gnet) %&gt;%
 ## Maximum Likelihood Results:
 ## 
 ##       Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-## edges -3.07625    0.07324      0     -42   &lt;1e-04 ***
+## edges -2.72506    0.06259      0  -43.54   &lt;1e-04 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ##      Null Deviance: 6130  on 4422  degrees of freedom
-##  Residual Deviance: 1599  on 4421  degrees of freedom
+##  Residual Deviance: 2044  on 4421  degrees of freedom
 ##  
-## AIC: 1601  BIC: 1607  (Smaller is better. MC Std. Err. = 0)</code></pre>
-<p>Our estimate for the density is -3.0762482. This seems pretty different from the network density we calculated above: 0.0440977. This is because binary ERGMs report coefficient on the log-odds scale. On this scale, a value of <code>0</code> is the same as a <code>0.5</code> probability.</p>
+## AIC: 2046  BIC: 2052  (Smaller is better. MC Std. Err. = 0)</code></pre>
+<p>Our estimate for the density is -2.7250615. This seems pretty different from the network density we calculated above: 0.0615106. This is because binary ERGMs report coefficient on the log-odds scale. On this scale, a value of <code>0</code> is the same as a <code>0.5</code> probability.</p>
 <p>To check our density estimates, we need to convert log-odds to probability. We do this by converting log-odds to an odds-ratio…</p>
 <pre class="r"><code>odds = exp(coef(fit0))
 odds</code></pre>
 <pre><code>##      edges 
-## 0.04613201</code></pre>
+## 0.06554217</code></pre>
 <p>and then dividing the odds by (1 + odds).</p>
 <pre class="r"><code>odds / (1 + odds)</code></pre>
 <pre><code>##      edges 
-## 0.04409769</code></pre>
+## 0.06151063</code></pre>
 <p>Compare this to the network density</p>
 <pre class="r"><code>network.density(net)</code></pre>
-<pre><code>## [1] 0.04409769</code></pre>
+<pre><code>## [1] 0.06151063</code></pre>
 <p>To simplify this process for later on, let’s write a function.</p>
 <pre class="r"><code>logit2prob = function(x) {
     odds = exp(x)
@@ -187,13 +174,552 @@ odds</code></pre>
 ## Maximum Likelihood Results:
 ## 
 ##                  Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-## edges            -3.11087    0.08547      0 -36.399   &lt;1e-04 ***
-## nodematch.family  0.13652    0.16588      0   0.823    0.411    
+## edges             -4.8134     0.1932      0  -24.91   &lt;1e-04 ***
+## nodematch.family   3.5993     0.2065      0   17.43   &lt;1e-04 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ##      Null Deviance: 6130  on 4422  degrees of freedom
-##  Residual Deviance: 1598  on 4420  degrees of freedom
+##  Residual Deviance: 1466  on 4420  degrees of freedom
 ##  
-## AIC: 1602  BIC: 1615  (Smaller is better. MC Std. Err. = 0)</code></pre>
+## AIC: 1470  BIC: 1482  (Smaller is better. MC Std. Err. = 0)</code></pre>
+<p>Just like a regression, we get an estimate of the Standard Error. When the Std. Error is greater than the estimate, this is an indication that the effect is uncertain. However, in this case we have a clear positive effect of family homophily. This is reinforced by the low p-value.</p>
+<p>Let’s calculate the odds.</p>
+<pre class="r"><code>exp(coef(fit1.1))</code></pre>
+<pre><code>##            edges nodematch.family 
+##      0.008120301     36.571268229</code></pre>
+<p>This tells us that an edge is 36.5712682 times more likely if two nodes come from the same family. That is a strong effect. If we want to express this in probability, then we need to add the coefficients together.</p>
+<pre class="r"><code># multiply coef[2] by 1 for nodematch = T
+logit2prob(coef(fit1.1)[1] + coef(fit1.1)[2]*1)</code></pre>
+<pre><code>##    edges 
+## 0.228972</code></pre>
+<p>Taking the low density into account, an edge between two households in the same family is 0.228972. A somewha low probability, but not nearly as low as it is for two nodes from different families.</p>
+<pre class="r"><code># multiply coef[2] by 0 for nodematch = F
+logit2prob(coef(fit1.1)[1] + coef(fit1.1)[2]*0 )</code></pre>
+<pre><code>##       edges 
+## 0.008054893</code></pre>
+<div id="goodness-of-fit" class="section level2">
+<h2>Goodness-of-fit</h2>
+<p>One way that we can test how well this model describe our data is by assessing the Goodness-of-fit. <code>ergm</code> comes with a convenient <code>gof</code> function that does this. If we plat it within the <code>plot</code> function, we receive some diagnostic plots.</p>
+<pre class="r"><code>plot(gof(fit1.1))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-3.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-4.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-5.png" width="672" /></p>
+<p>The <code>gof</code> function uses our <code>ergm</code> coefficients to simulate thousands of networks. It then calculates a set of descriptive statistics on each simulated network and compares the distribution of these statistics to the observed values. The observed values on plotted on each graph as a black line.</p>
+<p>Looking at the diagnostics, we see that our model does not capture the distribution of in-degree and out-degree very well (plots 2 and 3). However, this model closely resembles values of edgewise shared partners and slightly overestimates values of minimum geodesic distance.</p>
+<p>These mismatches are likely because there are other aspects of the network formation process beyond homophily.</p>
+</div>
+</div>
+<div id="question-2" class="section level1">
+<h1>Question 2</h1>
+<p>This brings us to our second question: is sharing more likely if relationships are reciprocated? To test this, we need to use the <code>mutual</code> term. The <code>mutual</code> term estimates the log-odds of an edge from <code>i</code> to <code>j</code> if there is an existing edge from <code>j</code> to <code>i</code>.</p>
+<p>The mutual term has some other options. We can estimate reciprocity for specific attributes. For now, we will look at reciprocity in general.</p>
+<pre class="r"><code>fit2.1 = ergm(net ~ edges + mutual)</code></pre>
+<pre><code>## Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+<pre><code>## Evaluating the predictor and response matrix.</code></pre>
+<pre><code>## Maximizing the pseudolikelihood.</code></pre>
+<pre><code>## Finished MPLE.</code></pre>
+<pre><code>## Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+<pre><code>## Iteration 1 of at most 60:</code></pre>
+<pre><code>## Warning: &#39;glpk&#39; selected as the solver, but package &#39;Rglpk&#39; is not available;
+## falling back to &#39;lpSolveAPI&#39;. This should be fine unless the sample size and/or
+## the number of parameters is very big.</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.4608.</code></pre>
+<pre><code>## Estimating equations are not within tolerance region.</code></pre>
+<pre><code>## Iteration 2 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.0024.</code></pre>
+<pre><code>## Convergence test p-value: 0.2944. Not converged with 99% confidence; increasing sample size.
+## Iteration 3 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0393.
+## Convergence test p-value: 0.0642. Not converged with 99% confidence; increasing sample size.
+## Iteration 4 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0609.
+## Convergence test p-value: 0.0090. Converged with 99% confidence.
+## Finished MCMLE.
+## Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
+## Bridging between the dyad-independent submodel and the full model...
+## Setting up bridge sampling...
+## Using 16 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 .
+## Bridging finished.
+## This model was fit using MCMC.  To examine model diagnostics and check
+## for degeneracy, use the mcmc.diagnostics() function.</code></pre>
+<p>Right away you will notice that there are many other details printed out. This is because the ERGM cannot only use MLPE to estimate the <code>mutual</code> term. Instead it has to also use a Markov Chain Monte Carlo (MCMC) procedure to explore a large, complex parameter space.</p>
+<p>We can discuss more about MCMC in future meetings. What is important right now is determining whether our model converged or not. Convergence indicates that the parameter space has been sufficiently explored and that the estimates are reliable. We haven’t gotten any warnings (that is good!) but let’s check the MCMC chains using the <code>mcmc.diagnostics</code> function.</p>
+<pre class="r"><code>mcmc.diagnostics(fit2.1)</code></pre>
+<pre><code>## Sample statistics summary:
+## 
+## Iterations = 59392:1138688
+## Thinning interval = 2048 
+## Number of chains = 1 
+## Sample size per chain = 528 
+## 
+## 1. Empirical mean and standard deviation for each variable,
+##    plus standard error of the mean:
+## 
+##         Mean     SD Naive SE Time-series SE
+## edges  5.555 18.240   0.7938         1.4203
+## mutual 2.754  7.983   0.3474         0.7185
+## 
+## 2. Quantiles for each variable:
+## 
+##        2.5% 25% 50%   75% 97.5%
+## edges   -30  -6   5 18.25 41.82
+## mutual  -12  -3   3  8.00 20.00
+## 
+## 
+## Are sample statistics significantly different from observed?
+##                   edges       mutual Overall (Chi^2)
+## diff.      5.5549242424 2.7537878788              NA
+## test stat. 3.9109586735 3.8325281054    1.483196e+01
+## P-val.     0.0000919305 0.0001268331    7.522974e-04
+## 
+## Sample statistics cross-correlations:
+##            edges    mutual
+## edges  1.0000000 0.7917343
+## mutual 0.7917343 1.0000000
+## 
+## Sample statistics auto-correlation:
+## Chain 1 
+##                edges    mutual
+## Lag 0     1.00000000 1.0000000
+## Lag 2048  0.42739276 0.6204211
+## Lag 4096  0.28289915 0.3936103
+## Lag 6144  0.16443373 0.2522036
+## Lag 8192  0.07300550 0.1610611
+## Lag 10240 0.05508056 0.0693910
+## 
+## Sample statistics burn-in diagnostic (Geweke):
+## Chain 1 
+## 
+## Fraction in 1st window = 0.1
+## Fraction in 2nd window = 0.5 
+## 
+##   edges  mutual 
+## -0.1661 -0.7427 
+## 
+## Individual P-values (lower = worse):
+##     edges    mutual 
+## 0.8680508 0.4576338 
+## Joint P-value (lower = worse):  0.5069271 .</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre><code>## 
+## MCMC diagnostics shown here are from the last round of simulation, prior to computation of final parameter estimates. Because the final estimates are refinements of those used for this simulation run, these diagnostics may understate model performance. To directly assess the performance of the final model on in-model statistics, please use the GOF command: gof(ergmFitObject, GOF=~model).</code></pre>
+<p>We want to see that the chains have a “fuzzy caterpillar” effect and do not have any obvious pattern to them. These chains look okay, but we might be better off if we increase the number of iterations (i.e., explore the parameter space for longer).</p>
+<p>We can do this by adjusting the sampler controls. There are many, MANY controls for the sampler – which can be very overwhelming – so we will save those details for an advanced meeting.</p>
+<pre class="r"><code>fit2.1 = ergm(net ~ edges + mutual, 
+              control = control.ergm(MPLE.maxit = 10000))</code></pre>
+<pre><code>## Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+<pre><code>## Evaluating the predictor and response matrix.</code></pre>
+<pre><code>## Maximizing the pseudolikelihood.</code></pre>
+<pre><code>## Finished MPLE.</code></pre>
+<pre><code>## Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+<pre><code>## Iteration 1 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.1321.</code></pre>
+<pre><code>## Estimating equations are not within tolerance region.</code></pre>
+<pre><code>## Iteration 2 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.0669.</code></pre>
+<pre><code>## Convergence test p-value: 0.2848. Not converged with 99% confidence; increasing sample size.
+## Iteration 3 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0412.
+## Convergence test p-value: 0.0261. Not converged with 99% confidence; increasing sample size.
+## Iteration 4 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0025.
+## Convergence test p-value: 0.0324. Not converged with 99% confidence; increasing sample size.
+## Iteration 5 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by &lt; 0.0001.
+## Convergence test p-value: 0.0116. Not converged with 99% confidence; increasing sample size.
+## Iteration 6 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0018.
+## Convergence test p-value: 0.0156. Not converged with 99% confidence; increasing sample size.
+## Iteration 7 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0086.
+## Convergence test p-value: &lt; 0.0001. Converged with 99% confidence.
+## Finished MCMLE.
+## Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
+## Bridging between the dyad-independent submodel and the full model...
+## Setting up bridge sampling...
+## Using 16 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 .
+## Bridging finished.
+## This model was fit using MCMC.  To examine model diagnostics and check
+## for degeneracy, use the mcmc.diagnostics() function.</code></pre>
+<pre class="r"><code>mcmc.diagnostics(fit2.1)</code></pre>
+<pre><code>## Sample statistics summary:
+## 
+## Iterations = 114688:2240512
+## Thinning interval = 4096 
+## Number of chains = 1 
+## Sample size per chain = 520 
+## 
+## 1. Empirical mean and standard deviation for each variable,
+##    plus standard error of the mean:
+## 
+##          Mean     SD Naive SE Time-series SE
+## edges  -1.858 18.839   0.8261         1.0061
+## mutual -1.017  7.771   0.3408         0.4747
+## 
+## 2. Quantiles for each variable:
+## 
+##          2.5% 25%  50% 75% 97.5%
+## edges  -38.02 -15 -1.5  11 36.02
+## mutual -15.00  -7 -1.0   4 16.00
+## 
+## 
+## Are sample statistics significantly different from observed?
+##                  edges      mutual Overall (Chi^2)
+## diff.      -1.85769231 -1.01730769              NA
+## test stat. -1.84645780 -2.14304768      4.80323892
+## P-val.      0.06482576  0.03210927      0.09262173
+## 
+## Sample statistics cross-correlations:
+##          edges  mutual
+## edges  1.00000 0.79386
+## mutual 0.79386 1.00000
+## 
+## Sample statistics auto-correlation:
+## Chain 1 
+##                  edges       mutual
+## Lag 0      1.000000000  1.000000000
+## Lag 4096   0.279481847  0.318993211
+## Lag 8192   0.079380889  0.094928989
+## Lag 12288 -0.064164706  0.006576045
+## Lag 16384 -0.009065296 -0.056344650
+## Lag 20480  0.020932016  0.015447910
+## 
+## Sample statistics burn-in diagnostic (Geweke):
+## Chain 1 
+## 
+## Fraction in 1st window = 0.1
+## Fraction in 2nd window = 0.5 
+## 
+##  edges mutual 
+## 0.4739 0.4979 
+## 
+## Individual P-values (lower = worse):
+##     edges    mutual 
+## 0.6355818 0.6185422 
+## Joint P-value (lower = worse):  0.937375 .</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<pre><code>## 
+## MCMC diagnostics shown here are from the last round of simulation, prior to computation of final parameter estimates. Because the final estimates are refinements of those used for this simulation run, these diagnostics may understate model performance. To directly assess the performance of the final model on in-model statistics, please use the GOF command: gof(ergmFitObject, GOF=~model).</code></pre>
+<p>That looks a bit better. Now we can examine the ERGM summary.</p>
+<pre class="r"><code>summary(fit2.1)</code></pre>
+<pre><code>## Call:
+## ergm(formula = net ~ edges + mutual, control = control.ergm(MPLE.maxit = 10000))
+## 
+## Monte Carlo Maximum Likelihood Results:
+## 
+##        Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges  -3.39920    0.08747      0  -38.86   &lt;1e-04 ***
+## mutual  3.43561    0.21207      0   16.20   &lt;1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 6130  on 4422  degrees of freedom
+##  Residual Deviance: 1802  on 4420  degrees of freedom
+##  
+## AIC: 1806  BIC: 1819  (Smaller is better. MC Std. Err. = 1.187)</code></pre>
+<p>We see from the output that indeed, there is strong effect of reciprocity within this network. An edge from <code>i</code> to <code>j</code> is 31.05 time more likely if there exists an edge from <code>j</code> to <code>i</code>.</p>
+<pre class="r"><code>exp(coef(fit2.1))</code></pre>
+<pre><code>##       edges      mutual 
+##  0.03340002 31.05037481</code></pre>
+<p>This leads to the question of whether reciprocity is common between households from the same family. One way to test this is by creating a new model with both <code>nodematch</code> and <code>mutual</code>. It is possible that reciprocity arrise merely because of family dynamics. If this is true, we should see a change in the coefficient estimates. If they both remain the same, or get stronger, then perhaps reciprocity and family dynamics are different independent influences on sharing.</p>
+<pre class="r"><code>fit2.2 = ergm(net ~ edges + nodematch(&#39;family&#39;) + mutual)</code></pre>
+<pre><code>## Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+<pre><code>## Evaluating the predictor and response matrix.</code></pre>
+<pre><code>## Maximizing the pseudolikelihood.</code></pre>
+<pre><code>## Finished MPLE.</code></pre>
+<pre><code>## Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+<pre><code>## Iteration 1 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.0796.</code></pre>
+<pre><code>## Convergence test p-value: 0.6904. Not converged with 99% confidence; increasing sample size.
+## Iteration 2 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0090.
+## Convergence test p-value: 0.2682. Not converged with 99% confidence; increasing sample size.
+## Iteration 3 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0145.
+## Convergence test p-value: 0.0005. Converged with 99% confidence.
+## Finished MCMLE.
+## Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
+## Bridging between the dyad-independent submodel and the full model...
+## Setting up bridge sampling...
+## Using 16 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 .
+## Bridging finished.
+## This model was fit using MCMC.  To examine model diagnostics and check
+## for degeneracy, use the mcmc.diagnostics() function.</code></pre>
+<pre class="r"><code>summary(fit2.2)</code></pre>
+<pre><code>## Call:
+## ergm(formula = net ~ edges + nodematch(&quot;family&quot;) + mutual)
+## 
+## Monte Carlo Maximum Likelihood Results:
+## 
+##                  Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges             -4.8647     0.1927      0 -25.242   &lt;1e-04 ***
+## nodematch.family   2.9822     0.2072      0  14.393   &lt;1e-04 ***
+## mutual             2.1154     0.2241      0   9.439   &lt;1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 6130  on 4422  degrees of freedom
+##  Residual Deviance: 1378  on 4419  degrees of freedom
+##  
+## AIC: 1384  BIC: 1403  (Smaller is better. MC Std. Err. = 0.8788)</code></pre>
+<pre class="r"><code>exp(coef(fit2.2))</code></pre>
+<pre><code>##            edges nodematch.family           mutual 
+##      0.007714095     19.731425171      8.292992524</code></pre>
+<p>Looking at the summary and odds-ratios (OR), we see that when both terms are included together, the strength of the <code>mutual</code> effect is reduced. This suggests that family homophily – kinship – is driving the reciprocity. That said, there are still some distinct reciprocity effects since the effect remains positive and significant.</p>
+<div id="gof" class="section level2">
+<h2>GOF</h2>
+<p>Let’s take another look at the goodness-of-fit.</p>
+<pre class="r"><code>plot(gof(fit2.2))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-24-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-24-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-24-3.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-24-4.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-24-5.png" width="672" /></p>
+<p>Based on these diagnostics, it seems we have improved our understanding of in-degree, but we are still missing the mark on out-degree minimum geodesic distance. Perhaps question three will help.</p>
+</div>
+</div>
+<div id="question-3" class="section level1">
+<h1>Question 3</h1>
+<p>In this question, we want to know understand how harvest productivity influences sharing and receiving. We might expect, for example, that individuals with large harvests are able to share with more people. We can test this with the <code>nodeocov</code> term.</p>
+<p>The <code>nodeocov</code> term stands for node, out-degree covariance. It tests whether a nodes out-degree covaries with some vertex attribute. In our case we will use <code>harvest</code>. There is also a <code>nodeicov</code> term which tests the same thing but for in-degree.</p>
+<p>If harvest plays a role as we expect it does, then <code>nodeocov</code> should be positive and <code>nodeicov</code> should be positive.</p>
+<pre class="r"><code>fit3.1 = ergm(net ~ edges + nodeocov(&#39;harvest&#39;) + nodeicov(&#39;harvest&#39;))</code></pre>
+<pre><code>## Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+<pre><code>## Evaluating the predictor and response matrix.</code></pre>
+<pre><code>## Maximizing the pseudolikelihood.</code></pre>
+<pre><code>## Finished MPLE.</code></pre>
+<pre><code>## Stopping at the initial estimate.</code></pre>
+<pre><code>## Evaluating log-likelihood at the estimate.</code></pre>
+<pre class="r"><code>summary(fit3.1)</code></pre>
+<pre><code>## Call:
+## ergm(formula = net ~ edges + nodeocov(&quot;harvest&quot;) + nodeicov(&quot;harvest&quot;))
+## 
+## Maximum Likelihood Results:
+## 
+##                  Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges            -3.12917    0.08802      0 -35.551   &lt;1e-04 ***
+## nodeocov.harvest  0.15280    0.03869      0   3.950   &lt;1e-04 ***
+## nodeicov.harvest  0.34740    0.04109      0   8.455   &lt;1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 6130  on 4422  degrees of freedom
+##  Residual Deviance: 1951  on 4419  degrees of freedom
+##  
+## AIC: 1957  BIC: 1976  (Smaller is better. MC Std. Err. = 0)</code></pre>
+<p>The estimates show us that both out-degree and in-degree covary with harvest size, although the effects a rather small. In-degree has a stronger covariance. Since out-degree is a rather small effect, one follow up question we might ask is how <code>owner</code> influences out-degree. Perhaps it is harvest size, per se, that influences sharing connections, but rather who owns a boat. In many places, boats are the location of sharing events.</p>
+<p>To examine the effect of boat ownership, we will use the term <code>nodeofactor</code>. This is similar to <code>nodeocov</code> except that it is designed for factors. For those who are familiar with dummy variables, a node factor behave similarly.</p>
+<pre class="r"><code>fit3.2 = ergm(net ~ edges + nodeocov(&#39;harvest&#39;) + nodeicov(&#39;harvest&#39;) + nodeofactor(&#39;owner&#39;))</code></pre>
+<pre><code>## Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+<pre><code>## Evaluating the predictor and response matrix.</code></pre>
+<pre><code>## Maximizing the pseudolikelihood.</code></pre>
+<pre><code>## Finished MPLE.</code></pre>
+<pre><code>## Stopping at the initial estimate.</code></pre>
+<pre><code>## Evaluating log-likelihood at the estimate.</code></pre>
+<pre class="r"><code>summary(fit3.2)</code></pre>
+<pre><code>## Call:
+## ergm(formula = net ~ edges + nodeocov(&quot;harvest&quot;) + nodeicov(&quot;harvest&quot;) + 
+##     nodeofactor(&quot;owner&quot;))
+## 
+## Maximum Likelihood Results:
+## 
+##                     Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges               -3.26609    0.09477      0 -34.463  &lt; 1e-04 ***
+## nodeocov.harvest     0.10709    0.04139      0   2.587  0.00968 ** 
+## nodeicov.harvest     0.34981    0.04131      0   8.467  &lt; 1e-04 ***
+## nodeofactor.owner.1  0.74291    0.14691      0   5.057  &lt; 1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 6130  on 4422  degrees of freedom
+##  Residual Deviance: 1927  on 4418  degrees of freedom
+##  
+## AIC: 1935  BIC: 1961  (Smaller is better. MC Std. Err. = 0)</code></pre>
+<p>When we include ownership, we find that the effect of harvest size is diminished and becomes less signifcant, while boat ownership itself is a much stronger effect.</p>
+<p>Even so, it seems that households with large harvest still tend to share more often, even if they don’t have a boat. We can test this explicitly. What is the probably of edge if a household has a large harvest but no boat vs. the same household with a boat?</p>
+<p>To do this, I am saving the log-odds coefficients, then I plug them into the <code>logit2prob</code> function and multiply them by the harvest size and boat ownership values. Here I am compare harvest of size <code>4</code>, which is about 4,000 lbs.</p>
+<pre class="r"><code>coef3.2 = coef(fit3.2) 
+
+# no boat
+logit2prob( coef3.2[1] + coef3.2[2]*4 + coef3.2[4]*0 )</code></pre>
+<pre><code>##      edges 
+## 0.05531871</code></pre>
+<pre class="r"><code>logit2prob( coef3.2[1] + coef3.2[2]*4 + coef3.2[4]*1 )</code></pre>
+<pre><code>##     edges 
+## 0.1096008</code></pre>
+</div>
+<div id="combined-models" class="section level1">
+<h1>Combined models</h1>
+<p>We have three conclusions so far:</p>
+<ol style="list-style-type: decimal">
+<li>Kinship and family groups have a strong positive influence on sharing relationships.</li>
+<li>Reciprocity also has a strong positive effect, although it is partly driven by kinship and partly driven by reciprocity between non-kin.</li>
+<li>Owning a boat is assocated with more sharing connections, while having a small harvest is assocaited with being on the receiving end of more partnerships.</li>
+</ol>
+<p>Let’s combine each of these hypotheses into a single model and see if there are any obvious changes to these conclusions. The main reason for doing this is so that we can determine the relative strengths of each effect against the others.</p>
+<pre class="r"><code>fit4.1 = ergm(net ~ edges + nodematch(&#39;family&#39;) + mutual + nodeocov(&#39;harvest&#39;) + nodeicov(&#39;harvest&#39;) + nodeofactor(&#39;owner&#39;))</code></pre>
+<pre><code>## Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+<pre><code>## Evaluating the predictor and response matrix.</code></pre>
+<pre><code>## Maximizing the pseudolikelihood.</code></pre>
+<pre><code>## Finished MPLE.</code></pre>
+<pre><code>## Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+<pre><code>## Iteration 1 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.3656.</code></pre>
+<pre><code>## Estimating equations are not within tolerance region.</code></pre>
+<pre><code>## Iteration 2 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.0541.</code></pre>
+<pre><code>## Convergence test p-value: 0.2372. Not converged with 99% confidence; increasing sample size.
+## Iteration 3 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0639.
+## Convergence test p-value: 0.5243. Not converged with 99% confidence; increasing sample size.
+## Iteration 4 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0553.
+## Convergence test p-value: 0.2400. Not converged with 99% confidence; increasing sample size.
+## Iteration 5 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.1144.
+## Estimating equations are not within tolerance region.
+## Estimating equations did not move closer to tolerance region more than 1 time(s) in 4 steps; increasing sample size.
+## Iteration 6 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0939.
+## Convergence test p-value: 0.0002. Converged with 99% confidence.
+## Finished MCMLE.
+## Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
+## Bridging between the dyad-independent submodel and the full model...
+## Setting up bridge sampling...
+## Using 16 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 .
+## Bridging finished.
+## This model was fit using MCMC.  To examine model diagnostics and check
+## for degeneracy, use the mcmc.diagnostics() function.</code></pre>
+<pre class="r"><code>summary(fit4.1)</code></pre>
+<pre><code>## Call:
+## ergm(formula = net ~ edges + nodematch(&quot;family&quot;) + mutual + nodeocov(&quot;harvest&quot;) + 
+##     nodeicov(&quot;harvest&quot;) + nodeofactor(&quot;owner&quot;))
+## 
+## Monte Carlo Maximum Likelihood Results:
+## 
+##                      Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges               -5.580005   0.215826      0 -25.854   &lt;1e-04 ***
+## nodematch.family     3.177944   0.219409      0  14.484   &lt;1e-04 ***
+## mutual               2.008886   0.246330      0   8.155   &lt;1e-04 ***
+## nodeocov.harvest     0.003266   0.049497      0   0.066    0.947    
+## nodeicov.harvest     0.427652   0.050962      0   8.392   &lt;1e-04 ***
+## nodeofactor.owner.1  1.064196   0.186527      0   5.705   &lt;1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 6130  on 4422  degrees of freedom
+##  Residual Deviance: 1248  on 4416  degrees of freedom
+##  
+## AIC: 1260  BIC: 1298  (Smaller is better. MC Std. Err. = 0.7166)</code></pre>
+<p>When all of these effects are combined, we find that many of the estimates are the same as before. One key difference is that harvest size no longer has any effect on the number of giving relationships. We also see that boat ownership is a stronger effect in the presence of family ties and reciprocity. This suggests that people may reciprocate outside of their family with people who own boats.</p>
+<div id="goodness-of-fit-1" class="section level2">
+<h2>Goodness-of-fit</h2>
+<p>Let’s examine the gof function again and see how well we capture the observed structural values of the network. Recall that previous models had a difficult time capturing the degree distributions.</p>
+<pre class="r"><code>plot(gof(fit4.1))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-29-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-29-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-29-3.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-29-4.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-29-5.png" width="672" />
+It appears that we are still have some issues but overall there fit is reasonable. We can further fine tune this model by include some additional structural parameters.</p>
+<p>Instead of looking at graphs, we can also use the gof hypothesis testing approach.</p>
+<pre class="r"><code>gof(fit4.1, GOF = ~model)</code></pre>
+<pre><code>## 
+## Goodness-of-fit for model statistics 
+## 
+##                          obs      min     mean      max MC p-value
+## edges               272.0000 244.0000 272.1700 310.0000       0.98
+## nodematch.family    245.0000 222.0000 245.3300 280.0000       0.98
+## mutual               69.0000  47.0000  69.1300  86.0000       1.00
+## nodeocov.harvest    231.4796 144.0366 229.5862 281.4167       0.92
+## nodeicov.harvest    358.2104 296.3139 355.3261 416.5988       0.86
+## nodeofactor.owner.1  81.0000  64.0000  81.2200  96.0000       0.96</code></pre>
+<p>The resulting table tells us statistically how well these terms fit our data. In this case, p-values closer to 1 are better. We find that of all of the terms, ownership is the worst fit, but it is still relatively high.</p>
+</div>
+</div>
+<div id="bonus-triangles" class="section level1">
+<h1>Bonus: triangles</h1>
+<p>Perhaps we should control for the tends for families to close triads within them. We can do this by explicit including terms for certain types of triads (e.g., cycles) or we can use the <code>gwesp</code> term. The gwesp term estimates the tendency for triadic closure within a network (for more details, see <a href="https://eehh-stanford.github.io/SNA-workshop/ergm-predictions.html#dealing-with-triangles">this workshop</a>).</p>
+<p>GWESP stands for geometrics weighted edgewise shared partners. This terms described the tendency for a triangle to close when two individuals have a shared partners. If the values is high, then there is a tendency for closure. It small networks, it is often the case that adding a single tie can closure several triangles.</p>
+<p>Some analysts use gwesp as a control parameters that helps them get clearer estimates for other variables of interest. Others may be testing competing hypotheses: for example, is a network driven more by homophily or triadic closure? In our case, we want to know if closure within families leads to a more even degree distribution.</p>
+<p>In <code>?ergm-terms</code> there is also a <code>triangles</code> term. This estimates how much more likely a tie is based on the number of shared partners. In other words, each additional shared partner continues to additively increase the probability. In contrast, the <code>gwesp</code> term uses a <code>decay</code> parameter with discounts each additional partner, making it a more conservative estimate of triadic closure.</p>
+<pre class="r"><code>fit4.2 = ergm(net ~ edges + nodematch(&#39;family&#39;) + mutual + nodeocov(&#39;harvest&#39;) + nodeicov(&#39;harvest&#39;) + nodeofactor(&#39;owner&#39;) + gwesp(0.5, fixed=T))</code></pre>
+<pre><code>## Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+<pre><code>## Evaluating the predictor and response matrix.</code></pre>
+<pre><code>## Maximizing the pseudolikelihood.</code></pre>
+<pre><code>## Finished MPLE.</code></pre>
+<pre><code>## Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+<pre><code>## Iteration 1 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.5816.</code></pre>
+<pre><code>## Estimating equations are not within tolerance region.</code></pre>
+<pre><code>## Iteration 2 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.0595.</code></pre>
+<pre><code>## Convergence test p-value: 0.9105. Not converged with 99% confidence; increasing sample size.
+## Iteration 3 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0558.
+## Convergence test p-value: 0.7967. Not converged with 99% confidence; increasing sample size.
+## Iteration 4 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.1001.
+## Convergence test p-value: 0.2075. Not converged with 99% confidence; increasing sample size.
+## Iteration 5 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0292.
+## Convergence test p-value: 0.0123. Not converged with 99% confidence; increasing sample size.
+## Iteration 6 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0226.
+## Convergence test p-value: 0.0370. Not converged with 99% confidence; increasing sample size.
+## Iteration 7 of at most 60:
+## Optimizing with step length 1.0000.
+## The log-likelihood improved by 0.0258.
+## Convergence test p-value: 0.0018. Converged with 99% confidence.
+## Finished MCMLE.
+## Evaluating log-likelihood at the estimate. Fitting the dyad-independent submodel...
+## Bridging between the dyad-independent submodel and the full model...
+## Setting up bridge sampling...
+## Using 16 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 .
+## Bridging finished.
+## This model was fit using MCMC.  To examine model diagnostics and check
+## for degeneracy, use the mcmc.diagnostics() function.</code></pre>
+<pre class="r"><code>summary(fit4.2)</code></pre>
+<pre><code>## Call:
+## ergm(formula = net ~ edges + nodematch(&quot;family&quot;) + mutual + nodeocov(&quot;harvest&quot;) + 
+##     nodeicov(&quot;harvest&quot;) + nodeofactor(&quot;owner&quot;) + gwesp(0.5, fixed = T))
+## 
+## Monte Carlo Maximum Likelihood Results:
+## 
+##                     Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges               -5.63401    0.22765      0 -24.749   &lt;1e-04 ***
+## nodematch.family     3.34608    0.27240      0  12.284   &lt;1e-04 ***
+## mutual               2.03767    0.24065      0   8.467   &lt;1e-04 ***
+## nodeocov.harvest     0.01885    0.05437      0   0.347    0.729    
+## nodeicov.harvest     0.44744    0.05579      0   8.020   &lt;1e-04 ***
+## nodeofactor.owner.1  1.15738    0.19481      0   5.941   &lt;1e-04 ***
+## gwesp.fixed.0.5     -0.09793    0.08278      0  -1.183    0.237    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 6130  on 4422  degrees of freedom
+##  Residual Deviance: 1248  on 4415  degrees of freedom
+##  
+## AIC: 1262  BIC: 1307  (Smaller is better. MC Std. Err. = 0.9049)</code></pre>
+<p>This estimate indicates that there are not many edges that would close triangles which suggests that there are relatively few shared partners in this network. This makes sense since the network itself is somewhat cluster into family groups. Were these groups not present, there may be a stronger triangle effect.</p>
+</div>
+<div id="model-comparison" class="section level1">
+<h1>Model Comparison</h1>
 </div>

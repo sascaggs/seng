@@ -12,7 +12,7 @@ tags:
   - workflow
 ---
 
-# Introduction
+# Introduction   
 
 We can a learn a lot about a network using visualization tools and descriptive statistics. But many researchers would like to make inferences about how specific variables influence the probability of a network connection. There are multiple ways to do this -- latent network modeling, multilevel Bayesian models, quadratic assignment procedures -- but one of the most common and versatile methods is to build Exponential Random Graph Models (ERGMs). 
 
@@ -38,7 +38,7 @@ In essence, an ERGM is used to model the likelihood of an edge between each pair
 
 In the examples to follow, we will be working with a binary ERGM. 
 
-# Why use ERGMs? 
+# Why use ERGMs?  
 
 There are many other approaches for studying data structures in which the observations are not independent of each other. So why should we use ergms? One of the greatest advantages of ERGMs is the ability to include structural elements of networks as predictive terms in a model. 
 
