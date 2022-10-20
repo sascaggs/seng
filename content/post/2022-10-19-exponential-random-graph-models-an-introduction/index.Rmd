@@ -10,7 +10,6 @@ tags:
   - coding
   - statnet
   - workflow
-draft: yes 
 ---
 
 # Introduction
