@@ -10,6 +10,7 @@ tags:
   - nodes
   - matrix
   - analysis
+draft: yes
 ---
 
 Many networks that we find interesting are large and structurally complex. This makes them difficult to visually understand. And although coming up with ways to visualize such networks is a kind of fun, most of the time we need practical ways to describe the position and structure of complex networks without dealing with the tangled hairball. 
