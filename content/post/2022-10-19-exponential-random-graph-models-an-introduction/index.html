@@ -26,7 +26,7 @@ library(statnet)</code></pre>
 <div id="what-is-an-ergm" class="section level1">
 <h1>What is an ERGM?</h1>
 <p>ERGMs are used to model the structural dependencies in a relational data object. For our purposes, these dependencies are the edges between the nodes and we can use an ERGM to estimate both the probability and uncertainty that such an edge exists in a given graph. More conventional statistical approaches fail in this endeavor because they assume that observations are independent, and we are specifically interested in the dependence of our observations.</p>
-<p>In essence, an ERGM is used to model the likelihood of an edge between each pair of nodes. In this sense, it is an ERGM is a dyadic model (Morris, Handcock, and Hunter 2008). There are many different types of ERGMs. Each variation is used to model networks with different kinds of edges, for instance:</p>
+<p>In essence, an ERGM is used to model the likelihood of an edge between each pair of nodes. In this sense, an ERGM is a dyadic model (Morris, Handcock, and Hunter 2008). There are many different types of ERGMs. Each variation is used to model networks with different kinds of edges, for instance:</p>
 <ul>
 <li>Binary ERGMs are for edges that are present or absent.</li>
 <li>Valued ERGMs (VERGMs) are for weighted networks; edges &gt; 1.</li>
@@ -71,7 +71,7 @@ library(statnet)</code></pre>
 <p>Before we dig into the ERGMs, let’s state some clear question that we will use to guide our analysis. Based on previous studies of fishing communities, we should ask the following questions:</p>
 <ol style="list-style-type: decimal">
 <li><strong>Kinship</strong> – Are households from the same family more likely to share with each other?</li>
-<li><strong>Reciprocity</strong> – Are sharing connections more likely whether the relationship is reciprocal?</li>
+<li><strong>Reciprocity</strong> – Are sharing connections more likely when the relationship is reciprocal?</li>
 <li><strong>Surplus and productivity</strong> – Do households with large harvests tend to have more sharing relationships? Are households with small harvests likely to be recipients?</li>
 </ol>
 <p>Visualizing the network might give us some qualitative clues about the answers of these questions. Let’s create a graph where each node is colored by it’s family group. Then we will resize each node according to the size of it’s harvest, and highlight reciprocity edges.</p>
@@ -722,4 +722,148 @@ It appears that we are still have some issues but overall there fit is reasonabl
 </div>
 <div id="model-comparison" class="section level1">
 <h1>Model Comparison</h1>
+<p>We have many models now and each one has helped us understand a specific aspect of household sharing. We could stop there but it might also be useful to learn which model makes the strongest predictions about the network structure.</p>
+<p>We need to be careful when we do and talk about model comparison. Every model we create is wrong. But they can be useful. Some researchers have a tendencies to describe the “best” model or the “correct” model. But these ideas only make sense in the context of <em>prediction</em>, we are interested in inference.</p>
+<div id="information-criterion" class="section level2">
+<h2>Information Criterion</h2>
+<p>One way to compare models is to use Information Criterion like AIC or BIC. We can use the <code>AIC</code> function to rank our model objects. This will help us learn more about what underlies the network formation. Using AIC, lower values indicate more predictive power.</p>
+<pre class="r"><code>mcomp = AIC(fit0, fit1.1, fit2.1, fit2.2, fit3.1, fit3.2, fit4.1, fit4.2) 
+mcomp[ order(mcomp$AIC), ]</code></pre>
+<pre><code>##        df      AIC
+## fit4.1  6 1259.675
+## fit4.2  7 1261.968
+## fit2.2  3 1383.637
+## fit1.1  2 1469.528
+## fit2.1  2 1805.717
+## fit3.2  4 1935.423
+## fit3.1  3 1957.276
+## fit0    1 2045.884</code></pre>
+<p>AIC analysis shows that the models that have our node covariates and structural parameters have the most predictive power. Notably, the model with the <code>gwesp</code> term is not a strong as the model without it. We also see that the models that only have node covariates (<code>fit3.1</code> and <code>fit3.2</code>) do not have the same predictive power as the models that contain <code>mutual</code>.</p>
+</div>
+<div id="analysis-of-deviance" class="section level2">
+<h2>Analysis of Deviance</h2>
+<p>Another approach we can use is to compare the deviance between the models. Every ERGM calculate a measure of Null deviance. This is reported at the bottom of each of the model summaries.</p>
+<pre class="r"><code>summary(fit0)</code></pre>
+<pre><code>## Call:
+## ergm(formula = net ~ edges)
+## 
+## Maximum Likelihood Results:
+## 
+##       Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges -2.72506    0.06259      0  -43.54   &lt;1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 6130  on 4422  degrees of freedom
+##  Residual Deviance: 2044  on 4421  degrees of freedom
+##  
+## AIC: 2046  BIC: 2052  (Smaller is better. MC Std. Err. = 0)</code></pre>
+<p>The Null deviance is the same for every one of our models. It is a constant value derived from the network object itself. For this network, the NULL deviance is <code>6130</code>. Each model then also reports the Residual deviance – the deviance that is left unexplained by the model.</p>
+<pre class="r"><code>summary(fit1.1)</code></pre>
+<pre><code>## Call:
+## ergm(formula = net ~ edges + nodematch(&quot;family&quot;))
+## 
+## Maximum Likelihood Results:
+## 
+##                  Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges             -4.8134     0.1932      0  -24.91   &lt;1e-04 ***
+## nodematch.family   3.5993     0.2065      0   17.43   &lt;1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 6130  on 4422  degrees of freedom
+##  Residual Deviance: 1466  on 4420  degrees of freedom
+##  
+## AIC: 1470  BIC: 1482  (Smaller is better. MC Std. Err. = 0)</code></pre>
+<p>So we can compare every model and see which models have the smallest residual deviance. This is an indication how much variance has been explain by the ERGM.</p>
+<p>The ANOVA function used for this procedure will compare the model sequentially. This means that <em>the order matters</em>! This means that each of our eight models needs to be compared pairwise to each of the other models. For our purposes, we are only going to compare the top three models.</p>
+<pre class="r"><code>anova(fit4.1, fit4.2)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: net ~ edges + nodematch(&quot;family&quot;) + mutual + nodeocov(&quot;harvest&quot;) + 
+##     nodeicov(&quot;harvest&quot;) + nodeofactor(&quot;owner&quot;)
+## Model 2: net ~ edges + nodematch(&quot;family&quot;) + mutual + nodeocov(&quot;harvest&quot;) + 
+##     nodeicov(&quot;harvest&quot;) + nodeofactor(&quot;owner&quot;) + gwesp(0.5, fixed = T)
+##      Df Deviance Resid. Df Resid. Dev Pr(&gt;|Chisq|)    
+## NULL                  4422     6130.2                 
+## 1     6   4882.5      4416     1247.7       &lt;2e-16 ***
+## 2     1     -0.3      4415     1248.0       0.5882    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>anova(fit4.1, fit2.2)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: net ~ edges + nodematch(&quot;family&quot;) + mutual + nodeocov(&quot;harvest&quot;) + 
+##     nodeicov(&quot;harvest&quot;) + nodeofactor(&quot;owner&quot;)
+## Model 2: net ~ edges + nodematch(&quot;family&quot;) + mutual
+##      Df Deviance Resid. Df Resid. Dev Pr(&gt;|Chisq|)    
+## NULL                  4422     6130.2                 
+## 1     6   4882.5      4416     1247.7    &lt; 2.2e-16 ***
+## 2    -3   -130.0      4419     1377.6    &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>anova(fit2.2, fit4.2)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: net ~ edges + nodematch(&quot;family&quot;) + mutual
+## Model 2: net ~ edges + nodematch(&quot;family&quot;) + mutual + nodeocov(&quot;harvest&quot;) + 
+##     nodeicov(&quot;harvest&quot;) + nodeofactor(&quot;owner&quot;) + gwesp(0.5, fixed = T)
+##      Df Deviance Resid. Df Resid. Dev Pr(&gt;|Chisq|)    
+## NULL                  4422     6130.2                 
+## 1     3   4752.6      4419     1377.6    &lt; 2.2e-16 ***
+## 2     4    129.7      4415     1248.0    &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>These results tell us that <code>fit4.1</code> and <code>fit4.2</code> are nearly identical. Their residual deviance only differs by <code>-0.3</code>. The p-value also shows they are not significantly different from each other. However, both 4.1 and 4.2 clearly outperform <code>fit2.2</code>.</p>
+<p>We can take these comparisons as evidence that there is both household level attributes (harvest size) and dyadic attributes (kinship and reciprocity) that are needed to describe the structure of this network.</p>
+</div>
+</div>
+<div id="conclusions" class="section level1">
+<h1>Conclusions</h1>
+<p>In conclusion, I want to let you all in on a little secret… <strong>This is not a real dataset</strong>. I SIMULATED IT. Although I based my simulation based on previous work that I have done on food sharing in Alaska (Scaggs et al. 2021), the network we analyzed here was synthetically generated using an ERGM model. The code for this is shown below:</p>
+<pre class="r"><code>set.seed(777)
+N = 67
+net = network(N, density=0)
+net %v% &#39;owner&#39;   = sample(c(0,1), size=N, prob = c(0.8,0.2), replace = T)
+net %v% &#39;family&#39;  = sample(LETTERS[1:4], size=N, prob = c(0.2,0.25,0.25,0.3), replace = T)
+net %v% &#39;harvest&#39; = ifelse( net %v% &#39;owner&#39; == 1, rnorm(N, 2,1), rnorm(N,0,2))
+net %v% &#39;hhsize&#39;  = rnorm(N)
+
+simnet = simulate(net ~ edges + 
+                      nodeofactor(&#39;owner&#39;) + 
+                      nodematch(&#39;family&#39;) + 
+                      nodeocov(&#39;harvest&#39;) + 
+                      nodeicov(&#39;harvest&#39;) + 
+                      gwesp(decay=0.1, fixed=T) + 
+                      mutual + 
+                      isolates, 
+                  coef = c(-6,       # density
+                            1.5,     # ownership effect
+                            3.5,     # family homophily
+                            0,       # large harvest giving
+                            0.5,     # small harvest receiving
+                            0,       # shared partnerships
+                            2,       # reciprocity 
+                           -2),      # isolates 
+                  seed = 777)
+
+saveRDS(simnet, file = &#39;fishing_network.Rdata&#39;)</code></pre>
+<p>I did this to demonstrate two important things. First, ERGMs are generative models – they can be used to created simulated data sets similar to the way that Bayesian models can be used to generate test data.</p>
+<p>Secondly, simulating and modeling simulated data is an important way to validate your own causal assumptions and anticipate possible confounding effects in data. In a real analysis, I would use this same procedure:</p>
+<ol style="list-style-type: decimal">
+<li>Set some causal assumptions about how a network forms.</li>
+<li>Simulate multiple networks based on different causal scenarios and fit ERGM models to these networks.</li>
+<li>Apply developed models to empirical data and compare the results to the simulated results.</li>
+</ol>
+<p>By thinking about the data generation process and conducting causal simulations, we are better able to replicate results, make our own studies reproducible, and – most importantly – make better causal inferences about the processes that occur in the systems we study.</p>
+<p>In a future meeting, we will dig deeper into simulation, including using the results from and ERGM analysis to generate additional networks. Until then, you can also check out our posting on <a href="https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/">Network Simulation using <code>statnet</code></a>.</p>
+<p>Additional resources:</p>
+<ul>
+<li><code>statnet</code> has many helpful <a href="https://statnet.org/">workshops and tutorials</a></li>
+<li>Standford anthropologists have put together <a href="https://eehh-stanford.github.io/SNA-workshop/">a short course on social network analysis</a></li>
+<li>This course by Mark Hoffman has <a href="https://bookdown.org/markhoff/social_network_analysis/">many useful resources</a>, including <a href="https://bookdown.org/markhoff/social_network_analysis/homophily-and-exponential-random-graphs-ergm.html">a chapter on ERGMs</a></li>
+<li>A workshop by Ted Chen describes some <a href="https://tedhchen.com/ERGMintro/extensions/">useful ERGM extensions</a></li>
+</ul>
+<p>We cited this paper above: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2481518/">Morris, M., Handcock, M. S., &amp; Hunter, D. R. (2008). Specification of exponential-family random graph models: terms and computational aspects. Journal of statistical software, 24(4), 1548.</a></p>
+<p>And this paper from Shane’s work: <a href="https://onlinelibrary.wiley.com/doi/pdf/10.1002/ajhb.23573?casa_token=kssWonad3dAAAAAA:3lPLIIM76fp63V5vZJ2JqQzVufpYBhLHPMb2TnW33JqtPE1jqGHYfa3mfV4Yq4YL1nHZwq8Au0tp3WY">Scaggs, S. A., Gerkey, D., &amp; McLaughlin, K. R. (2021). Linking subsistence harvest diversity and productivity to adaptive capacity in an Alaskan food sharing network. American Journal of Human Biology, 33(4), e23573.</a></p>
 </div>

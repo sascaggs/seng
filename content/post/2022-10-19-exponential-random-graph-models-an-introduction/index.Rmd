@@ -432,7 +432,7 @@ summary(fit1.1)
 So we can compare every model and see which models have the smallest residual deviance. This is an indication how much variance has been explain by the ERGM. 
 
 The ANOVA function used for this procedure will compare the model sequentially. This means that *the order matters*! This means that each of our eight models needs to be compared pairwise to each of the other models. For our purposes, we are only going to compare the top three models. 
-
+ 
 
 ```{r}
 anova(fit4.1, fit4.2)
