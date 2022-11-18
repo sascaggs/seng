@@ -1,6 +1,6 @@
 ---
 title: 'Exponential Random Graph Models, Valued Edges, and Markov Chain Monte Carlo'
-author: 'Shane A. Scaggs' 
+author: Shane A. Scaggs, Harrison Fried
 date: '2022-11-18'
 slug: exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo
 categories:
