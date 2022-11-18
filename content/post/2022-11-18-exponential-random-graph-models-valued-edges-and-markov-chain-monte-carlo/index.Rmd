@@ -21,3 +21,5 @@ We've talked about ERGMs but we really only covered binary ERGMs. Not too long a
 We know longer have this problem. Instead, we have a plethora of extensions and alternatives, particularly for edges that consist of count data. Any of these packages could work: `ergm.count`, `STRAND`, the social relations model (Kenny and LaVoie 1984), `GERGM`, `bergm`, `latentnet`.  
 
 Today we are going to stick with the `statnet` suite that we started with and look at valued ergms using the `ergm.count` package. A published article by [Martina Morris and Pavel Krivitsky](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3964598/) (2017) accompanies this package, and there is also [a very helpful workshop](https://statnet.org/Workshops/valued.html) on the statnet website. 
+
+The other thing we will do today is spend a little time looking at the MCMC control settings in the ERGM package. When it comes to MCMC and MLE controls, there is a lot to cover. We will be focusing on some of the most commonly adjusted settings when calibrating an MCMC sampler. For a more interactive look at MCMC algorithms, [check out these simulations](http://chi-feng.github.io/mcmc-demo/). 

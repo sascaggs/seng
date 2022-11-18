@@ -7,6 +7,7 @@ categories:
   - methods
 tags: 
 toc: yes
+draft: yes
 ---
 
 In this meeting, we cover the basics of working with networks in R. By the end of the workshop, you will be acquainted with three packages -- `igraph`, `statnet`, and `tidygraph` -- and you will be able to create a network from scratch, turn it into a network object, create vertex and edge attributes, and genereate a basic visualization. Let's get started. 
