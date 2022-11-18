@@ -6,8 +6,8 @@
 <meta name="generator" content="Hugo 0.80.0" />
 
 
-<title>Network simulation using statnet - Social Ecological Networks Group</title>
-<meta property="og:title" content="Network simulation using statnet - Social Ecological Networks Group">
+<title>Network Simulation using {statnet} - Social Ecological Networks Group</title>
+<meta property="og:title" content="Network Simulation using {statnet} - Social Ecological Networks Group">
 
 
   <link href='https://seng.netlify.app/images/SENG_Circle_NoOutline.png' rel='icon' type='image/x-icon'/>
@@ -69,9 +69,43 @@
 
   <article class="article">
     
+    
+    
 
-    <h1 class="article-title">Network simulation using statnet</h1>
 
+    
+    
+    <h1 class="article-title">Network Simulation using {statnet}</h1>
+    <span class="author">Shane A. Scaggs</span> <br>
+    <span class="article-date">2021-09-25</span>
+    <br>
+    <p class="terms">
+      
+      
+      Categories:
+      
+      <a href='/categories/methods'>methods</a>
+       <br>
+      
+      
+      
+      Tags:
+      
+      <a href='/tags/statnet'>statnet</a>
+      
+      <a href='/tags/rstudio'>Rstudio</a>
+      
+      <a href='/tags/analysis'>analysis</a>
+      
+      <a href='/tags/simulation'>simulation</a>
+      
+      <a href='/tags/coding'>coding</a>
+      
+      <a href='/tags/workflow'>workflow</a>
+       <br>
+      
+       <br>
+    </p>
     
 
     <div class="article-content">
@@ -109,12 +143,12 @@ library(ggraph)</code></pre>
 <blockquote>
 <p><code>network ~ edges + mutual + nodematch('group')</code></p>
 </blockquote>
-<p>On the left of the tilde, we include our network object. On the right of the tilde are the <code>edges</code> and <code>mutual</code> terms. These are terms within the <code>ergm</code> package that codify network structures. For example, <code>edges</code> similar to an <code>Intercept</code> and is used to estimate network density. The <code>mutual</code> term estimates reciprocity directed networks.</p>
-<p>I am using the last term, <code>nodematch</code> to parameterize the likelihood that two individuals who share the same attribute value (in this case <code>group</code>) will connect. This term can be used to understand homophily. Some terms like <code>nodematch</code> require attribute arguments, while structural terms, like <code>mutual</code> or <code>edges</code>, don’t necessarily require attributes. To view all of the terms in the Help tab, call <code>?ergm-terms</code>.</p>
+<p>On the left of the tilde, we include our network object. On the right of the tilde are three terms. The <code>edges</code> and <code>mutual</code> terms are part of the <code>ergm</code> package and they codify network structures. For example, <code>edges</code> is similar to an <code>Intercept</code> and is used to estimate network density. The <code>mutual</code> term estimates reciprocity in directed networks.</p>
+<p>I am using the last term, <code>nodematch</code>, to parameterize the likelihood that two nodes that share the same attribute value (in this case <code>group</code>) will connect one another. This is one way to generate homophily. Some terms like <code>nodematch</code> require attribute arguments, while structural terms, like <code>mutual</code> or <code>edges</code>, don’t necessarily require attributes. To view all of the terms in the Help tab, call <code>?ergm-terms</code>.</p>
 </div>
 <div id="initializing-an-empty-network" class="section level2">
 <h2>Initializing an empty network</h2>
-<p>The first step in our workflow is to initialize a network of <code>N</code> vertices with no edges (<code>density = 0</code>). We are going to set our own parameters for each term that we will used to generate the network. The initialized network object serves as a container for the network that we will generate.</p>
+<p>The first step in our workflow is to initialize a network of <code>N</code> vertices with no edges (<code>density = 0</code>). We will eventually set parameters for each term that we will used to generate the network. For now the initialized network object serves as a container for the network that we will generate.</p>
 <pre class="r"><code>set.seed(777)                      # reproducibility
 N &lt;- 20                            # N vertices
 net1 &lt;- network(N, directed = T, density = 0)    # edge density
@@ -134,7 +168,7 @@ net1</code></pre>
 ##     vertex.names 
 ## 
 ## No edge attributes</code></pre>
-<p>If we were only using structural terms like <code>edges</code>, then we could simulate right away. Terms based on attribute conditions need attributes assigned. For simplicity, let’s just assign two color attributes: <code>purple</code> and <code>green.</code> We just have to make sure the length of our attribute vector matches the length of <code>N</code>.</p>
+<p>If we were only using structural terms like <code>edges</code>, then we could simulate without creating attributes, but terms based on attribute conditions need attributes assigned to the network object. For simplicity, let’s just assign two color attributes: <code>purple</code> and <code>green.</code> We just have to make sure the length of our attribute vector matches the length of <code>N</code>.</p>
 <pre class="r"><code># some colors
 cols &lt;- c(&#39;purple&#39;,&#39;green&#39;)
 
@@ -147,7 +181,7 @@ net1 %v% &#39;vcolor&#39;</code></pre>
 </div>
 <div id="parameterization-and-calibration" class="section level2">
 <h2>Parameterization and calibration</h2>
-<p>The final step in a basic simulation is to set the coefficients that <code>simulate</code> will use to generate the network. The scale used to specify these coefficients is in <em>log-odds</em>, which can be a bit challenging to understand. It is easier if you convert log-odds into a probability:</p>
+<p>The next step is to set the coefficients that the <code>simulate</code> will use to generate the network. The scale used to specify these coefficients is in <em>log-odds</em>, which can be a bit challenging to conceptualize without a reference point. It is somewhat easier if you convert log-odds into probabilities:</p>
 <pre class="r"><code>logit2prob &lt;- function(coef) {
   odds &lt;- exp(coef)
   prob &lt;- odds / (1 + odds)
@@ -160,7 +194,7 @@ net1 %v% &#39;vcolor&#39;</code></pre>
 <p>See for yourself.</p>
 <pre class="r"><code>logit2prob(0)</code></pre>
 <pre><code>## [1] 0.5</code></pre>
-<p>In practice, theory and published studies should help you decide coefficient parameters. For now, we’ll generate a sparse network (<code>density ~0.02</code>) where there is a half chance of reciprocity (<code>log-odds = 0</code>) and homophily is probable (<code>log-odds = 1</code>)</p>
+<p>In practice you would use theory and published studies should help you decide coefficient parameters. For now, we’ll generate a sparse network (<code>density ~0.02</code>) where there is a half chance of reciprocity (<code>log-odds = 0</code>) and homophily is probable (<code>log-odds = 2</code>)</p>
 <pre class="r"><code># density (probability) to log odds 
 qlogis(0.02)        # -3.8</code></pre>
 <pre><code>## [1] -3.89182</code></pre>
@@ -203,10 +237,10 @@ gplot(sim1, vertex.col = sim1 %v% &#39;vcolor&#39;)</code></pre>
 <h1>Birds of a feather</h1>
 <p><img src="images/Flock-Party_Eric-Losh.jpg" style="width:70.0%;height:70.0%" /></p>
 <p>Artwork by <a href="http://www.elosh.com/illustration/">Eric Losh</a></p>
-<p>Flocking behavior is an interesting social phenomenon and it turns out that some birds like to hang out in mixed species flocks. Let’s simulate some different flocking interactions and see what kind of networks form. We’ll start by picking where we left off with <em>homophily</em>.</p>
+<p>Flocking behavior is an interesting social phenomenon and it turns out that some birds like to hang out in mixed-species flocks. Let’s simulate some flocking interactions and see what kind of networks arise. We’ll start by picking up where we left off with <em>homophily</em>.</p>
 <div id="flock-together" class="section level2">
 <h2>Flock together</h2>
-<p>Birds who prefer to interact with their conspecifics would be an example of intraspecific homophily. So let’s initialize a network with a vertex attribute for <code>species</code> and vary the strength of intraspecific interactions.</p>
+<p>Birds who prefer to interact with their conspecifics would be an example of intraspecific homophily. So let’s initialize a network with a vertex attribute for <code>species</code> and vary the strength of intraspecific preference.</p>
 <pre class="r"><code># initialization
 N_birds &lt;- 30   
 N_sp &lt;- 5        # how many species? 
@@ -220,11 +254,11 @@ species &lt;- sample( 1:N_sp,          # species index
 flock %v% &#39;species&#39; &lt;- species
 flock %v% &#39;species&#39; </code></pre>
 <pre><code>##  [1] 3 5 3 3 5 4 4 3 1 5 1 4 3 5 5 4 2 3 4 5 1 3 2 1 3 3 4 3 3 3</code></pre>
-<p>It’s possible that not every species would be equality present. We can alter this by using the <code>prob</code> argument in <code>sample</code>. For simplicity, we’ll assume all species are evenly abundant.</p>
+<p>It’s possible that not every species would have the same number of individuals. We can alter this by using the <code>prob</code> argument in <code>sample</code>. For simplicity, I’m just going to assume all species are evenly abundant.</p>
 </div>
 <div id="density-parameter" class="section level2">
 <h2>Density parameter</h2>
-<p>The model formula for this simulation is: <code>flock ~ edges + nodematch('species')</code>. But we need to choose coefficients for each of the terms. We know that homophily should be positive, but it’s hard to know what the log-odds for energy should be.</p>
+<p>The model formula for this simulation is: <code>flock ~ edges + nodematch('species')</code>. But we need to choose coefficients for each of the terms. We know that homophily should be positive, but it’s hard to know what the log-odds for density should be.</p>
 <div class="figure"><span style="display:block;" id="fig:unnamed-chunk-12"></span>
 <img src="https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/index_files/figure-html/unnamed-chunk-12-1.png" alt="Many networks are sparse, with fewer than 2% of all possible edges present. This corresponds appoximately to -4 log odds (reference lines). A) Relationship between log odds and probability; B) zoomed in on -4 and 0.02." width="70%" />
 <p class="caption">
@@ -232,8 +266,8 @@ Figure 1: Many networks are sparse, with fewer than 2% of all possible edges pre
 </p>
 </div>
 </div>
-<div id="parameter-sweep" class="section level2">
-<h2>Parameter sweep</h2>
+<div id="parameter-sweeps" class="section level2">
+<h2>Parameter sweeps</h2>
 <p>If we really want to understand the impact of homophily, we should simulate several networks with different coefficient values for <code>nodematch('species')</code>. We can do this by creating a sequence of coefficient values (on the log odds scale), and using a <code>for</code> loop to simulate one network for each value. To reduce the computational load, I’m going create a sequence of 9 values for 9 different networks.</p>
 <pre class="r"><code>N_sims &lt;- 9                              # number of simulations
 Hseq &lt;- seq(-2,2, length.out = N_sims)   # length.out controls breaks
@@ -280,13 +314,14 @@ head(df)</code></pre>
 ## 6     0      0     0      2    12     8    10    10    10</code></pre>
 <p>Now we can use<code>df</code> – which contains 9 columns of degree centrality scores 9 simulated network – to plot the distributions and compare the effects. Explaining how to plot these is beyond this scope of this document, but there are many plotting tutorials available (including my own).</p>
 <p><img src="https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/index_files/figure-html/unnamed-chunk-17-1.png" width="408" /></p>
-<p>Looking at the graphs, it is clear that as homophily increase, so does the density. But I thought we held density constant? We did, but since there are lots of <em>possible</em> species pairs available in this network (each species has ~15 members), as we increase the odds, more edges form and this increase the network density above and beyond coefficient. This is evident in graph A: the density shifts more or less symmetrically to the right, suggesting that increased homophily improve the degree centrality of all vertices on average.</p>
+<p>Looking at the graphs, it is clear that as homophily increases, so does the density. But I thought we held density constant? We did in one sense. Another way to describe the edges parameter is <em>the probability that an edge connect any two nodes, regardless of their attributes</em>.</p>
+<p>Once we add homophily, we create a lot of <em>possible</em> species pairs in this network (each species has ~15 members), and as we increase the odds, more edges form. A consequence of this is that it increases the network density above and beyond <code>edges</code> coefficient. This is evident in graph A: the peak density for each value of <code>nodematch</code> flattens and shifts to the right, suggesting that increased homophily uniformly improves the degree centrality of all vertices on average.</p>
 </div>
 </div>
 <div id="body-size" class="section level1">
 <h1>Body size</h1>
 <p>In a 2012 paper, Farine, Garroway, and Sheldon use network analysis to study a mixed species flock made up of blue tits (<em>Cyanistes caeruleus</em>), coal tits (<em>Parus ater</em>), great tits (<em>Parus major</em>), marsh tits (<em>Poecile palustris</em>), and nuthatches (<em>Sitta europaea</em>). Two hypotheses – vigilance and foraging efficiency – are thought to explain some aspects of group composition, and both are connected to body size and dominance.</p>
-<p>Larger individuals tend to be more dominant within groups of birds and fishes. A consequence of this is that dominant individuals tend to face less competition from social partners, which makes them more efficien foragers, and they can deter predators more easily, which improves vigilance. So the expectation of Farine, Garroway, and Sheldon is that larger birds should have more partners. They also argue that, in general, birds ought to prefer heterospecifics (i.e. negative homophily) because they will encounter a greater variety of body sizes, thus increasing their chances of foraging with an efficient and protective partner.</p>
+<p>Larger individuals tend to be more dominant within groups of birds and fishes. A consequence of this is that dominant individuals tend to face less competition from social partners, which makes them more efficient foragers. They can also deter predators more easily, which makes them effective vigilantes. So the expectation of Farine, Garroway, and Sheldon is that larger birds should have more flocking partners. They also argue that, in general, birds ought to prefer heterospecifics (i.e. no homophily) because by focusing in different species they are more likely to encounter a variety of body sizes, thereby increasing their chances of foraging with an efficient and protective partner.</p>
 <div id="creating-wingspan-and-length-variables" class="section level2">
 <h2>Creating wingspan and length variables</h2>
 <p>How should we decide what size to make each bird? There are many sources of information, but we want to keep it rough dirty, so let’s just visit the <a href="https://www.bto.org/">British Trust for Ornithology</a>. Here is what they say:</p>
@@ -481,17 +516,8 @@ Figure 4: Four networks from the positive homophily simulation, each different p
 <footer class="footer">
         <ul class="footer-links">
           
-          <h1> <strong> Social Ecological Networks Group </strong> </h1>
-          <img src = "/images/SENG_Circle_NoOutline.png" alt = "SENG logo" width = "270" height = "240">
-          <br>
-          <li>
-            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
-            
-             
-            <a href="https://bookdown.org/yihui/blogdown/" class="footer-links-kudos">Via <img src="/images/blogdown.png" width="22" height="22"></a>
-          </li>
-          
-        </ul>
+          <h2> <strong> Social Ecological Networks Group </strong> </h2>
+          <img src = "/images/SENG_Circle_NoOutline.png" alt = "SENG logo" width = "108" height = "96">
       </footer>
 
     </div>

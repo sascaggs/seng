@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>structure on Social Ecological Networks Group</title>
+    <link>https://seng.netlify.app/tags/structure/</link>
+    <description>Recent content in structure on Social Ecological Networks Group</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 30 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/structure/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Measures of network position and structure </title>
+      <link>https://seng.netlify.app/2022/09/30/measures-of-network-position-and-structure/</link>
+      <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/09/30/measures-of-network-position-and-structure/</guid>
+      <description>Many networks that we find interesting are large and structurally complex. This makes them difficult to visually understand. And although coming up with ways to visualize such networks is a kind of fun, most of the time we need practical ways to describe the position and structure of complex networks without dealing with the tangled hairball.
+This post covers some a variety of ways to measure network position and structure.</description>
+    </item>
+    
+    <item>
+      <title>Network size and structure</title>
+      <link>https://seng.netlify.app/2021/12/22/size-structure-and-density/</link>
+      <pubDate>Wed, 22 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2021/12/22/size-structure-and-density/</guid>
+      <description>The size of a network is determined by the number of vertices and edges within it, and different size networks have different structural properties. This is obviously true if social processes like homophily, preferential attachment, or triadic closure influence network size, but it is also true for randomly generated networks.
+How do properties like density, sparseness, degree distribution, or connectivity change as the number of vertices in a network increases?</description>
+    </item>
+    
+  </channel>
+</rss>

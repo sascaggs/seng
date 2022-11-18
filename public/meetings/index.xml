@@ -6,9 +6,29 @@
     <description>Recent content in Meetings on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/meetings/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 27 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/meetings/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Network simulation using statnet</title>
+      <title>Autumn 2022 Schedule </title>
+      <link>https://seng.netlify.app/meetings/autumn-2022-schedule/</link>
+      <pubDate>Sat, 27 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/autumn-2022-schedule/</guid>
+      <description>Meeting InformationTime: 3PM Eastern Standard TimeDates: 9/9, 9/23, 10/7, 10/21, 11/4, 11/18, 12/2 (see below)Zoom: Join meetingPasscode: 002244Location: TBDBeginning in September and ending in December, SENG is holding seven hybrid meetings.
+The focus of our meetings this term is on building confidence in our network analysis methods. We will do this by workshopping a lot and hosting fewer seminar style talks.</description>
+    </item>
+    
+    <item>
+      <title>Egocentric patterns in homophilous networks</title>
+      <link>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</link>
+      <pubDate>Mon, 24 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</guid>
+      <description>Introduction Researchers who work with smaller populations that have clearly defined boundaries (Laumann, Marsden, and Prensky 1989) may be able to design survey instruments that can feasibly document an entire social network. These complete, sociocentric networks can exhibit some systematic biases (Ready et al. 2020), but they typically do a better job of characterizing the full suite of direct and indirect connections within a population.
+Many researchers, however, work in larger populations that have fuzzy boundaries, if any.</description>
+    </item>
+    
+    <item>
+      <title>Network Simulation using {statnet}</title>
       <link>https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/</link>
       <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
       

@@ -6,9 +6,38 @@
     <description>Recent content in methods on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/categories/methods/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 19 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/categories/methods/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Network simulation using statnet</title>
+      <title>Exponential Random Graph Models, An Introduction</title>
+      <link>https://seng.netlify.app/2022/10/19/exponential-random-graph-models-an-introduction/</link>
+      <pubDate>Wed, 19 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/10/19/exponential-random-graph-models-an-introduction/</guid>
+      <description>IntroductionWe can a learn a lot about a network using visualization tools and descriptive statistics. But many researchers would like to make inferences about how specific variables influence the probability of a network connection. There are multiple ways to do this – latent network modeling, multilevel Bayesian models, quadratic assignment procedures – but one of the most common and versatile methods is to build Exponential Random Graph Models (ERGMs).</description>
+    </item>
+    
+    <item>
+      <title>Measures of network position and structure </title>
+      <link>https://seng.netlify.app/2022/09/30/measures-of-network-position-and-structure/</link>
+      <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/09/30/measures-of-network-position-and-structure/</guid>
+      <description>Many networks that we find interesting are large and structurally complex. This makes them difficult to visually understand. And although coming up with ways to visualize such networks is a kind of fun, most of the time we need practical ways to describe the position and structure of complex networks without dealing with the tangled hairball.
+This post covers some a variety of ways to measure network position and structure.</description>
+    </item>
+    
+    <item>
+      <title>Egocentric patterns in homophilous networks</title>
+      <link>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</link>
+      <pubDate>Mon, 24 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</guid>
+      <description>Introduction Researchers who work with smaller populations that have clearly defined boundaries (Laumann, Marsden, and Prensky 1989) may be able to design survey instruments that can feasibly document an entire social network. These complete, sociocentric networks can exhibit some systematic biases (Ready et al. 2020), but they typically do a better job of characterizing the full suite of direct and indirect connections within a population.
+Many researchers, however, work in larger populations that have fuzzy boundaries, if any.</description>
+    </item>
+    
+    <item>
+      <title>Network Simulation using {statnet}</title>
       <link>https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/</link>
       <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
       

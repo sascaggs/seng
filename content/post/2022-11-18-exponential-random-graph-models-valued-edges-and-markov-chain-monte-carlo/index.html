@@ -1,0 +1,27 @@
+---
+title: 'Exponential Random Graph Models, Valued Edges, and Markov Chain Monte Carlo'
+author: 'Shane A. Scaggs' 
+date: '2022-11-18'
+slug: exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo
+categories:
+  - methods
+tags:
+  - analysis
+  - coding
+  - statnet
+  - workflow
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="preamble" class="section level1">
+<h1>Preamble</h1>
+<p>We’ve talked about ERGMs but we really only covered binary ERGMs. Not too long ago, binary ERGMs were all that was available to us in R, something that anthropologist David Nolin noted in a paper on food sharing in <em>Human Nature</em>:</p>
+<blockquote>
+<p>The chief disadvantage of ERGM is that dependent-variable networks can consist only of binary ties… Networks composed of valued ties can be binarized for use with ERGM, but this entails a loss of statistical information.</p>
+</blockquote>
+<p>We know longer have this problem. Instead, we have a plethora of extensions and alternatives, particularly for edges that consist of count data. Any of these packages could work: <code>ergm.count</code>, <code>STRAND</code>, the social relations model (Kenny and LaVoie 1984), <code>GERGM</code>, <code>bergm</code>, <code>latentnet</code>.</p>
+<p>Today we are going to stick with the <code>statnet</code> suite that we started with and look at valued ergms using the <code>ergm.count</code> package. A published article by <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3964598/">Martina Morris and Pavel Krivitsky</a> (2017) accompanies this package, and there is also <a href="https://statnet.org/Workshops/valued.html">a very helpful workshop</a> on the statnet website.</p>
+<p>The other thing we will do today is spend a little time looking at the MCMC control settings in the ERGM package. When it comes to MCMC and MLE controls, there is a lot to cover. We will be focusing on some of the most commonly adjusted settings when calibrating an MCMC sampler. For a more interactive look at MCMC algorithms, <a href="http://chi-feng.github.io/mcmc-demo/">check out these simulations</a>.</p>
+</div>

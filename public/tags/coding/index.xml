@@ -6,9 +6,18 @@
     <description>Recent content in coding on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/coding/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 19 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/coding/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Network simulation using statnet</title>
+      <title>Exponential Random Graph Models, An Introduction</title>
+      <link>https://seng.netlify.app/2022/10/19/exponential-random-graph-models-an-introduction/</link>
+      <pubDate>Wed, 19 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/10/19/exponential-random-graph-models-an-introduction/</guid>
+      <description>IntroductionWe can a learn a lot about a network using visualization tools and descriptive statistics. But many researchers would like to make inferences about how specific variables influence the probability of a network connection. There are multiple ways to do this – latent network modeling, multilevel Bayesian models, quadratic assignment procedures – but one of the most common and versatile methods is to build Exponential Random Graph Models (ERGMs).</description>
+    </item>
+    
+    <item>
+      <title>Network Simulation using {statnet}</title>
       <link>https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/</link>
       <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
       

@@ -6,20 +6,29 @@
     <description>Recent content in Categories on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 19 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>methods</title>
       <link>https://seng.netlify.app/categories/methods/</link>
-      <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 19 Oct 2022 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/categories/methods/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>general</title>
+      <link>https://seng.netlify.app/categories/general/</link>
+      <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/categories/general/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>theory</title>
       <link>https://seng.netlify.app/categories/theory/</link>
-      <pubDate>Fri, 12 Feb 2021 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 22 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/categories/theory/</guid>
       <description></description>

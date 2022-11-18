@@ -36,10 +36,11 @@ code {
 
 .header {
   padding: 20px 0;
-  height: 150px;
+  height: 80px;
   position: relative;
   background: url('../images/wide.png');
   border-bottom: 1px solid #eaeaea;
+  color: white;
 }
 
 .header-img{
@@ -49,6 +50,10 @@ code {
   background-size: cover;
 }
 
+a:link {
+  color: #3300ff;
+  text-decoration: none;
+}
 
 .nav {
   max-width: 800px;
@@ -59,8 +64,9 @@ code {
 
 .nav-logo {
   float: left;
-  margin-top: -60px;
+  margin-top: -11px;
   transition: transform 150ms ease-out;
+  position: center;
 }
 
 .nav-logo:hover {
@@ -72,11 +78,12 @@ code {
   max-height: 40px;
   width: auto;
   border-radius: 50%;
+  padding: 24px;
 }
 
 .nav-links {
   margin: 0;
-  padding: 0;
+  padding: 24px;
   font-size: 14px;
   list-style: none;
 }
@@ -92,12 +99,14 @@ code {
 
 .nav-links a {
   text-decoration: none;
-  color: #111;
+  color: #f4ffe8;
 }
 
 .nav-links a:hover {
-  color: #000;
+  color: #78efff;
 }
+
+
 
 .content {
   max-width: 700px;
@@ -126,8 +135,12 @@ code {
   padding: 1px 5px;
   font-weight: bold;
   border-radius: 3px;
-  background: #bbb;
+  background: #3300ff;
   color: #fff
+}
+
+.author {
+  color: #3300ff;
 }
 
 .article-content p {
@@ -137,15 +150,15 @@ code {
 .article-content a {
   text-decoration: none;
   color: inherit;
-  border-bottom: 3px solid #CBF8DF;
-  box-shadow: inset 0 -4px 0 #CBF8DF;
+  border-bottom: 3px solid #78efff;
+  /*box-shadow: inset 0 -4px 0 #78efff;*/
   background: transparent;
   transition: background 150ms ease;
 }
 
 .article-content a:hover,
 .article-content a:focus {
-  background: #CBF8DF;
+  background: #78efff33;
 }
 
 .article-content hr {
@@ -177,6 +190,7 @@ code {
   color: #111;
 }
 
+
 .archive-title {
   font-size: 32px;
   margin-top: 60px;
@@ -188,7 +202,7 @@ code {
 }
 
 .archive-item-date {
-  color: #ccc;
+  color: #aaa;
   font-size: 14px;
   padding: 5px 0;
   margin-top: 5px;
@@ -198,15 +212,15 @@ code {
 .archive-item-link {
   display: inline-block;
   text-decoration: none;
-  font-size: 21px;
+  font-size: 24px;
   font-weight: bold;
   color: #222;
   padding: 5px 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 2px solid #ddd;
 }
 
 .archive-item-link:hover {
-  border-bottom-color: #222;
+  border-bottom-color: #78efff;
 }
 
 .footer {
@@ -328,3 +342,24 @@ code {
     box-shadow: none;
   }
 }
+
+/*table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px '#3300ff';
+  table-layout: fixed;
+}*/
+table {
+   margin: auto; 
+   border-top: 1px solid #666; 
+   border-bottom: 1px solid #666; 
+}
+
+
+table thead th {
+  color: white;
+  background: black;
+}
+
+th, td { padding: 5px; }
+tr:nth-child(even) { background: #eee; }

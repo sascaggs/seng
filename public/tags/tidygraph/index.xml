@@ -6,7 +6,17 @@
     <description>Recent content in tidygraph on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 26 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/tidygraph/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 24 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/tidygraph/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Egocentric patterns in homophilous networks</title>
+      <link>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</link>
+      <pubDate>Mon, 24 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</guid>
+      <description>Introduction Researchers who work with smaller populations that have clearly defined boundaries (Laumann, Marsden, and Prensky 1989) may be able to design survey instruments that can feasibly document an entire social network. These complete, sociocentric networks can exhibit some systematic biases (Ready et al. 2020), but they typically do a better job of characterizing the full suite of direct and indirect connections within a population.
+Many researchers, however, work in larger populations that have fuzzy boundaries, if any.</description>
+    </item>
+    
     <item>
       <title>Introduction to Networks in R</title>
       <link>https://seng.netlify.app/meetings/introduction-to-networks-in-r/</link>

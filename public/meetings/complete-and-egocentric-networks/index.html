@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+<title>Egocentric patterns in homophilous networks - Social Ecological Networks Group</title>
+<meta property="og:title" content="Egocentric patterns in homophilous networks - Social Ecological Networks Group">
+
+
+  <link href='https://seng.netlify.app/images/SENG_Circle_NoOutline.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/SENG_Circle_NoOutline.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="/people/">Contributors</a></li>
+    
+    <li><a href="/post/">Posts</a></li>
+    
+    <li><a href="/canon/">Canon</a></li>
+    
+    <li><a href="/meetings/">Meetings</a></li>
+    
+    <li><a href="/contact/">Contact</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    
+    
+
+
+    
+    
+    <h1 class="article-title">Egocentric patterns in homophilous networks</h1>
+    <span class="author">Shane A. Scaggs</span> <br>
+    <span class="article-date">2022-01-24</span>
+    <br>
+    <p class="terms">
+      
+      
+      Categories:
+      
+      <a href='/categories/methods'>methods</a>
+       <br>
+      
+      
+      
+      Tags:
+      
+      <a href='/tags/simulation'>simulation</a>
+      
+      <a href='/tags/egocentric-networks'>egocentric networks</a>
+      
+      <a href='/tags/sociocentric-networks'>sociocentric networks</a>
+      
+      <a href='/tags/sampling'>sampling</a>
+      
+      <a href='/tags/tidygraph'>tidygraph</a>
+       <br>
+      
+       <br>
+    </p>
+    
+
+    <div class="article-content">
+      <h1 id="introduction">Introduction</h1>
+<p>Researchers who work with smaller populations that have clearly defined boundaries (Laumann, Marsden, and Prensky 1989) may be able to design survey instruments that can feasibly document an entire social network. These complete, <em>sociocentric</em> networks can exhibit some systematic biases (Ready et al. 2020), but they typically do a better job of characterizing the full suite of direct and indirect connections within a population.</p>
+<p>Many researchers, however, work in larger populations that have fuzzy boundaries, if any. In these settings it is usually not feasible to construct a complete social network using only a survey or semi-structured interview. An alternative approach is to collect <em>egocentric</em> networks from a random sample of individuals.</p>
+<p>In this post, I will describe what an egocentric network is, and provide some simulation and sampling tools that can be used to understand the structural implications of an egocentric approach.</p>
+<h1 id="egocentric-networks">Egocentric networks</h1>
+<p>An egocentric network contains all of the alters connected to a particular <em>ego</em> (a single node), as well as all of the people to whom those ego’s alters are also connected. These two degrees of separation are sometimes referred to as the <code>\(1^{st}\)</code> and <code>\(2^{nd}\)</code> order neighborhoods of ego.</p>
+<div class="figure">
+<p><img src="https://seng.netlify.app/meetings/complete-and-egocentric-networks/index_files/figure-html/unnamed-chunk-2-1.png" alt="An example of an egocentric network." width="672" /></p>
+<p class="caption">
+Figure 1: An example of an egocentric network.
+</p>
+</div>
+<p>Put differently, an egocentric design attempts to:</p>
+<blockquote>
+<p>[observe] the network of interest from the point of view of a set of sampled actors, who provide information about themselves and anonymized information on their network neighbors (Krivitsky and Morris 2017: 1).</p>
+</blockquote>
+<p>Look at the quote above, we can see that when we use an egocentric network design, we develop a survey instrument that asks survey respondents to do, at minimum, two network tasks.</p>
+<p>First, we ask each ego to list the names of people with whom they have a particular relationship. In my work, I might ask people to list individuals with whom they have shared a meal in the past month. I might also ask them for details about the relationship, like how frequently they share meals, or how they are related to the person.</p>
+<p>This procedure yields a short edgelist that might look something like this:</p>
+<pre><code>##   Node Edge Frequency Relation
+## 1  Ego    A         3   friend
+## 2  Ego    B         2   parent
+## 3  Ego    C         2  sibling
+## 4  Ego    D         5  sibling
+## 5  Ego    E         3   friend
+</code></pre>
+<p>Once the respondent have listed their partners, the next steps is to ask them who those partners might also be connected with. For example, now that we know <code>Ego</code> has had a meal with person <code>A</code>, we will ask if they know who person <code>A</code> (and person <code>B</code>, etc.) has shared a meal with. We can also ask ego to estimate the frequency and how <code>A</code> is related to the person. In some cases, <code>Ego</code> might not know the answers to these questions.</p>
+<pre><code>##    Node Edge Frequency Relation
+## 1     B    E         1   parent
+## 2     B    F         3  sibling
+## 3     B    G         2     &lt;NA&gt;
+## 4     C    I         5   friend
+## 5     C    J         3     &lt;NA&gt;
+## 6     C    K         4  sibling
+## 7     D    I         4  sibling
+## 8     D    J         4 coworker
+## 9     E    F         4  sibling
+## 10    E    G         5     &lt;NA&gt;
+</code></pre>
+<p>These two edgelists represent the <code>\(1^{st}\)</code> and <code>\(2^{nd}\)</code> order neighborhoods of ego.</p>
+<div class="figure">
+<p><img src="https://seng.netlify.app/meetings/complete-and-egocentric-networks/index_files/figure-html/unnamed-chunk-5-1.png" alt="A graph of the hypothetical ego network described in the text above. Ego is shown in blue." width="672" /></p>
+<p class="caption">
+Figure 2: A graph of the hypothetical ego network described in the text above. Ego is shown in blue.
+</p>
+</div>
+<h1 id="limitations-and-benefits-of-egocentric-networks">Limitations and benefits of egocentric networks</h1>
+<p>Observing a network through the lens of sampled egos presents has some limitations. Each respondent must be able to report information on themselves and all of their partners. For some relationships and details, this can be very challenging. The resulting network is also a biased representation of the complete network. This means that some centrality metrics – e.g., betweenness and closeness – are greatly affected by the incomplete network structure, while others – e.g., degree centrality – are less impacted (Marsden 2002).</p>
+<p>But there are also some benefits that come from working with egocentric networks. A large amount of information can be obtained by only sampling a small number of people. This greatly reduces the amount of research effort needed to sample large populations. Egocentric networks also lend themselves to respondent driven sampling (Heckathorn 1997, 2002). Together these approaches can be used to document senstive or stigmatized social relations. Egocentric networks can also be constructed using contact diaries, which lend themselves to longitudinal network documentation (Fu 2007).</p>
+<h1 id="egocentric-sampling-a-simulation-study">Egocentric sampling: A simulation study</h1>
+<p>So if you do work in a large population, and you intend to use an egocentric approach, you will be faced with some design questions:</p>
+<ul>
+<li>How many egos do you need to sample?</li>
+<li>What kinds of metrics will be biased?</li>
+<li>Can you conduct valid inferential statistics?</li>
+</ul>
+<p>These questions are the focus of this simulation study. Here, I provide some tools you can use to simulate and visualize a sample of egos from a complete network and immediately see the ramifications. There are several packges used.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">library</span>(statnet)
+<span style="color:#a6e22e">library</span>(igraph)
+<span style="color:#a6e22e">library</span>(tidygraph)
+<span style="color:#a6e22e">library</span>(ggraph)
+<span style="color:#a6e22e">library</span>(ggforce)
+<span style="color:#a6e22e">library</span>(patchwork)
+<span style="color:#a6e22e">library</span>(intergraph)
+</code></pre></div><h1 id="egonetworks-function"><code>egonetworks</code> function</h1>
+<p>To begin, I’ve created a function that has several settings that can help you understand the implications of an egonetwork design. This is superficially similar to a <em>power analysis</em> used in statistical research design.</p>
+<p>The overall purpose of the function is to simulate a complete network to use as a reference, and then sample egos from this complete network. By sampling egos and looking at their neighborhoods, we can get a sense of how the collection of egonetworks compare to the complete network structure.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">egonetworks <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">function</span>(
+  
+  <span style="color:#75715e"># SIMULATION SETTINGS</span>
+  N<span style="color:#f92672">=</span><span style="color:#ae81ff">30</span>,   
+  directed <span style="color:#f92672">=</span> F,
+  formula<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;net ~ edges + nodematch(&#39;group&#39;)&#34;</span>,
+  params<span style="color:#f92672">=</span><span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-3.5</span>,<span style="color:#ae81ff">3</span>),
+  groups <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>,
+  
+  <span style="color:#75715e"># EGONETWORK SETTINGS</span>
+  select_egos<span style="color:#f92672">=</span>F,
+  N_egos<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>,
+  egoIds,
+  seed<span style="color:#f92672">=</span><span style="color:#ae81ff">777</span>) 
+
+{
+  
+  <span style="color:#75715e"># SIMULATE A COMPLETE NETWORK</span>
+  <span style="color:#a6e22e">set.seed</span>(seed)
+  n <span style="color:#f92672">&lt;-</span> N 
+  net <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">network</span>(n, directed <span style="color:#f92672">=</span> directed, density <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>)
+  net <span style="color:#f92672">%v%</span> <span style="color:#e6db74">&#39;group&#39;</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">sample</span>(<span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>groups, size <span style="color:#f92672">=</span> n, replace <span style="color:#f92672">=</span> T)
+  g <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">simulate</span>(<span style="color:#a6e22e">as.formula</span>(formula), coef<span style="color:#f92672">=</span>params, seed <span style="color:#f92672">=</span> seed) 
+  
+  <span style="color:#75715e"># CONVERT TO IGRAPH</span>
+  ig <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">asIgraph</span>(g)
+  
+  <span style="color:#75715e"># SAMPLE EGOS, FIND NEIGHBORHOODS </span>
+  <span style="color:#a6e22e">if </span>(select_egos <span style="color:#f92672">==</span> F) {
+    egos <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">sample</span>(<span style="color:#a6e22e">V</span>(ig)<span style="color:#f92672">$</span>vertex.names, size<span style="color:#f92672">=</span>N_egos, replace <span style="color:#f92672">=</span> F)
+    first <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">ego</span>(ig, order<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, nodes<span style="color:#f92672">=</span>egos, mindist <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>)
+    second <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">ego</span>(ig, order<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, nodes<span style="color:#f92672">=</span>egos, mindist <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>) 
+  } else <span style="color:#a6e22e">if </span>(select_egos <span style="color:#f92672">==</span> T) { 
+    egos <span style="color:#f92672">&lt;-</span> egoIds 
+    first <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">ego</span>(ig, order<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, nodes<span style="color:#f92672">=</span>egos, mindist <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>)
+    second <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">ego</span>(ig, order<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, nodes<span style="color:#f92672">=</span>egos, mindist <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>)
+  }
+  
+  <span style="color:#75715e"># CREATE ATTRIBUTES </span>
+  tg <span style="color:#f92672">&lt;-</span> ig <span style="color:#f92672">%&gt;%</span>
+    <span style="color:#a6e22e">as_tbl_graph</span>() <span style="color:#f92672">%&gt;%</span>
+    <span style="color:#a6e22e">activate</span>(nodes) <span style="color:#f92672">%&gt;%</span>
+    <span style="color:#a6e22e">mutate</span>(Neighborhood <span style="color:#f92672">=</span>  <span style="color:#a6e22e">as.factor</span>(<span style="color:#a6e22e">ifelse</span>( vertex.names <span style="color:#f92672">%in%</span> egos, <span style="color:#ae81ff">1</span>, 
+                                             <span style="color:#a6e22e">ifelse</span>( vertex.names <span style="color:#f92672">%in%</span> <span style="color:#a6e22e">unlist</span>(first) <span style="color:#f92672">|</span> vertex.names <span style="color:#f92672">%in%</span> <span style="color:#a6e22e">unlist</span>(second), <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#39;Unobserved&#39;</span>))), 
+           egolab <span style="color:#f92672">=</span> <span style="color:#a6e22e">ifelse</span>( vertex.names <span style="color:#f92672">%in%</span> egos, <span style="color:#a6e22e">paste</span>(<span style="color:#e6db74">&#39;Ego&#39;</span>, vertex.names), <span style="color:#e6db74">&#39;&#39;</span> ), 
+           IsEgo <span style="color:#f92672">=</span> <span style="color:#a6e22e">ifelse</span>(vertex.names <span style="color:#f92672">%in%</span> egos, <span style="color:#e6db74">&#39;Yes&#39;</span>,<span style="color:#e6db74">&#39;No&#39;</span>)) <span style="color:#f92672">%&gt;%</span> 
+    <span style="color:#a6e22e">activate</span>(edges) <span style="color:#f92672">%&gt;%</span>
+    <span style="color:#a6e22e">mutate</span>(Neighborhood <span style="color:#f92672">=</span> <span style="color:#a6e22e">as.factor</span>(<span style="color:#a6e22e">ifelse</span>(from <span style="color:#f92672">%in%</span> egos, <span style="color:#ae81ff">1</span>, 
+                                           <span style="color:#a6e22e">ifelse</span>(to <span style="color:#f92672">%in%</span> egos, <span style="color:#ae81ff">1</span>, 
+                                                  <span style="color:#a6e22e">ifelse</span>( from <span style="color:#f92672">%in%</span> <span style="color:#a6e22e">unlist</span>(first), <span style="color:#ae81ff">2</span>,
+                                                          <span style="color:#a6e22e">ifelse</span>( to <span style="color:#f92672">%in%</span> <span style="color:#a6e22e">unlist</span>(first), <span style="color:#ae81ff">2</span>,  <span style="color:#e6db74">&#39;Unobserved&#39;</span> ))))))
+  
+  <span style="color:#75715e"># SAVE EGO NETWORKS</span>
+  <span style="color:#a6e22e">E</span>(ig)<span style="color:#f92672">$</span>id <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">seq_len</span>(<span style="color:#a6e22e">ecount</span>(ig))
+  <span style="color:#a6e22e">V</span>(ig)<span style="color:#f92672">$</span>vid <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">seq_len</span>(<span style="color:#a6e22e">vcount</span>(ig))
+  egographs <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">make_ego_graph</span>(ig,order<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>,nodes<span style="color:#f92672">=</span>egos)
+  
+  <span style="color:#75715e"># RETURN COMPLETE, TIDYGRAPH, AND EGONETWORKS IN A LIST</span>
+  <span style="color:#a6e22e">return</span>(<span style="color:#a6e22e">list</span>(g, tg, egographs))
+  
+}
+</code></pre></div><p>The <code>egonetworks</code> function generates the following:</p>
+<ol>
+<li>One complete network.</li>
+<li>Node and edge attributes to visualize each egonetwork within the complete network.</li>
+<li>A list of egonetworks.</li>
+</ol>
+<h2 id="simulation-settings">Simulation Settings</h2>
+<p>The function has the following default settings:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#75715e"># SIMULATION SETTINGS</span>
+N<span style="color:#f92672">=</span><span style="color:#ae81ff">30</span>,
+directed <span style="color:#f92672">=</span> F,
+formula<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;net ~ edges + nodematch(&#39;group&#39;)&#34;</span>,
+groups <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>,
+params<span style="color:#f92672">=</span><span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-3.5</span>,<span style="color:#ae81ff">3</span>),
+
+<span style="color:#75715e"># EGONETWORK SETTINGS</span>
+select_egos<span style="color:#f92672">=</span>F, 
+N_egos<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>,
+egoIds,
+seed<span style="color:#f92672">=</span><span style="color:#ae81ff">777</span>) 
+</code></pre></div><h3 id="simulation-settings-1">Simulation settings</h3>
+<p><code>N</code> controls the number of nodes that are in the complete network simulation. <code>directed</code> controls whether the simulation generates a directed or undirected network.</p>
+<p><code>egonetworks</code> accepts a ergm <code>formula</code> that determines the structure for the network simulation. We covered ergm formulae in a previous post on <a href="https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/">network simulations with <code>statnet</code></a>. Currently, the default formula creates a network based on group membership homophily. The number of groups is controlled by the <code>groups</code> argument. But you can also include any ergm term in your formula, as long as the term does not require an attribute (see <code>?ergm-terms</code> for details).</p>
+<p>The <code>params</code> argument is used to specify parameters values that are required by the <code>formula</code>. Since the default formula is <code>&quot;net ~ edges + nodematch('group')&quot;</code>, we need one parameter for network density (<code>edges</code>) and another for how strong the homophily is (<code>nodematch</code>). These parameters are specified in <em>log-odds</em>; log-odds = <code>0</code> is the same as <code>0.5</code> probability.</p>
+<h2 id="egonetwork-settings">Egonetwork settings</h2>
+<p>Once a complete network is simulated from the settings above, we need to sample a number of egos from it. Here you have two options. If <code>select_egos = FALSE</code>, then you can set the number of egos to sample using <code>N_egos</code>. The number of egos you choose will be randomly sampled from the nodes in the complete network (based <code>seed</code>). Alternatively, if <code>select_egos = TRUE</code>, you can provide a vector of <code>egoIds</code>. This is useful if you want to take a deep examinations of a specific node.</p>
+<h2 id="testing-it-out">Testing it out</h2>
+<p>You can run <code>egonetworks</code> with just the defaults and a list will be generated. The first element of the list is the complete network as a <code>network</code> object.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">test <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">egonetworks</span>()
+test[[1]]
+</code></pre></div><pre><code>##  Network attributes:
+##   vertices = 30 
+##   directed = FALSE 
+##   hyper = FALSE 
+##   loops = FALSE 
+##   multiple = FALSE 
+##   bipartite = FALSE 
+##   total edges= 54 
+##     missing edges= 0 
+##     non-missing edges= 54 
+## 
+##  Vertex attribute names: 
+##     group vertex.names 
+## 
+## No edge attributes
+</code></pre>
+<p>The second element is a <code>tbl_graph</code> object with node and edge attributes that can be used for visualization.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">test[[2]]
+</code></pre></div><pre><code>## # A tbl_graph: 30 nodes and 54 edges
+## #
+## # An undirected simple graph with 2 components
+## #
+## # Edge Data: 54 x 4 (active)
+##    from    to na    Neighborhood
+##   &lt;int&gt; &lt;int&gt; &lt;lgl&gt; &lt;fct&gt;       
+## 1     1     6 FALSE 2           
+## 2     1     9 FALSE 1           
+## 3     1    11 FALSE 1           
+## 4     1    14 FALSE 2           
+## 5     1    27 FALSE 2           
+## 6     1    30 FALSE 2           
+## # ... with 48 more rows
+## #
+## # Node Data: 30 x 6
+##   group na    vertex.names Neighborhood egolab IsEgo
+##   &lt;int&gt; &lt;lgl&gt; &lt;chr&gt;        &lt;fct&gt;        &lt;chr&gt;  &lt;chr&gt;
+## 1     2 FALSE 1            2            &quot;&quot;     No   
+## 2     4 FALSE 2            2            &quot;&quot;     No   
+## 3     4 FALSE 3            2            &quot;&quot;     No   
+## # ... with 27 more rows
+</code></pre>
+<p>And the third element is a list of <code>igraph</code> objects based on all the ego graphs that were subset by <code>make_ego_graph</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">test[[3]]
+</code></pre></div><pre><code>## [[1]]
+## IGRAPH 22e6c59 U--- 20 37 -- 
+## + attr: group (v/n), na (v/l), vertex.names (v/c), vid (v/n), na (e/l),
+## | id (e/n)
+## + edges from 22e6c59:
+##  [1]  1-- 5  1-- 8  1-- 9  1--11  1--17  1--20  2-- 8  2-- 9  2--10  2--15
+## [11]  3-- 5  3-- 6  4-- 7  4--19  5-- 6  5-- 8  5--15  5--16  5--17  5--18
+## [21]  6--12  6--17  6--18  7-- 8  7--12  7--19  8--14  8--18  9--16 10--11
+## [31] 10--15 11--16 13--14 14--17 14--18 16--18 17--20
+## 
+## [[2]]
+## IGRAPH 22e6c59 U--- 14 26 -- 
+## + attr: group (v/n), na (v/l), vertex.names (v/c), vid (v/n), na (e/l),
+## | id (e/n)
+## + edges from 22e6c59:
+##  [1]  1-- 4  1-- 5  3-- 5  4-- 5  1-- 6  3-- 6  2-- 7  6-- 7  2-- 8  3-- 8
+## [11]  7-- 8  1-- 9  8-- 9  3--10  4--10  8--10  4--11  6--11  9--11  1--12
+## [21]  4--12  4--13  5--13 11--13  1--14 12--14
+## 
+## [[3]]
+## IGRAPH 22e6c59 U--- 14 23 -- 
+## + attr: group (v/n), na (v/l), vertex.names (v/c), vid (v/n), na (e/l),
+## | id (e/n)
+## + edges from 22e6c59:
+##  [1]  1-- 3  3-- 4  1-- 6  2-- 6  3-- 6  5-- 6  6-- 8  7-- 8  7-- 9  7--10
+## [11]  9--10  3--11  1--12  3--12  4--12  8--12  3--13  4--13  6--13  8--13
+## [21] 11--13  1--14 12--14
+</code></pre>
+<h2 id="visualization">Visualization</h2>
+<p>First, let’s take a look at what the complete network looks like for a few different <code>seed</code> values.</p>
+<div class="figure">
+<p><img src="https://seng.netlify.app/meetings/complete-and-egocentric-networks/index_files/figure-html/unnamed-chunk-12-1.png" alt="Complete undirected networks for four different seed values." width="672" /></p>
+<p class="caption">
+Figure 3: Complete undirected networks for four different seed values.
+</p>
+</div>
+<p>Coloring each node by group membership, we see how our simulation has generated a network based on group homophily.</p>
+<p>The default settings draw three egos randomly out of the thirty used in the simulation. We can use the <code>Neighborhood</code> and <code>IsEgo</code> variables to color the edges and nodes. These variables tag which nodes and edges are part of the <code>\(1^{st}\)</code> and <code>\(2^{nd}\)</code> degree neighborhoods and which nodes are unobserved (<code>Neighborhood = 0</code>). The <code>egolab</code> variables can be used to label each ego.</p>
+<p>Let’s focus on <code>seed = 777</code> and <code>seed = 72</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">p1 <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">egonetworks</span>(seed <span style="color:#f92672">=</span> <span style="color:#ae81ff">777</span>)[[2]] <span style="color:#f92672">%&gt;%</span>
+  <span style="color:#a6e22e">ggraph</span>() <span style="color:#f92672">+</span>
+  <span style="color:#a6e22e">geom_edge_link0</span>(<span style="color:#a6e22e">aes</span>(color<span style="color:#f92672">=</span>Neighborhood)) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">geom_node_point</span>(<span style="color:#a6e22e">aes</span>(color<span style="color:#f92672">=</span>Neighborhood, shape<span style="color:#f92672">=</span>IsEgo), size<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">geom_node_label</span>(<span style="color:#a6e22e">aes</span>(label<span style="color:#f92672">=</span>egolab), repel <span style="color:#f92672">=</span> T) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">theme_void</span>() <span style="color:#f92672">+</span> <span style="color:#a6e22e">theme</span>(legend.position <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;none&#39;</span>) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">scale_edge_color_manual</span>(values<span style="color:#f92672">=</span><span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#39;#3300ff&#39;</span>,<span style="color:#e6db74">&#39;magenta&#39;</span>,<span style="color:#e6db74">&#39;#00000033&#39;</span>)) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">scale_color_manual</span>(values<span style="color:#f92672">=</span><span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#39;#3300ff&#39;</span>,<span style="color:#e6db74">&#39;magenta&#39;</span>,<span style="color:#e6db74">&#39;#00000033&#39;</span>)) <span style="color:#f92672">+</span>
+  <span style="color:#a6e22e">ggtitle</span>(<span style="color:#e6db74">&#39;seed = 777&#39;</span>) 
+
+p2 <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">egonetworks</span>(seed <span style="color:#f92672">=</span> <span style="color:#ae81ff">72</span>)[[2]] <span style="color:#f92672">%&gt;%</span>
+  <span style="color:#a6e22e">ggraph</span>() <span style="color:#f92672">+</span>
+  <span style="color:#a6e22e">geom_edge_link0</span>(<span style="color:#a6e22e">aes</span>(color<span style="color:#f92672">=</span>Neighborhood)) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">geom_node_point</span>(<span style="color:#a6e22e">aes</span>(color<span style="color:#f92672">=</span>Neighborhood, shape<span style="color:#f92672">=</span>IsEgo), size<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">geom_node_label</span>(<span style="color:#a6e22e">aes</span>(label<span style="color:#f92672">=</span>egolab), repel <span style="color:#f92672">=</span> T) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">theme_void</span>() <span style="color:#f92672">+</span> <span style="color:#75715e">#theme(legend.position = &#39;none&#39;) + </span>
+  <span style="color:#a6e22e">scale_edge_color_manual</span>(values<span style="color:#f92672">=</span><span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#39;#3300ff&#39;</span>,<span style="color:#e6db74">&#39;magenta&#39;</span>,<span style="color:#e6db74">&#39;#00000033&#39;</span>)) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">scale_color_manual</span>(values<span style="color:#f92672">=</span><span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#39;#3300ff&#39;</span>,<span style="color:#e6db74">&#39;magenta&#39;</span>,<span style="color:#e6db74">&#39;#00000033&#39;</span>)) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">ggtitle</span>(<span style="color:#e6db74">&#39;seed = 72&#39;</span>) 
+
+p1 <span style="color:#f92672">+</span> p2 
+</code></pre></div><div class="figure">
+<p><img src="https://seng.netlify.app/meetings/complete-and-egocentric-networks/index_files/figure-html/unnamed-chunk-13-1.png" alt="Visualizing egocentric networks." width="672" /></p>
+<p class="caption">
+Figure 4: Visualizing egocentric networks.
+</p>
+</div>
+<p>Looking at Figure 4, something clearly stands out. Can you tell what it is?</p>
+<p>A sample of three egos is capable of recovering a lot of the complete network structure, but only if those egos occupy different structural positions in the network. This is somewhat true when we used <code>seed = 777</code>, but <code>seed = 72</code> happened to select three nodes that are all connected to each other. This greatly reduces the our ability to observe the complete network.</p>
+<p>It is easy to notice this <em>when we have the complete network</em> already. But how would we know this if we haven’t and cannot collect a complete network?</p>
+<p>One approach is to used stratified random sampling instead of purely random sampling. This requires that we have some background, contextual knowledge of the populationwe are studying. For instance, if we know that there are a number of organization in the population, we need to be sure to sample egos from each of them. In our simulation study, this means we need to sample at least one ego from each of our homophily groups.</p>
+<p>Similarly, if we have reason to believe that a person’s position in a network is correlated with other personal attributes (e.g., wealth, age, location), then we can take stratified random samples of people who have different attributes.</p>
+<h2 id="a-larger-network">A larger network</h2>
+<p>Now that we have a sense of how this function behaves, let’s take it up a notch.</p>
+<p>In reality, you probably wouldn’t use an egocentric approach for a population of <code>30</code>. More likely you’d what to use it for a much large population, say, <code>500</code> nodes. Let’s parameterize this.</p>
+<p>First, we need to build some intuition. Start by simulating a network with <code>500</code> nodes using the default <code>params</code> and then calculating the density on the complete network.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">eg <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">egonetworks</span>(N <span style="color:#f92672">=</span> <span style="color:#ae81ff">500</span>)
+<span style="color:#a6e22e">graph.density</span>(<span style="color:#a6e22e">asIgraph</span>(eg[[1]]))
+</code></pre></div><pre><code>## [1] 0.03502204
+</code></pre>
+<p>This is much too dense. Most real world networks are more sparse – a topic I discuss in <a href="https://seng.netlify.app/2021/12/22/size-structure-and-density/">this blog post</a>. The <code>sparsepoint</code> for a network with 500 nodes is:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">sparsepoint <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">function</span>(n, directed<span style="color:#f92672">=</span>F) {
+  <span style="color:#a6e22e">if </span>( directed <span style="color:#f92672">==</span> F  )   { n <span style="color:#f92672">/</span> (n<span style="color:#f92672">*</span>(n<span style="color:#ae81ff">-1</span>)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>) }
+  else <span style="color:#a6e22e">if </span>( directed <span style="color:#f92672">==</span> T ) { n <span style="color:#f92672">/</span> (n<span style="color:#f92672">*</span>(n<span style="color:#ae81ff">-1</span>))   }
+  else { 
+    <span style="color:#a6e22e">print</span>(<span style="color:#e6db74">&#39;Must be TRUE or FALSE.&#39;</span>)
+  }
+}
+
+<span style="color:#a6e22e">sparsepoint</span>(<span style="color:#ae81ff">500</span>, directed <span style="color:#f92672">=</span> F)
+</code></pre></div><pre><code>## [1] 0.004008016
+</code></pre>
+<p>So to improve the simulation, we should set more extreme <code>params</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">eg <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">egonetworks</span>(N <span style="color:#f92672">=</span> <span style="color:#ae81ff">500</span>, params <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-8</span>,<span style="color:#ae81ff">4</span>))
+<span style="color:#a6e22e">graph.density</span>(<span style="color:#a6e22e">asIgraph</span>(eg[[1]]))
+</code></pre></div><pre><code>## [1] 0.004857715
+</code></pre>
+<p>Much better. The visual difference is striking.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">par</span>(mfrow<span style="color:#f92672">=</span><span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>))
+<span style="color:#a6e22e">gplot</span>(<span style="color:#a6e22e">egonetworks</span>(<span style="color:#ae81ff">500</span>, params <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-3.5</span>,<span style="color:#ae81ff">3</span>))[[1]] )
+<span style="color:#a6e22e">gplot</span>(<span style="color:#a6e22e">egonetworks</span>(<span style="color:#ae81ff">500</span>, params <span style="color:#f92672">=</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-8</span>,<span style="color:#ae81ff">4</span>))[[1]])
+</code></pre></div><p><img src="https://seng.netlify.app/meetings/complete-and-egocentric-networks/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>Now that we have some more reasonable parameters, let’s sample different quantities of <code>N_egos</code> and see how well we recover the complete network. We’ll try <code>3</code>,<code>10</code>,<code>35</code>, and <code>60</code>. For brevity, I’ve omitted the plotting code, but an example is show below.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">params <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-8</span>,<span style="color:#ae81ff">4</span>)
+mypal <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#39;#3300ff&#39;</span>,<span style="color:#e6db74">&#39;magenta&#39;</span>,<span style="color:#e6db74">&#39;#00000033&#39;</span>)
+
+p1 <span style="color:#f92672">&lt;-</span> 
+  <span style="color:#a6e22e">egonetworks</span>(
+    N<span style="color:#f92672">=</span><span style="color:#ae81ff">500</span>, 
+    params <span style="color:#f92672">=</span> params, 
+    N_egos <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>)[[2]] <span style="color:#f92672">%&gt;%</span>
+  <span style="color:#a6e22e">ggraph</span>() <span style="color:#f92672">+</span>
+  <span style="color:#a6e22e">geom_edge_link0</span>(<span style="color:#a6e22e">aes</span>(color<span style="color:#f92672">=</span>Neighborhood)) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">geom_node_point</span>(<span style="color:#a6e22e">aes</span>(color<span style="color:#f92672">=</span>Neighborhood, shape<span style="color:#f92672">=</span>IsEgo), size<span style="color:#f92672">=</span><span style="color:#ae81ff">1.5</span>) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">theme_void</span>() <span style="color:#f92672">+</span> <span style="color:#a6e22e">theme</span>(legend.position <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;none&#39;</span>) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">scale_edge_color_manual</span>(values<span style="color:#f92672">=</span>mypal) <span style="color:#f92672">+</span> 
+  <span style="color:#a6e22e">scale_color_manual</span>(values<span style="color:#f92672">=</span>mypal) <span style="color:#f92672">+</span>
+  <span style="color:#a6e22e">ggtitle</span>(<span style="color:#e6db74">&#39;N_egos = 3&#39;</span>) 
+</code></pre></div><p><img src="https://seng.netlify.app/meetings/complete-and-egocentric-networks/index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p>As we increase the number of egos, we get much closer to the complete network. We also end up smapling some isolates by chance. But this qualitative approach isn’t all that satisfying. We need to make some quanitative comparisons between the complette network and the merged egocentric networks.</p>
+<p>To do this, we first need to take all of the egonetworks, (i.e., <code>egonetworks()[[3]]</code>) and combine them into a single network. Then we will look at how the structural characteristics compare between the complete and egocentric versions.</p>
+<h2 id="merging-the-egonetworks">Merging the egonetworks</h2>
+<p>There may be some fancy <code>igraph</code> ways to combine these networks, but I think the most straight forward approach is to get the edgelist for every network, using <code>rbind</code> to combine them, and then eliminate any duplicate edges.</p>
+<p>I’m going to do this once with 10 egos and once with 60 egos. Since each egonetwork is stored in a list, I’ll use <code>lapply</code> to <code>get.edgelist</code> and converted all the edgelists into <code>data.frame</code> so that they can be unlisted using <code>dplyr::bind_rows</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">params <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">-8</span>,<span style="color:#ae81ff">4</span>)
+egonet10 <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">egonetworks</span>(N<span style="color:#f92672">=</span><span style="color:#ae81ff">500</span>, params <span style="color:#f92672">=</span> params, N_egos <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>)[[3]]
+egonet60 <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">egonetworks</span>(N<span style="color:#f92672">=</span><span style="color:#ae81ff">500</span>, params <span style="color:#f92672">=</span> params, N_egos <span style="color:#f92672">=</span> <span style="color:#ae81ff">60</span>)[[3]]
+
+<span style="color:#75715e"># add names to egonetworks </span>
+<span style="color:#a6e22e">for</span>(i in <span style="color:#a6e22e">seq_along</span>(egonet10)) { 
+  <span style="color:#a6e22e">V</span>(egonet10[[i]])<span style="color:#f92672">$</span>name <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">V</span>(egonet10[[i]])<span style="color:#f92672">$</span>vid 
+}
+<span style="color:#a6e22e">for</span>(i in <span style="color:#a6e22e">seq_along</span>(egonet60)) { 
+  <span style="color:#a6e22e">V</span>(egonet60[[i]])<span style="color:#f92672">$</span>name <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">V</span>(egonet60[[i]])<span style="color:#f92672">$</span>vid 
+}
+
+<span style="color:#75715e"># get edgelists</span>
+el10 <span style="color:#f92672">&lt;-</span> dplyr<span style="color:#f92672">::</span><span style="color:#a6e22e">bind_rows</span>( 
+  <span style="color:#a6e22e">lapply</span>( 
+    <span style="color:#a6e22e">lapply</span>(egonet10, get.edgelist), as.data.frame) )
+el60 <span style="color:#f92672">&lt;-</span> dplyr<span style="color:#f92672">::</span><span style="color:#a6e22e">bind_rows</span>( 
+  <span style="color:#a6e22e">lapply</span>( 
+    <span style="color:#a6e22e">lapply</span>(egonet60, get.edgelist), as.data.frame) )
+
+<span style="color:#75715e"># graph the edgelist without duplicates </span>
+g10 <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">graph.data.frame</span>(el10[ <span style="color:#f92672">!</span><span style="color:#a6e22e">duplicated</span>(el10), ])
+g60 <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">graph.data.frame</span>(el60[ <span style="color:#f92672">!</span><span style="color:#a6e22e">duplicated</span>(el60), ])
+</code></pre></div><p><img src="https://seng.netlify.app/meetings/complete-and-egocentric-networks/index_files/figure-html/unnamed-chunk-21-1.png" width="576" /></p>
+<h2 id="network-comparisons">Network comparisons</h2>
+<p>How do network statistics calculated on the compiled egonetworks compared to the full network?</p>
+<pre><code>##    Network N_nodes     Density AvgPathLength Connectedness
+## 1 Complete     500 0.004857715      7.705835     0.7498677
+## 2   60Egos     289 0.004060938      1.775687     0.9793829
+## 3   10Egos      91 0.010866911      1.617834     0.3789988
+</code></pre>
+<div class="figure">
+<p><img src="https://seng.netlify.app/meetings/complete-and-egocentric-networks/index_files/figure-html/unnamed-chunk-23-1.png" alt="Comparison of degree distributions for each network (Complete = dashed; 60Egos = orange; 10Egos = purple." width="432" /></p>
+<p class="caption">
+Figure 5: Comparison of degree distributions for each network (Complete = dashed; 60Egos = orange; 10Egos = purple.
+</p>
+</div>
+<h1 id="concluding-thoughts">Concluding thoughts</h1>
+<ul>
+<li>Egocentric networks are capable of estimating the structure of large networks with much lower research effort.</li>
+<li>Network simulation and the <code>egonetworks</code> function are tools for anticipating how much research effort is needed. They can be used like a power analysis.</li>
+<li>Theory and ethnographic knowledge is necessary for adequate research design, but relatively little prior knowledge is needed to come up with useful simulations.</li>
+</ul>
+<p>We have not touched on inferential statistics with <code>ego.ergm</code> but this package is very useful for developing statistically models on egocentrically sampled data. We will cover this in a future post.</p>
+<h1 id="references">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-fu2007contact" class="csl-entry">
+<p>Fu, Yang-chih. 2007. “Contact Diaries: Building Archives of Actual and Comprehensive Personal Networks.” <em>Field Methods</em> 19 (2): 194–217.</p>
+</div>
+<div id="ref-heckathorn1997respondent" class="csl-entry">
+<p>Heckathorn, Douglas D. 1997. “Respondent-Driven Sampling: A New Approach to the Study of Hidden Populations.” <em>Social Problems</em> 44 (2): 174–99.</p>
+</div>
+<div id="ref-heckathorn2002respondent" class="csl-entry">
+<p>———. 2002. “Respondent-Driven Sampling II: Deriving Valid Population Estimates from Chain-Referral Samples of Hidden Populations.” <em>Social Problems</em> 49 (1): 11–34.</p>
+</div>
+<div id="ref-krivitsky2017inference" class="csl-entry">
+<p>Krivitsky, Pavel N, and Martina Morris. 2017. “Inference for Social Network Models from Egocentrically Sampled Data, with Application to Understanding Persistent Racial Disparities in HIV Prevalence in the US.” <em>The Annals of Applied Statistics</em> 11 (1): 427.</p>
+</div>
+<div id="ref-laumann1989boundary" class="csl-entry">
+<p>Laumann, Edward O, Peter V Marsden, and David Prensky. 1989. “The Boundary Specification Problem in Network Analysis.” <em>Research Methods in Social Network Analysis</em> 61: 87.</p>
+</div>
+<div id="ref-marsden2002egocentric" class="csl-entry">
+<p>Marsden, Peter V. 2002. “Egocentric and Sociocentric Measures of Network Centrality.” <em>Social Networks</em> 24 (4): 407–22.</p>
+</div>
+<div id="ref-ready2020comparing" class="csl-entry">
+<p>Ready, Elspeth, Patrick Habecker, Roberto Abadie, Carmen A Dávila-Torres, Angélica Rivera-Villegas, Bilal Khan, and Kirk Dombrowski. 2020. “Comparing Social Network Structures Generated Through Sociometric and Ethnographic Methods.” <em>Field Methods</em> 32 (4): 416–32.</p>
+</div>
+</div>
+
+    </div>
+  </article>
+  
+  <aside> 
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#simulation-settings">Simulation Settings</a>
+      <ul>
+        <li><a href="#simulation-settings-1">Simulation settings</a></li>
+      </ul>
+    </li>
+    <li><a href="#egonetwork-settings">Egonetwork settings</a></li>
+    <li><a href="#testing-it-out">Testing it out</a></li>
+    <li><a href="#visualization">Visualization</a></li>
+    <li><a href="#a-larger-network">A larger network</a></li>
+    <li><a href="#merging-the-egonetworks">Merging the egonetworks</a></li>
+    <li><a href="#network-comparisons">Network comparisons</a></li>
+  </ul>
+</nav>
+  </aside>
+
+  
+
+
+</main>
+
+<footer class="footer">
+        <ul class="footer-links">
+          
+          <h2> <strong> Social Ecological Networks Group </strong> </h2>
+          <img src = "/images/SENG_Circle_NoOutline.png" alt = "SENG logo" width = "108" height = "96">
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

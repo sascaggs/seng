@@ -17,9 +17,9 @@ output:
 
 [Google Scholar](https://scholar.google.com/citations?user=CtWNkOkAAAAJ&hl=en)
 
-I am a PhD candidate and NSF Graduate Research Fellow in the Department of Anthropology at the Ohio State University where I work in the [Human Complexity Lab](http://u.osu.edu/hclab/). My research focuses on the social and ecological dynamics of human subsistence activities (e.g., cultivation, foraging, exchange). I am conducting my dissertation research in southern Belize, where I have previous conducted fieldwork with my advisor, [Sean Downey](https://anthropology.osu.edu/people/downey.205). 
+I am a PhD candidate and NSF Graduate Research Fellow in the Department of Anthropology at the Ohio State University where I work in the [Human Complexity Lab](http://u.osu.edu/hclab/). My research focuses on the social and ecological dynamics of human subsistence activities (e.g., cultivation, foraging, exchange). I am conducting my dissertation research in southern Belize, where I have [previously conducted fieldwork](https://anthropology.osu.edu/news/anthropology-action-playing-milpa-game-crique-sarco-belize.) with my advisor, [Sean Downey](https://anthropology.osu.edu/people/downey.205). 
 
-I have a master of science in Applied Anthropology from Oregon State University where I worked with [Drew Gerkey](https://liberalarts.oregonstate.edu/users/drew-gerkey), and conducted fieldwork with the [Division of Subsistence](https://www.adfg.alaska.gov/index.cfm?adfg=subsistence.main), a branch of the Alaska Department of Fish & Game. In my thesis at Oregon State, I used network modeling to characterize the relationship between subsistence harvest diversity and resource sharing in a network of rural Alaskan households.  
+I have a master of science in Applied Anthropology from Oregon State University where I worked with [Drew Gerkey](https://liberalarts.oregonstate.edu/users/drew-gerkey), and [conducted fieldwork](https://liberalarts.oregonstate.edu/feature-story/anthropologists-research-traditional-harvesting-alaska) with the [Division of Subsistence](https://www.adfg.alaska.gov/index.cfm?adfg=subsistence.main), a branch of the Alaska Department of Fish & Game. In my thesis at Oregon State, I used network modeling to characterize the relationship between subsistence harvest diversity and resource sharing in a network of rural Alaskan households.  
 
 <br>
 
@@ -61,34 +61,8 @@ Prior to joining Oregon State, I was a postdoctoral fellow at the University of 
 
 <br>
 
-## Priya Bhattacharya
+## Jordan Inskeep 
 
-[Contact Priya](mailto: bhattacharya.97@osu.edu) (she/her)
+![](/./people_files/Jordan Bio Pic.jpg){width=40% height=40%}
 
-[LinkedIn](https://www.linkedin.com/in/priya-bhattacharya-a4092919/)
-
-I have a bachelor's degree in commerce and have two master's degree in business administration and environmental science. Currently I am working on my research for PhD under Dr. Sayeed Mehmood. The topics are Reasonable Person Model and valuation of coal mine restoration efforts using the Stated Preference Method. 
-
-<br>
-
-## Andrew Mitchel 
-
-![](/./people_files/AndrewM.jpg){width=280px}
-
-[Contact Mitchel](mailto: mitchel.13@osu.edu) (he/him/his)
-
-[Twitter](http://www.twitter.com/mitchel_andrew) 
-
-I am a first-year PhD student in Cultural Anthropology working with Professor Jeffrey Cohen. I received my BA from the University of Michigan in Anthropology and Spanish, and my MA in Latin American Studies from University of California, Los Angeles. My MA thesis concerned the Dominican academy system run by Major League Baseball, to which young Latin American baseball players are recruited and signed at sixteen years old in their first step toward potential major league stardom. My current dissertation plan is to study Latinx foodways around the Midwest. I hope to learn about how food traditions, as well as jobs in food service and food production, play into livelihoods for Latinx folks in this part of the country.
-
-<br>
-
-## Matthew Walker 
-
-![](/./people_files/Matthew.jpg){width=280px} 
-
-[Contact Matthew](mailto: walker.2035@osu.edu) (He/Him)
-
-[LinkedIn](https://www.linkedin.com/in/matthew-j-walker-osu)
-
-I'm a senior undergrad at Ohio State studying Data Analytics and Comparative Studies. In my free time I enjoy rock climbing, reading, and photography (astro and analog). I am also a research assistant in the [Human Complexity Lab](http://u.osu.edu/hclab) under Dr. Sean Downey. In the long term, I am interested in growing interdisciplinary teams and reimagining how we use data in the social sciences. 
+I am a master's student in the School of Environment and Natural Resources at the Ohio State University. My research is focused on collaboration and learning in environmental policy networks. Particularly, I am interested in the development of theory grounded tools which help policymakers and community stakeholders develop more collaborative and community engaged decision making processes. I am currently working in the [Socio-Environmental Networks and Sustainability](https://sens-lab.github.io/) (SENS) Lab with Dr. Matt Hamilton where we are studying policy learning and diffusion in wildfire risk mitigation networks. I have broad interest in complex governance, social learning, text analysis and natural language processing, and network analysis. 

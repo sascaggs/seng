@@ -6,9 +6,29 @@
     <description>Recent content in simulation on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/simulation/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 24 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/simulation/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Network simulation using statnet</title>
+      <title>Egocentric patterns in homophilous networks</title>
+      <link>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</link>
+      <pubDate>Mon, 24 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</guid>
+      <description>Introduction Researchers who work with smaller populations that have clearly defined boundaries (Laumann, Marsden, and Prensky 1989) may be able to design survey instruments that can feasibly document an entire social network. These complete, sociocentric networks can exhibit some systematic biases (Ready et al. 2020), but they typically do a better job of characterizing the full suite of direct and indirect connections within a population.
+Many researchers, however, work in larger populations that have fuzzy boundaries, if any.</description>
+    </item>
+    
+    <item>
+      <title>Network size and structure</title>
+      <link>https://seng.netlify.app/2021/12/22/size-structure-and-density/</link>
+      <pubDate>Wed, 22 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2021/12/22/size-structure-and-density/</guid>
+      <description>The size of a network is determined by the number of vertices and edges within it, and different size networks have different structural properties. This is obviously true if social processes like homophily, preferential attachment, or triadic closure influence network size, but it is also true for randomly generated networks.
+How do properties like density, sparseness, degree distribution, or connectivity change as the number of vertices in a network increases?</description>
+    </item>
+    
+    <item>
+      <title>Network Simulation using {statnet}</title>
       <link>https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/</link>
       <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
       

@@ -1,0 +1,114 @@
+---
+title: "Canon"
+output:
+    blogdown::html_page:
+        toc: true
+biblography: seng_canon.bib
+---
+
+*This collection is always in progress*. 
+
+# General Network Theory 
+
+[Social Network Analysis](https://journals.sagepub.com/doi/pdf/10.1177/0038038588022001007?casa_token=u0IemtO8RKEAAAAA:wKiTVxloaouj7Y4g4ZiACmtQYQ-aHxQZcdLGurJuEihST6vgaBrFXa1V7Ad3zp1cyKhhMdGka7iMTA) [@scott1988social]
+
+[Complex Networks: from Graph Theory to Biology](https://link.springer.com/content/pdf/10.1007/s11005-006-0123-1.pdf) [@lesne2006complex]
+
+[Emergence of Scaling in Random Networks](https://homes.luddy.indiana.edu/jbollen/I501F13/readings/Science-1999-Barabasi-509-12.pdf) [@barabasi1999]
+
+[Explosive Percolation in Random Networks](http://www.uvm.edu/pdodds/files/papers/others/2009/achlioptas2009a.pdf) [@achlioptas2009]
+
+# Social Network Theory 
+
+[An economic model of friendship: Homophily, minorities, and segregation](https://onlinelibrary.wiley.com/doi/pdf/10.3982/ECTA7528?casa_token=gOxDDGfqQJ4AAAAA:54cxVptr1JRmCi3ErwoSs5LrblN8ChoLYB40Tayxl_b4NtsBO5EftAsBg_ZC0xuyPjQttrH4nMZzb_Qz) [@currarini2009economic]
+
+[Network approaches and social movements](https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199678402.001.0001/oxfordhb-9780199678402-e-9) [@diani2015network]
+
+[Network theory | A network theory of power](https://ijoc.org/index.php/ijoc/article/view/1136/553) [@castells2011network]
+
+[Birds of Feather: Homophily in Social Networks](https://www.annualreviews.org/doi/pdf/10.1146/annurev.soc.27.1.415) [@mcpherson2001birds]
+
+[Social Capital and Social Quilts: Network Patterns of Favor Exchange](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.154.2629&rep=rep1&type=pdf) [@jackson2012]
+
+[Meeting Strangers and Friends of Friends: How Random are Social Networks](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.84.8381&rep=rep1&type=pdf) [@jackson2007]
+
+[Governing Institutional Complexity: The Ecology of Games Framework](https://onlinelibrary.wiley.com/doi/pdf/10.1111/psj.12028?casa_token=qidLJtKNYLgAAAAA%3AdDWTYUMb1oFzVHiOegyTcFPZjv7D9qFElERhqwvd3LqH7pKuuYdZFWOQkUyhVS5dBPxY5WoopfypIpk) [@lubell2013governing]  
+
+[The role of social networks in natural resource governance: What relational patterns make a differences?](https://www.stockholmresiliencecenter.org/download/18.5ce3bd8012d79a5929580003005/Bodin+and+Crona+2009_Social+networks+in+NRM+review.pdf) [@bodin2009role]
+
+# Ecological Network Theory 
+
+[Ecological Networks: Linking Structure to Dynamics in Food Webs](https://books.google.com/books?hl=en&lr=&id=YpQRDAAAQBAJ&oi=fnd&pg=PP1&ots=K642d6Yw6X&sig=jYbQ1ORGpkloo8l3dxWSLaRB0fI#v=onepage&q&f=false) [@pascual2006]
+
+[Network structure and biodiversity loss in food webs: robustness increases with connectance](https://onlinelibrary.wiley.com/doi/abs/10.1046/j.1461-0248.2002.00354.x) [@dunne2002network]
+
+[The nested assembly of plant-animal mutualistic networks](https://www.pnas.org/content/pnas/100/16/9383.full.pdf) [@bascompte2003]
+
+# Social-Ecological Networks
+
+[Social-ecological network analysis for sustainability sciences: a systematic review and innovative research agenda for the future](https://iopscience.iop.org/article/10.1088/1748-9326/ab2619/pdf) [@sayles2019social]
+
+[Managing ecological disturbances: Learning and the structure of social-ecological networks](https://www.sciencedirect.com/science/article/pii/S1364815217313075/pdfft?casa_token=V6jbplf111wAAAAA:SLSMw9lKHtWf8yefTzdNPWGDyilN8woe7zp-78fuRtSW8yTkZXf4BNEku0RCYTOTqp-ZJZXnNg&md5=afeb4de4cb5f0c326cd4aec2cc178778&pid=1-s2.0-S1364815217313075-main.pdf) [@baggio2018managing]
+
+[Early warning signs in social ecological networks](https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0101851&type=printable) [@suweis2014early]
+
+[Toward a Network Perspective of the Study of Resilience in Social-Ecological Systems](https://www.ecologyandsociety.org/vol11/iss1/art15/ES-2005-1462.pdf) [@janssen2006]
+
+[Disentangling intangible social-ecological systems](http://explorer.bee.oregonstate.edu/Topic/InfluenceNetworks/Documents/DisentanglingIntangibleSES.pdf) [@bodin2012]
+
+# Network Modeling 
+
+[An introduction to exponential random graph (p*) modles for social networks](https://pdf.sciencedirectassets.com/271850/1-s2.0-S0378873307X01060/1-s2.0-S0378873306000372/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEMH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJGMEQCICb1ZS8KkZQ54LeB5W7pPqe2FnE%2Bzjf08%2FbFmT5KLZQnAiBensC83e1xEpyULJxVk9WnutGvTYbTF%2B%2FA7eN5YTuvvCqDBAiq%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAQaDDA1OTAwMzU0Njg2NSIMHLjlZ6qONEO0rCaZKtcDRIcNPH5G9OsVQZoTvmWOOZuZZQ%2BLUIS1Rj9ChH2Cf7G1xTNOH%2BifKjWZmMJSI7B%2FylUisEbJxdoTst2ioY1%2BbdlV2ExCKhq3VYPCrO7JvTnYZ4jWaQcEHydm91Bp1uzJwxbMTueWM64AL%2Bi3mEW%2FHFKjPoyk6BqUK0p%2B5bALCGHYQh%2BxSpPvOsR4htIsbGDpERzpglydU7DGVkRyZ5UW88zaRnnZRTXcVnRXx98OKa40n8p1DcyrVpCNIippLAuntpmEHvQCu%2BcZgDe8mfGT%2BFOLDp8yrkDR4MPrZhVOoU2NgK08g8nFYsIGYPA4yJKNpnHODSZveB%2F%2FMctP6FuDAQEZ9wwtXUl1n%2FQzY97NbkFbNHkvLQKNGSVEKBKcDdSUDNE1NvnBsZJy4j%2BV2qjsiQLGGq1UQGGvK%2FhW71x3Lz%2F2rvpox9a7v%2FH8NYHnT%2FHB8sCLHjZV0%2F5ujtT78horTM7ovssfefiB7Dd2sN5%2BC1zw2%2BjPx1UZTzoES%2BFteVqBupecYzPteQlWiL5O9yHsGRR0ia2wk6vo62alBZdfIN7HQzck%2BilkNHJlrh%2Fh%2FUix%2BckZ1RhUI2MQmrlXaOWRyebuMIRAwSNyhjNCU%2BiI4iXyz2k174LcMMGC840GOqYB3PentLFjjgMXZhAy7qBToDaa%2BLzX8TpNpMqSjslSqBrE%2BNhKv3z2HlTKLNLJ7uIf0P9rn0%2BaXVjt4TzxyplTjNv1thS3DYOATNobecs7JMjGJcRmiM1Kxtah2qqaaTqLvG%2F1ShkWRBeatOrdZbylYsdHHcGqQAkFr8vnq48FUQOfFwV7BS1ke1C6jAwTMdacJNPrmCJEKdVruLxqMYcWS4NwuJpT4g%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20211217T172011Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTYQDXNYKML%2F20211217%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=60bbc468687acfff69ed0d837d921c7e79c682c844cee8c4aea5b707ffa59069&hash=58dbdfdd6c4e846dba7a0bd3d331096579d8bd200a95cfb6754aa3d25c88783f&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0378873306000372&tid=spdf-86738f18-1d9c-4dc1-bf8d-a193a9689e57&sid=728f9b2a871f7341802b02231807f7b4a000gxrqa&type=client) [@robins2007introduction]
+
+[Specification of exponential-family random graph models: terms and computation aspects](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2481518/pdf/nihms-54862.pdf) [@morris2008specification]
+
+[Exponential-family random graph models for valued networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3964598/pdf/nihms469413.pdf) [@krivitsky2012exponential]
+
+[Stochastic weighted graphs: Flexible model specification and simulation](https://pdf.sciencedirectassets.com/271850/1-s2.0-S0378873316X00068/1-s2.0-S0378873315300083/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEMH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQCxLpGP4O7PlesYvtEC2BH4ymD2F6GZtSOoo6JEHN%2F07QIhAJN7PYp8R6b6Zblp5O%2FLY4wbaWInoH%2ByrRjxikgxJcYyKoMECKr%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQBBoMMDU5MDAzNTQ2ODY1Igxbd4yScVCt8M54etMq1wOdMdbmTGVa2XdD0Rl6Hk78W8NSIlcC8pA7avp5%2BaWIgVFVboOq2N223yg2Q%2BH%2F%2BmndEyDm9oGhyxTZJo3ycL2waiTpJPfKwne4mwJdKW86Y7PWec24oigKQrnqcATePR38VJLURn61a8Zhigy5Ks0R15BuckwGDF3yEjJv14ICPDYmbpJxae6m0ESg5zeKppc7zri3i29PbYX3xKRwilFFEMu0rOfSd15jbRagQXbATr3seb5KiOdfkMqduxTIy3RQfQfO57BW%2FW%2BoAWuJr3WCNz%2FmvXZc6w4bkt4oI6BCeiKvQeW9Kiu4HN8n3mUprYowypVoSPaG7BfjgGA3wfX9u98d1KbdhJbVIWLHCq4%2FS%2BezwPC1sumCxDjMg%2FsnYk%2FqQAig%2BbX1E9Bt2uUdEQkJ6bR8%2BsZ%2Fwp%2FkZQSPXFBmxt4Uiefy8GcTU8OzTUr1JWK47lAarfvDq6rkEErAmTiU1u7LWDUKjzCd5IuATlKteqj8qZunyslNmfJ%2B7fiJ%2BjwSS007vb%2FuqRRjpKD%2Fa31jkXMPFHIYGYT%2FEYsMnqiqiIwzyX581LbUqQYXlIECuVBcH9817pK%2BdEd17McvmpLJrWYUYmyz8TnyxFd00o2YKC4EUbFeqy4wzYHzjQY6pAEyzpuy4ObCh%2F%2Fwz2nL75eQGI0W2ZHrpMqRycrOQAenujBNLmhhz0bLN4pK2vZGpHYAbVnUgA703l951bB%2B5IFaKnXV%2BrTu8VAB9Mhrz87AyHN4ivX3JF5NXddy6rtC8NmOLC8L9vfle0TY%2Bnf59Fzjq1gRNpmFamqgfl66JDFMK%2FDOQQI5QrOXTjZY04IbqG4lVZ6noYGgif05Hop9xOeyLCcPcA%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20211217T180228Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTYRGMRDSES%2F20211217%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=1c12d90d58f43ad73429b33e07e7555717a50a32d9618ddfcd82f3ead578a7c2&hash=3fe5831c7dfa495ba521f045134d9e6734a954999bad99ef26ae258637924653&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0378873315300083&tid=spdf-2e3d8d05-ca5d-402f-b482-a59348d43ad4&sid=728f9b2a871f7341802b02231807f7b4a000gxrqa&type=client) [@wilson2017stochastic]
+
+# Egonetworks
+
+[Macrostructure from Microstructure: Generating Whole Systems from Ego Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4203462/) [@smith2012macrostructure]
+
+[Inference for Social Networks from Egocentrically Sampled Data](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5737754/pdf/nihms901911.pdf) [@krivitsky2017inference]
+
+# Methodology and Ethics
+
+[Whose results are these anyway? Reciprocity and the ethics of "giving back: after social network research](https://core.ac.uk/reader/265350790) [@tubaro2021whose]
+
+[Social network analysis: New ethical approaches through collective reflexivity](https://www.sciencedirect.com/science/article/pii/S0378873320301003?casa_token=pVOoyX_AnMwAAAAA:kPlJa7CLkDBDlHFAkvTsl_kGqUHHJfidcD9Ub9WHUHk02cT_18PsviZgyEVTOfK2nOorAOpvHIc) [@tubaro2021social]
+
+[Comparing Social Network Structures Generated through Sociometric and Ethnographic Methods](https://journals.sagepub.com/doi/10.1177/1525822X20945499) [@ready2020comparing]
+
+[Measuring reciprocity: Double sampling, concordance, and network construction]() [@readymeasuring]
+
+# Research Design   
+
+[Survey Methods for Social Network Research](https://onlinelibrary.wiley.com/doi/abs/10.1002/9781118594629.ch11)[@cornwell2014survey]
+
+[Respondent-Driven Sampling II: Deriving Valid Populations Estimates from Chain-Referral Samples of Hidden Populations](https://academic.oup.com/socpro/article-abstract/49/1/11/1664491?redirectedFrom=PDF&casa_token=Pm9tGjYDd2MAAAAA:jGWGg_pus3gdLYbidmfxm5hSzVq77oHT-mMScLAz_hn5jQomyjCpw2n550YFBZFb4J5aPqDw5s0X_A)[@heckathorn2002respondent]
+
+[Network Data and Measurement](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.1069.8580&rep=rep1&type=pdf)[@marsden1990network]
+
+[Doing social network research: Network-based research design for social scientists](https://books.google.com/books?hl=en&lr=&id=GsKICwAAQBAJ&oi=fnd&pg=PP1&dq=robins+research+design+networks&ots=WsMYTrpxWi&sig=4PtLCw1VHezWdPCcZnXkzI_OXh8#v=onepage&q=robins%20research%20design%20networks&f=false)[@robins2015doing]
+
+[Proximity data-loggers increase the quantity and quality of social network data](https://royalsocietypublishing.org/doi/full/10.1098/rsbl.2012.0536)[@ryder2012proximity]
+
+[The SAGE Handbook of Social Network Analysis](https://books.google.com/books?hl=en&lr=&id=2chSmLzClXgC&oi=fnd&pg=PP1&dq=scott+carrington+social+network&ots=GVSbP3qEwt&sig=rSdPe7Sh6CkdrtMZD_8fLk7PwyE#v=onepage&q=scott%20carrington%20social%20network&f=false)[scott2011sage]
+
+[Social Network Analysis: Methods and Applications](https://books.google.com/books?hl=en&lr=&id=CAm2DpIqRUIC&oi=fnd&pg=PR21&dq=wasserman+and+faust&ots=HxLprc3HOd&sig=nA2JZzYaM4c_wbdeEoWkHMD4-JM#v=onepage&q=wasserman%20and%20faust&f=false)[@wasserman1994social]
+
+
+# Empirical Cases 
+
+[Why wage earners hunt: food sharing, social structure, and influence in an arctic mixed economy](http://eprints.lse.ac.uk/86516/1/Power_Why%20wage%20earners%20hunt_2018.pdf) [@ready2018wage]
+
+[Identifying governance gaps among interlinked sustainability challenges](https://www.sciencedirect.com/science/article/pii/S1462901118303010/pdfft?isDTMRedir=true&download=true) [@bergsten2019]
+
+[Linking subsistence harvest diversity](https://pubmed.ncbi.nlm.nih.gov/33554415/) [@scaggs2021]
+
+
+
+# Full Reference List
+
+[Download current .bib file](/content/seng_canon.bib)

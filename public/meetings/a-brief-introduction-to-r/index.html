@@ -69,14 +69,44 @@
 
   <article class="article">
     
+    
+    
 
+
+    
+    
     <h1 class="article-title">A Brief Introduction to R</h1>
-
+    <span class="author">Harrison Fried, Shane A. Scaggs</span> <br>
+    <span class="article-date">2021-04-05</span>
+    <br>
+    <p class="terms">
+      
+      
+      Categories:
+      
+      <a href='/categories/methods'>methods</a>
+       <br>
+      
+      
+      
+      Tags:
+      
+      <a href='/tags/rstudio'>Rstudio</a>
+      
+      <a href='/tags/coding'>coding</a>
+      
+      <a href='/tags/analysis'>analysis</a>
+      
+      <a href='/tags/workflow'>workflow</a>
+       <br>
+      
+       <br>
+    </p>
     
 
     <div class="article-content">
       
-<script src="index_files/header-attrs/header-attrs.js"></script>
+<script src="https://seng.netlify.app/meetings/a-brief-introduction-to-r/index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="module-1-r-studio-basics" class="section level2">
@@ -92,7 +122,7 @@ R is open source and free for anyone to download and use.</p>
 (4) A plot/help/files window that can alternate to show your plots, help reauests, and file directory</p>
 <p>For example, use the text editing window to write the following code:</p>
 <pre class="r"><code>plot(2,2)</code></pre>
-<p><img src="index_files/figure-html/Plot%20the%20point%202,2-1.png" width="672" />
+<p><img src="https://seng.netlify.app/meetings/a-brief-introduction-to-r/index_files/figure-html/Plot%20the%20point%202,2-1.png" width="672" />
 In R Studio, notice that the code is stored in the text editor (script), is passed to the console, and then is plotted in the plot window
 Also, panels can be resized by dragging the slider</p>
 </div>
@@ -343,18 +373,18 @@ Indexing a vector is straightforward, we will return to indexing for 2-D data fr
 library(ggplot2) #We will return to installing and loading packages later in this document.
 mpg #It&#39;s not quite a data frame yet</code></pre>
 <pre><code>## # A tibble: 234 x 11
-##    manufacturer model    displ  year   cyl trans   drv     cty   hwy fl    class
-##    &lt;chr&gt;        &lt;chr&gt;    &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt;
-##  1 audi         a4         1.8  1999     4 auto(l~ f        18    29 p     comp~
-##  2 audi         a4         1.8  1999     4 manual~ f        21    29 p     comp~
-##  3 audi         a4         2    2008     4 manual~ f        20    31 p     comp~
-##  4 audi         a4         2    2008     4 auto(a~ f        21    30 p     comp~
-##  5 audi         a4         2.8  1999     6 auto(l~ f        16    26 p     comp~
-##  6 audi         a4         2.8  1999     6 manual~ f        18    26 p     comp~
-##  7 audi         a4         3.1  2008     6 auto(a~ f        18    27 p     comp~
-##  8 audi         a4 quat~   1.8  1999     4 manual~ 4        18    26 p     comp~
-##  9 audi         a4 quat~   1.8  1999     4 auto(l~ 4        16    25 p     comp~
-## 10 audi         a4 quat~   2    2008     4 manual~ 4        20    28 p     comp~
+##    manufacturer model      displ  year   cyl trans drv     cty   hwy fl    class
+##    &lt;chr&gt;        &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt;
+##  1 audi         a4           1.8  1999     4 auto~ f        18    29 p     comp~
+##  2 audi         a4           1.8  1999     4 manu~ f        21    29 p     comp~
+##  3 audi         a4           2    2008     4 manu~ f        20    31 p     comp~
+##  4 audi         a4           2    2008     4 auto~ f        21    30 p     comp~
+##  5 audi         a4           2.8  1999     6 auto~ f        16    26 p     comp~
+##  6 audi         a4           2.8  1999     6 manu~ f        18    26 p     comp~
+##  7 audi         a4           3.1  2008     6 auto~ f        18    27 p     comp~
+##  8 audi         a4 quattro   1.8  1999     4 manu~ 4        18    26 p     comp~
+##  9 audi         a4 quattro   1.8  1999     4 auto~ 4        16    25 p     comp~
+## 10 audi         a4 quattro   2    2008     4 manu~ 4        20    28 p     comp~
 ## # ... with 224 more rows</code></pre>
 <pre class="r"><code>?mpg #What is this data set?
 mpg &lt;- data.frame(mpg) #Coerce to a data frame</code></pre>
@@ -759,96 +789,54 @@ You must load them every time you restart R (so R knows what package(s) you will
 <pre><code>## Loading required package: tergm</code></pre>
 <pre><code>## Loading required package: ergm</code></pre>
 <pre><code>## Loading required package: network</code></pre>
-<pre><code>## network: Classes for Relational Data
-## Version 1.16.1 created on 2020-10-06.
-## copyright (c) 2005, Carter T. Butts, University of California-Irvine
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Martina Morris, University of Washington
-##                     Skye Bender-deMoll, University of Washington
-##  For citation information, type citation(&quot;network&quot;).
-##  Type help(&quot;network-package&quot;) to get started.</code></pre>
 <pre><code>## 
-## ergm: version 3.11.0, created on 2020-10-14
-## Copyright (c) 2020, Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Steven M. Goodreau, University of Washington
-##                     Pavel N. Krivitsky, UNSW Sydney
-##                     Martina Morris, University of Washington
-##                     with contributions from
-##                     Li Wang
-##                     Kirk Li, University of Washington
-##                     Skye Bender-deMoll, University of Washington
-##                     Chad Klumb
-##                     Michal Bojanowski, Kozminski University
-##                     Ben Bolker
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;ergm&quot;).</code></pre>
-<pre><code>## NOTE: Versions before 3.6.1 had a bug in the implementation of the bd()
-## constraint which distorted the sampled distribution somewhat. In
-## addition, Sampson&#39;s Monks datasets had mislabeled vertices. See the
-## NEWS and the documentation for more details.</code></pre>
-<pre><code>## NOTE: Some common term arguments pertaining to vertex attribute and
-## level selection have changed in 3.10.0. See terms help for more
-## details. Use &#39;options(ergm.term=list(version=&quot;3.9.4&quot;))&#39; to use old
-## behavior.</code></pre>
+## &#39;network&#39; 1.17.1 (2021-06-12), part of the Statnet Project
+## * &#39;news(package=&quot;network&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;network&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## 
+## &#39;ergm&#39; 4.1.2 (2021-07-26), part of the Statnet Project
+## * &#39;news(package=&quot;ergm&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;ergm&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## &#39;ergm&#39; 4 is a major update that introduces some backwards-incompatible
+## changes. Please type &#39;news(package=&quot;ergm&quot;)&#39; for a list of major
+## changes.</code></pre>
 <pre><code>## Loading required package: networkDynamic</code></pre>
 <pre><code>## 
-## networkDynamic: version 0.10.1, created on 2020-01-16
-## Copyright (c) 2020, Carter T. Butts, University of California -- Irvine
-##                     Ayn Leslie-Cook, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Skye Bender-deMoll, University of Washington
-##                     with contributions from
-##                     Zack Almquist, University of California -- Irvine
-##                     David R. Hunter, Penn State University
-##                     Li Wang
-##                     Kirk Li, University of Washington
-##                     Steven M. Goodreau, University of Washington
-##                     Jeffrey Horner
-##                     Martina Morris, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;networkDynamic&quot;).</code></pre>
+## &#39;networkDynamic&#39; 0.11.0 (2021-06-12), part of the Statnet Project
+## * &#39;news(package=&quot;networkDynamic&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;networkDynamic&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;tergm&#39;:
+##   method                   from
+##   simulate_formula.network ergm</code></pre>
 <pre><code>## 
-## tergm: version 3.7.0, created on 2020-10-15
-## Copyright (c) 2020, Pavel N. Krivitsky, UNSW Sydney
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     with contributions from
-##                     David R. Hunter, Penn State University
-##                     Steven M. Goodreau, University of Washington
-##                     Martina Morris, University of Washington
-##                     Nicole Bohme Carnegie, New York University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Ayn Leslie-Cook, University of Washington
-##                     Skye Bender-deMoll
-##                     Li Wang
-##                     Kirk Li, University of Washington
-##                     Chad Klumb
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;tergm&quot;).</code></pre>
+## &#39;tergm&#39; 4.0.2 (2021-07-28), part of the Statnet Project
+## * &#39;news(package=&quot;tergm&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;tergm&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## 
+## Attaching package: &#39;tergm&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ergm&#39;:
+## 
+##     snctrl</code></pre>
 <pre><code>## Loading required package: ergm.count</code></pre>
 <pre><code>## 
-## ergm.count: version 3.4.0, created on 2019-05-15
-## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
-##                     with contributions from
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;ergm.count&quot;).</code></pre>
-<pre><code>## NOTE: The form of the term &#39;CMP&#39; has been changed in version 3.2 of
-## &#39;ergm.count&#39;. See the news or help(&#39;CMP&#39;) for more information.</code></pre>
+## &#39;ergm.count&#39; 4.0.2 (2021-06-18), part of the Statnet Project
+## * &#39;news(package=&quot;ergm.count&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;ergm.count&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
 <pre><code>## Loading required package: sna</code></pre>
 <pre><code>## Loading required package: statnet.common</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;statnet.common&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:base&#39;:
+<pre><code>## The following object is masked from &#39;package:ergm&#39;:
 ## 
-##     order</code></pre>
+##     snctrl</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     attr, order</code></pre>
 <pre><code>## sna: Tools for Social Network Analysis
 ## Version 2.6 created on 2020-10-5.
 ## copyright (c) 2005, Carter T. Butts, University of California-Irvine
@@ -856,17 +844,10 @@ You must load them every time you restart R (so R knows what package(s) you will
 ##  Type help(package=&quot;sna&quot;) to get started.</code></pre>
 <pre><code>## Loading required package: tsna</code></pre>
 <pre><code>## 
-## statnet: version 2019.6, created on 2019-06-13
-## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Steven M. Goodreau, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Skye Bender-deMoll
-##                     Martina Morris, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;statnet&quot;).</code></pre>
+## &#39;statnet&#39; 2019.6 (2019-06-13), part of the Statnet Project
+## * &#39;news(package=&quot;statnet&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;statnet&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
 <pre><code>## unable to reach CRAN</code></pre>
 </div>
 </div>
@@ -899,7 +880,7 @@ head(iris)</code></pre>
 ## Levels: setosa versicolor virginica</code></pre>
 <p>Let’s plot the relationship between petal length and width</p>
 <pre class="r"><code>plot(iris$Petal.Width, iris$Petal.Length, col=iris$Species)</code></pre>
-<p><img src="index_files/figure-html/petal-1.png" width="672" /></p>
+<p><img src="https://seng.netlify.app/meetings/a-brief-introduction-to-r/index_files/figure-html/petal-1.png" width="672" /></p>
 <p>Next, let’s fit a linear model predicting petal length from width and species using <code>lm()</code></p>
 <pre class="r"><code>fit1 &lt;- lm(Petal.Length ~ Petal.Width + Species,  data = iris)
 summary(fit1)</code></pre>
@@ -960,7 +941,7 @@ points(Petal.Length ~ Petal.Width, data = iris, col=Species)
 points(seq(0,3,by=0.2), preds, col=1, pch=19)
 points(seq(0,3,by=0.2), preds1, col=2, pch=19)
 points(seq(0,3,by=0.2), preds2, col=3, pch=19)</code></pre>
-<p><img src="index_files/figure-html/Predictions-1.png" width="672" /></p>
+<p><img src="https://seng.netlify.app/meetings/a-brief-introduction-to-r/index_files/figure-html/Predictions-1.png" width="672" /></p>
 </div>
 <div id="for-loops-and-apply-statements" class="section level3">
 <h3>for Loops and Apply Statements</h3>
@@ -1007,7 +988,7 @@ x</code></pre>
 par(mfrow=c(1,1)) #Set the plotting dimensions
 g &lt;- barabasi.game(n=40, power = 1, directed = F)
 plot(g, vertex.label=NA)</code></pre>
-<p><img src="index_files/figure-html/Forloops_net-1.png" width="672" /></p>
+<p><img src="https://seng.netlify.app/meetings/a-brief-introduction-to-r/index_files/figure-html/Forloops_net-1.png" width="672" /></p>
 <pre class="r"><code># First, let&#39;s use a for loop to create 4 networks with different powers 
 pow &lt;- seq(0, 1, length.out=4)
 pow</code></pre>
@@ -1028,7 +1009,7 @@ for(i in seq_along(pow)) {
          edge.arrow.size=0.2, 
          vertex.label=NA)
 }</code></pre>
-<p><img src="index_files/figure-html/Forloops_net-2.png" width="672" /></p>
+<p><img src="https://seng.netlify.app/meetings/a-brief-introduction-to-r/index_files/figure-html/Forloops_net-2.png" width="672" /></p>
 <p>Now we can run some descriptive statistic on the list <code>L</code>
 One way to do it is to use a loop.</p>
 <pre class="r"><code>for(i in seq_along(L)) { 
@@ -1087,17 +1068,8 @@ Or, <code>apply(DF, 2, mean)</code> # this will apply the function <code>mean()<
 <footer class="footer">
         <ul class="footer-links">
           
-          <h1> <strong> Social Ecological Networks Group </strong> </h1>
-          <img src = "/images/SENG_Circle_NoOutline.png" alt = "SENG logo" width = "270" height = "240">
-          <br>
-          <li>
-            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" width="22" height="22"></a>
-            
-             
-            <a href="https://bookdown.org/yihui/blogdown/" class="footer-links-kudos">Via <img src="/images/blogdown.png" width="22" height="22"></a>
-          </li>
-          
-        </ul>
+          <h2> <strong> Social Ecological Networks Group </strong> </h2>
+          <img src = "/images/SENG_Circle_NoOutline.png" alt = "SENG logo" width = "108" height = "96">
       </footer>
 
     </div>

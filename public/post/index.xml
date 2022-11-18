@@ -6,7 +6,46 @@
     <description>Recent content in Posts on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 11 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 19 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Exponential Random Graph Models, An Introduction</title>
+      <link>https://seng.netlify.app/2022/10/19/exponential-random-graph-models-an-introduction/</link>
+      <pubDate>Wed, 19 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/10/19/exponential-random-graph-models-an-introduction/</guid>
+      <description>IntroductionWe can a learn a lot about a network using visualization tools and descriptive statistics. But many researchers would like to make inferences about how specific variables influence the probability of a network connection. There are multiple ways to do this – latent network modeling, multilevel Bayesian models, quadratic assignment procedures – but one of the most common and versatile methods is to build Exponential Random Graph Models (ERGMs).</description>
+    </item>
+    
+    <item>
+      <title>Measures of network position and structure </title>
+      <link>https://seng.netlify.app/2022/09/30/measures-of-network-position-and-structure/</link>
+      <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/09/30/measures-of-network-position-and-structure/</guid>
+      <description>Many networks that we find interesting are large and structurally complex. This makes them difficult to visually understand. And although coming up with ways to visualize such networks is a kind of fun, most of the time we need practical ways to describe the position and structure of complex networks without dealing with the tangled hairball.
+This post covers some a variety of ways to measure network position and structure.</description>
+    </item>
+    
+    <item>
+      <title>Join SENG for breakfast with the Evironmental Professionals Network</title>
+      <link>https://seng.netlify.app/2022/09/01/join-seng-for-breakfast-with-the-evironmental-professionals-network/</link>
+      <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/09/01/join-seng-for-breakfast-with-the-evironmental-professionals-network/</guid>
+      <description>Once a month, the Environmental Professionals Network (EPN) hosts network events over breakfast. The EPN is a service of the School of Environment and Natural Resources at Ohio State University that works to help connect and grow environmental professionals both in-person and online.
+This month’s EPN event focuses on “Advancing environmental justice in extreme head and adapting through collaborative networks.” As part of this September 13th event, SENG members Kimberly Ordonez and Harrison Fried will present their work developing a “Network of Stakeholders” website tool that harnesses the power of network science to help bring together environmentally focused organizations and individuals.</description>
+    </item>
+    
+    <item>
+      <title>Network size and structure</title>
+      <link>https://seng.netlify.app/2021/12/22/size-structure-and-density/</link>
+      <pubDate>Wed, 22 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2021/12/22/size-structure-and-density/</guid>
+      <description>The size of a network is determined by the number of vertices and edges within it, and different size networks have different structural properties. This is obviously true if social processes like homophily, preferential attachment, or triadic closure influence network size, but it is also true for randomly generated networks.
+How do properties like density, sparseness, degree distribution, or connectivity change as the number of vertices in a network increases?</description>
+    </item>
+    
     <item>
       <title>What is SENG?</title>
       <link>https://seng.netlify.app/2021/01/11/what-is-seng/</link>

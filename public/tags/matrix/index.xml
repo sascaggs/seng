@@ -6,7 +6,17 @@
     <description>Recent content in matrix on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 26 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/matrix/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 30 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/matrix/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Measures of network position and structure </title>
+      <link>https://seng.netlify.app/2022/09/30/measures-of-network-position-and-structure/</link>
+      <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/09/30/measures-of-network-position-and-structure/</guid>
+      <description>Many networks that we find interesting are large and structurally complex. This makes them difficult to visually understand. And although coming up with ways to visualize such networks is a kind of fun, most of the time we need practical ways to describe the position and structure of complex networks without dealing with the tangled hairball.
+This post covers some a variety of ways to measure network position and structure.</description>
+    </item>
+    
     <item>
       <title>Introduction to Networks in R</title>
       <link>https://seng.netlify.app/meetings/introduction-to-networks-in-r/</link>

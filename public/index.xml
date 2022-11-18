@@ -6,9 +6,68 @@
     <description>Recent content on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 19 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Network simulation using statnet</title>
+      <title>Exponential Random Graph Models, An Introduction</title>
+      <link>https://seng.netlify.app/2022/10/19/exponential-random-graph-models-an-introduction/</link>
+      <pubDate>Wed, 19 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/10/19/exponential-random-graph-models-an-introduction/</guid>
+      <description>IntroductionWe can a learn a lot about a network using visualization tools and descriptive statistics. But many researchers would like to make inferences about how specific variables influence the probability of a network connection. There are multiple ways to do this – latent network modeling, multilevel Bayesian models, quadratic assignment procedures – but one of the most common and versatile methods is to build Exponential Random Graph Models (ERGMs).</description>
+    </item>
+    
+    <item>
+      <title>Measures of network position and structure </title>
+      <link>https://seng.netlify.app/2022/09/30/measures-of-network-position-and-structure/</link>
+      <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/09/30/measures-of-network-position-and-structure/</guid>
+      <description>Many networks that we find interesting are large and structurally complex. This makes them difficult to visually understand. And although coming up with ways to visualize such networks is a kind of fun, most of the time we need practical ways to describe the position and structure of complex networks without dealing with the tangled hairball.
+This post covers some a variety of ways to measure network position and structure.</description>
+    </item>
+    
+    <item>
+      <title>Join SENG for breakfast with the Evironmental Professionals Network</title>
+      <link>https://seng.netlify.app/2022/09/01/join-seng-for-breakfast-with-the-evironmental-professionals-network/</link>
+      <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/09/01/join-seng-for-breakfast-with-the-evironmental-professionals-network/</guid>
+      <description>Once a month, the Environmental Professionals Network (EPN) hosts network events over breakfast. The EPN is a service of the School of Environment and Natural Resources at Ohio State University that works to help connect and grow environmental professionals both in-person and online.
+This month’s EPN event focuses on “Advancing environmental justice in extreme head and adapting through collaborative networks.” As part of this September 13th event, SENG members Kimberly Ordonez and Harrison Fried will present their work developing a “Network of Stakeholders” website tool that harnesses the power of network science to help bring together environmentally focused organizations and individuals.</description>
+    </item>
+    
+    <item>
+      <title>Autumn 2022 Schedule </title>
+      <link>https://seng.netlify.app/meetings/autumn-2022-schedule/</link>
+      <pubDate>Sat, 27 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/autumn-2022-schedule/</guid>
+      <description>Meeting InformationTime: 3PM Eastern Standard TimeDates: 9/9, 9/23, 10/7, 10/21, 11/4, 11/18, 12/2 (see below)Zoom: Join meetingPasscode: 002244Location: TBDBeginning in September and ending in December, SENG is holding seven hybrid meetings.
+The focus of our meetings this term is on building confidence in our network analysis methods. We will do this by workshopping a lot and hosting fewer seminar style talks.</description>
+    </item>
+    
+    <item>
+      <title>Egocentric patterns in homophilous networks</title>
+      <link>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</link>
+      <pubDate>Mon, 24 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</guid>
+      <description>Introduction Researchers who work with smaller populations that have clearly defined boundaries (Laumann, Marsden, and Prensky 1989) may be able to design survey instruments that can feasibly document an entire social network. These complete, sociocentric networks can exhibit some systematic biases (Ready et al. 2020), but they typically do a better job of characterizing the full suite of direct and indirect connections within a population.
+Many researchers, however, work in larger populations that have fuzzy boundaries, if any.</description>
+    </item>
+    
+    <item>
+      <title>Network size and structure</title>
+      <link>https://seng.netlify.app/2021/12/22/size-structure-and-density/</link>
+      <pubDate>Wed, 22 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2021/12/22/size-structure-and-density/</guid>
+      <description>The size of a network is determined by the number of vertices and edges within it, and different size networks have different structural properties. This is obviously true if social processes like homophily, preferential attachment, or triadic closure influence network size, but it is also true for randomly generated networks.
+How do properties like density, sparseness, degree distribution, or connectivity change as the number of vertices in a network increases?</description>
+    </item>
+    
+    <item>
+      <title>Network Simulation using {statnet}</title>
       <link>https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/</link>
       <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
       
@@ -74,11 +133,12 @@ After all, this is a group about networks, and networks are formed through inter
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/canon/</guid>
-      <description>Network (Graph) TheorySocial Network TheoryEcological Network TheorySocial-Ecological NetworksNetwork AnalysisEmpirical CasesPhilsophical FoundationsFull Reference ListThis collection is always in progress.
-Network (Graph) TheoryEmergence of Scaling in Random Networks (Barabási and Albert 1999)
-Explosive Percolation in Random Networks (Achlioptas, D’Souza, and Spencer 2009)
-Social Network TheoryNetwork approaches and social movements (Diani and Mische 2015)
-Network theory | A network theory of power (Castells 2011)</description>
+      <description>General Network TheorySocial Network TheoryEcological Network TheorySocial-Ecological NetworksNetwork ModelingEgonetworksMethodology and EthicsEmpirical CasesFull Reference ListThis collection is always in progress.
+General Network TheorySocial Network Analysis [@scott1988social]
+Complex Networks: from Graph Theory to Biology [@lesne2006complex]
+Emergence of Scaling in Random Networks [@barabasi1999]
+Explosive Percolation in Random Networks [@achlioptas2009]
+Social Network TheoryAn economic model of friendship: Homophily, minorities, and segregation [@currarini2009economic]</description>
     </item>
     
     <item>
@@ -108,11 +168,11 @@ I am a PhD candidate and NSF Graduate Research Fellow in the Department of Anthr
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/people/</guid>
-      <description>Shane A. ScaggsHarrison FriedChelsea E. HunterDrew GerkeyPriya BhattacharyaAndrew MitchelMatthew Walker
+      <description>Shane A. ScaggsHarrison FriedChelsea E. HunterDrew GerkeyJordan Inskeep
 Shane A. ScaggsContact Shane (he/him)
 Twitter
 Google Scholar
-I am a PhD candidate and NSF Graduate Research Fellow in the Department of Anthropology at the Ohio State University where I work in the Human Complexity Lab. My research focuses on the social and ecological dynamics of human subsistence activities (e.</description>
+I am a PhD candidate and NSF Graduate Research Fellow in the Department of Anthropology at the Ohio State University where I work in the Human Complexity Lab. My research focuses on the social and ecological dynamics of human subsistence activities (e.g., cultivation, foraging, exchange).</description>
     </item>
     
   </channel>
