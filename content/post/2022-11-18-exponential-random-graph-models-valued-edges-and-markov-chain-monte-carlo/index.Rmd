@@ -1,0 +1,23 @@
+---
+title: 'Exponential Random Graph Models, Valued Edges, and Markov Chain Monte Carlo'
+author: 'Shane A. Scaggs' 
+date: '2022-11-18'
+slug: exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo
+categories:
+  - methods
+tags:
+  - analysis
+  - coding
+  - statnet
+  - workflow
+---
+
+# Preamble 
+
+We've talked about ERGMs but we really only covered binary ERGMs. Not too long ago, binary ERGMs were all that was available to us in R, something that anthropologist David Nolin noted in a paper on food sharing in *Human Nature*: 
+
+> The chief disadvantage of ERGM is that dependent-variable networks can consist only of binary ties... Networks composed of valued ties can be binarized for use with ERGM, but this entails a loss of statistical information. 
+
+We know longer have this problem. Instead, we have a plethora of extensions and alternatives, particularly for edges that consist of count data. Any of these packages could work: `ergm.count`, `STRAND`, the social relations model (Kenny and LaVoie 1984), `GERGM`, `bergm`, `latentnet`.  
+
+Today we are going to stick with the `statnet` suite that we started with and look at valued ergms using the `ergm.count` package. A published article by [Martina Morris and Pavel Krivitsky](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3964598/) (2017) accompanies this package, and there is also [a very helpful workshop](https://statnet.org/Workshops/valued.html) on the statnet website. 
