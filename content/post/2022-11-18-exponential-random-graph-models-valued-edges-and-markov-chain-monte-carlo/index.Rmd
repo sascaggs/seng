@@ -14,12 +14,235 @@ tags:
 
 # Preamble 
 
-We've talked about ERGMs but we really only covered binary ERGMs. Not too long ago, binary ERGMs were all that was available to us in R, something that anthropologist David Nolin noted in a paper on food sharing in *Human Nature*: 
+We've talked about ERGMs but we really only covered binary ERGMs. Not too long ago, binary ERGMs were all that was available to us in R, something that anthropologist David Nolin noted in a 2010 paper on food sharing in *Human Nature*: 
 
-> The chief disadvantage of ERGM is that dependent-variable networks can consist only of binary ties... Networks composed of valued ties can be binarized for use with ERGM, but this entails a loss of statistical information. 
+> "The chief disadvantage of ERGM is that dependent-variable networks can consist only of binary ties... Networks composed of valued ties can be binarized for use with ERGM, but this entails a loss of statistical information." 
 
-We know longer have this problem. Instead, we have a plethora of extensions and alternatives, particularly for edges that consist of count data. Any of these packages could work: `ergm.count`, `STRAND`, the social relations model (Kenny and LaVoie 1984), `GERGM`, `bergm`, `latentnet`.  
+We no longer have this problem. Instead, we have a plethora of extensions and alternatives, particularly for edges that consist of count data. Any of these packages could work: `ergm.count`, `STRAND`, the social relations model (Kenny and LaVoie 1984), `GERGM`, `bergm`, `latentnet`, etc.  
 
-Today we are going to stick with the `statnet` suite that we started with and look at valued ergms using the `ergm.count` package. A published article by [Martina Morris and Pavel Krivitsky](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3964598/) (2017) accompanies this package, and there is also [a very helpful workshop](https://statnet.org/Workshops/valued.html) on the statnet website. 
+Let's stick with the `statnet` suite that we started with and look at valued ergms using the `ergm.count` package. A published article by [Martina Morris and Pavel Krivitsky](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3964598/) (2017) accompanies this package, and there is also [a very helpful workshop](https://statnet.org/Workshops/valued.html) on the statnet website. 
 
 The other thing we will do today is spend a little time looking at the MCMC control settings in the ERGM package. When it comes to MCMC and MLE controls, there is a lot to cover. We will be focusing on some of the most commonly adjusted settings when calibrating an MCMC sampler. For a more interactive look at MCMC algorithms, [check out these simulations](http://chi-feng.github.io/mcmc-demo/). 
+
+# Setup 
+
+For this example, let's use the network data from Koster and Leckie (2014) that is included as part of the `rethinking` package. 
+
+```{r}
+data('KosterLeckie', package = 'rethinking')
+```
+
+Now let's load up `statnet`. 
+
+```{r, warning=F, message=F}
+library(statnet)
+```
+
+# Wrangling 
+
+The `KosterLeckie` data contains information about 25 households (`kl_households`) and their food sharing relationships (`kl_dyads`). These relations are stored in a dyadic format. Take a look. 
+
+```{r}
+head(kl_dyads)
+```
+
+So we'll have to do just a little bit of wrangling to get this into an edgelist format. First, we isolate the AB columns along with the household IDs. 
+
+```{r}
+AB_dyads = kl_dyads[, c('hidA','hidB','giftsAB')]
+```
+
+Then we want to do the same thing, but we need to switch the order of the `hidA` and `hidB` column so that they exhibit the correction directionality. 
+
+```{r}
+BA_dyads = kl_dyads[, c('hidB','hidA','giftsBA')]
+```
+
+Now we will rename the columns, bind them together, and filter out any rows where there were no gifts exchanged. 
+
+```{r}
+# rename
+colnames(AB_dyads) = c('sender','receiver','gifts')
+colnames(BA_dyads) = c('sender','receiver','gifts')
+# filter and bind
+el = rbind(AB_dyads[ !AB_dyads$gifts == 0, ], 
+           BA_dyads[ !BA_dyads$gifts == 0, ])
+```
+
+Edge attributes can be stored in an edgelist as additional columns. So in this case, we have an edgelist with a single edge attribute called `gifts`. Let's construct the full network now. Let's not forget to add the vertex attributes from the `kl_households` file. 
+
+
+```{r}
+g = network(el, vertex.attr = kl_households)
+g
+```
+
+Let's quickly visualize this network. 
+
+```{r, message=F, warning=FALSE}
+library(tidygraph)
+library(ggraph)
+
+g %>% as_tbl_graph() %>%
+    ggraph() + 
+    geom_edge_link(aes(width=gifts)) 
+```
+# Questions 
+
+First, let's decide some specific questions that we wanted to ask about this network. In particular, I would like to know the following: 
+
+1. Is reciprocity a strong driver of edge formation? 
+2. What impact does harvest size have on the number of gives and sharing partners a household has? 
+3. How prevalent are triangles in this network? 
+
+# Constructing a model
+
+Building a ERGM that can handle edge counts is very similar to how we constructed our ERGMs before. Many of the functions are the same -- `ergm`, `simulate`, `summary` -- as is the general syntax for including covariates. 
+
+If you check the documentation for `ergm-terms`, you'll find that each term has a listed of network types that it is compatible with: binary, directed, undirected, valued, etc. This helps us find the valued versions of particular terms. 
+
+For example, in a binary ERGM we include an `edges` term that estimates the overall edge density. However, the density of a valued ERGM cannot be described solely by the number of observed edges, because the values on the edges are relevant. According to the documentation, a `threshold`  can be set, but in some cases there may not be an obvious maximum value for the edges, making it impossible to calculate a density. Instead, we include a `sum` term in place of the `edges` term. 
+
+We can test this by taking a summary of `g ~ sum` -- a simple valued ERGM.
+
+```{r, error=T}
+summary(g ~ sum)
+```
+Oops we're getting an error! 
+
+This is because there is another key difference between valued and binary ERGMs. A valued ERGM requires that a `response` argument be included in the ERGM function. This "response" is the valued edge attribute that we want to estimate in the model (i.e., `gifts`).  
+
+```{r}
+summary(g ~ sum, response = 'gifts')
+```
+
+This summary tells us the sum of all values across every edge in the network. We can validate this. 
+
+```{r}
+sum(el$gifts)
+```
+
+## Reference distribution 
+
+In a binary ERGM, ties are either present or absent. Under the hood, this data structure implies a very specific reference distribution -- a `Bernoulii` distribution. You can think of a Bernoulli kind of like a weighted coin flip where the probability tells us how likely we are to get a `1`. The Bernoulli is the same as a `Binomial` distribution that has `size = 1`.
+
+```{r}
+# binomial with same number of edges as network
+rbinom(n=427, size=1, prob=0.5)
+```
+
+For a valued ERGM, it isn't totally obvious what the reference distribution should be since there are multiple distributions that can be used for counts and continuous values. Let's check the documentation using `help("ergm-references")`. 
+
+We find that `ergm.count` supports three types of reference distributions: Poisson, Geometric, and Binomial. We need to choose a reference distribution that is sensible for our gift data.
+
+```{r}
+hist(g %e% 'gifts')
+```
+
+We have a long tail and a high number of zeros. Let's explore these other distributions and see if they are similar.
+
+### Poisson
+
+A poisson distribution is a discrete distribution whose mean and variance are described by a single parameter lambda. 
+
+```{r}
+hist(rpois(n=427, lambda = 1))
+```
+
+Higher values of lambda will lead to a more bell shaped curve. 
+
+```{r}
+hist(rpois(n=427, lambda = 10))
+```
+This is quite what we're after since our gift distribution has a lot of zeros. Perhaps we could try a zero-inflated Poisson, an option that is supported by the `ergm.count` package. I'm constructing this distribution as a mixture of a bernoulli (for the zeros) and a poisson. 
+
+```{r}
+hist( ifelse(rbinom(n=427,size=1,prob=0.5) == 0, 0 , rpois(n=427, lambda=2)), 
+      main = '')
+```
+This is a bit closer, but the problem is that we don't have a long enough tail. Our data ranges all the way up to 100. Increasing the value of lambda won't help either because it will lead to a hurdle distribution. See here. 
+
+```{r}
+hist( ifelse(rbinom(n=427,size=1,prob=0.5) == 0, 0 , rpois(n=427, lambda=10)), 
+      main = '')
+```
+
+### Binomial 
+
+The `Binomial` distribution may work if we weight the probability toward low values and set a high value of size. We should use the maximum value of gifts that is observed in the network. 
+
+```{r}
+max(el$gifts)
+
+hist(rbinom(n=427, size=max(el$gifts), prob = 0.01))
+
+```
+
+We've having the same problem as the poisson distribution. and In fact, the Poisson and Binomial distribution because one and the same when there is a high count. 
+
+### Geometric
+
+Our last option is the geometric distribution. The geometric distribution is described by a single parameter `prob` which controls the "probability of success". When prob is near 1, the distribution collapses onto a small number of values and a short tail. 
+
+```{r}
+hist(rgeom(n=427, prob=0.9))
+```
+But when probability is low, the distribution exhibits a much longer tail and an inflation of low values. 
+
+```{r}
+hist(rgeom(n=427, prob=0.1))
+```
+
+This seems much closer to the kind of reference distribution we are looking for. Let's give it a try. 
+
+```{r, error=T}
+fit0 = ergm(g ~ sum, response = 'gifts', reference = ~Geometric)
+ 
+summary(fit0)
+```
+
+Good news is that the model runs. Let's worry about interpetation a bit later. 
+
+# Question 1
+
+Let's build a model to answer question 1 about the effects of reciprocity. In our last workshop, we used the `mutual` term to estimate reciprocity. In that scenario, it's pretty straight forward: reciprocity occurs when there is both an edge from $i \rightarrow j$ and $j \rightarrow i$. 
+
+In the valued case, it isn't so simple. Maybe there is an edge from $i \rightarrow j$ with a value of 1, but the value of the edge from $j to i$ has a value of 10.  Is this truly reciprocity or do the values need to be the same? The answer isn't obvious and you should consult your ethnographic information about the study system to make a decision. 
+
+If we consult the `help("ergm-terms")` documentation, we find that mutual terms for valued networks require additional arguments `form`. We have the following options:
+
+1. `min` = mutual pairs match based on the minimum value observed (easy to interpret)
+2. `nabsdiff` = mutual pairs match based on the absolute difference between them 
+3. `product` = mutual pairs match using product of edge values
+4. `geometric` = mutual pairs form an uncentered covariance (hard to interpret)
+
+There is no clear answer here. I am going to choose `nabsdiff` because this will allow us to keep information about both the differences between edge values and their overall combination. 
+
+```{r, message=F}
+fit1.1 = ergm(g ~ sum + mutual(form="nabsdiff"), response = 'gifts', reference = ~Geometric)
+summary(fit1.1)
+```
+
+The results of this model indicate that there is a significant but slightly negative effect of mutuality on this network. A good practice would be to try other forms of mutuality and determine if some of wildly different than the others. I did this already and they all give similar results. 
+
+# Question 2 
+
+For the next question, I want to understand how harvests of fish and game influence connections. First, I need to combined the `hgame` and `hfish` into on node attributes. 
+
+```{r}
+g %v% 'harv' = g %v% 'hgame' + g %v% 'hfish'
+```
+
+Now I need to choose the appropriate ERGM term: `nodecov`. Like the mutual term we have to specify additional arguments. In this case, we want to base our node covariate term on the `sum` of the the edges connected to the household. 
+
+```{r, message=F}
+fit2.1 = ergm(g ~ sum + nodecov(attr='harv', form='sum'), response = 'gifts', reference = ~Geometric)
+summary(fit2.1)
+```
+
+Now the results show that there is a very slight but significant effect of harvests the number incoming and outgoing connections a household has. In the binary case, we can interpret this as is, but in the valued case, we may want to determine what the probability is for a specific edge value. To do this, we need to multiply our coefficient estimates of `sum` and `nodecov` by values of interest.
+
+ 
+
+
+
