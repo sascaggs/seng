@@ -206,8 +206,8 @@ m3
 
 ## Bipartite ERGM example: Comparing the "model fit" of M2 and M3 using "Goodness of Fit"
 
-Let's plot and visually compare the goodness of fit of M2 and M3 to see how adding `gwb1degree` impacted fitness.
-```{r}
+You also plot and visually compare the goodness of fit of M2 and M3 to see how adding `gwb1degree` impacted fitness.
+```{r, eval=F}
 gofm2 <- gof(m2)
 gofm3 <- gof(m3)
 plot(gofm2)
@@ -239,4 +239,4 @@ screenreg(list(m1, m2, m3), single.row = T)
 
 Harrison Fried, Matthew Hamilton, Ramiro Berardo, Theorizing Multilevel Closure Structures Guiding Forum Participation, Journal of Public Administration Research and Theory, 2022;, muac042, https://doi.org/10.1093/jopart/muac042
 
- 
+  
