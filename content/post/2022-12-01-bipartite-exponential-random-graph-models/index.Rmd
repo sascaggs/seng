@@ -1,0 +1,243 @@
+---
+title: Bipartite Exponential Random Graph Models
+author: Harrison Fried
+date: '2022-11-18'
+slug: bipartite-exponential-random-graph-models
+categories:
+  - methods
+tags:
+  - analysis
+  - bipartite
+  - coding
+  - statnet
+  - workflow
+output: 
+  html_document:
+    toc: true
+    toc_float: true  
+---
+
+# Introduction   
+
+We have already discussed a lot about Exponential Random Graph Models (ERGMs) in the first tutorial. However, there's much more to learn! Many times, researchers would like to run ERGMs for network datasets that are not binary, and determine how complex variables influence the probability of a network connection. For example, additional methods exist for using ERGMs with networks that have bipartite (two-mode) data and longitudinal (dynamic networks across time) data. On this page, we will discuss both bipartite and longitudinal ERGMs.
+
+Remember that to use ERGMs, we use the [`statnet`](https://statnet.org/packages/) suite of packages, one of which is the `ergm` package. If you haven't already, install `statnet`.
+
+```{r, warning=F, message=F}
+#install statnet suite
+#install.packages('network', dependencies = T)
+#install.packages('statnet', dependencies = T)
+library(statnet)
+#You may need to update your statnet package if you haven't in a while, you can do so by doing " statnet::update_statnet() "
+```
+
+# Refresher - what is an ERGM?
+
+ERGMs can model the structural dependencies in a relational data object. In other words, for a measured empirical network, what are the underlying processes of edge formation that formed the network we see before us? ERGMs essentially measure the probability of an edge forming between a given pair of nodes; we can use an ERGM to estimate both the probability and uncertainty that such an edge exists in a given graph. As described in the first part of our ERGMs conversation, more conventional statistical approaches fail in this endeavor because they assume that observations are independent, and we are specifically interested in the dependence of our observations.
+
+There are many different types of ERGMs. Each variation is used to model networks with different kinds of edges, for instance: 
+
+Two types of ERGMs we have covered or will cover in this page:
+- Binary ERGMs are for edges that are present or absent (we focused on this for the majority of the ERGMs part 1).
+- Bipartite ERGMs for multi-level (two-mode) networks; edges are between nodes of mode a and mode b (not within-mode).
+
+
+Three additional types of ERGMs that we won't cover in this page:
+- Valued ERGMs (VERGMs) are for weighted networks; edges > 1. 
+- Bayesian ERGMs (BERGMs) for probabilistic networks; edges are probabilities.
+- Temporal ERGMs (TERGMs) for longitudinal networks; edges turn on and off over time.
+
+
+# Control variables
+
+When running an ERGM, it is important to set controls for the MCMCMLE process, which can be used to help the model converge (such as by allowing it to run for longer), or to ensure replicability (such as by setting a seed).
+
+For a more in-depth description of setting control parameters, as well as switching them around to achieve model convergence (in the case of a degenerate model), we plan to have a SENG event in the near future dedicated to understanding ERGM control terms.
+
+# Advanced ERGMs for Different Types of Networks
+
+## Bipartite ERGMs 
+
+###A refresher on bipartite networks and introduction to bipartite ERGMs
+
+First, we'll start by discussing bipartite ERGMs. Let's first revisit what bipartite networks are. These networks have two "levels" (i.e., two types of nodes - termed "modes"). Common examples of bipartite networks exist everywhere, such as networks of politicians (mode 1) and the bills they sponsor (mode 2). Or in the case of a group of individual people (mode 1) and the habitat patches they utilize for resources (mode 2).
+
+The goal of bipartite ERGMs is to measure the tendency of an edge to form between any pair of nodes from mode 1 and mode 2. So, what is the probability of an edge to form between a politician and a bill? Or, what is the probability of an edge to form between an individual person and a habitat patch? 
+
+Well, these probabilities are typically based on a series of variables. Each of these variables can be added to a bipartite ERGM.
+
+# Common bipartite ERGM terms that researchers add to their models
+
+Just as with the simpler binary ERGMs we discussed at the first ERGM SENG event/post, there is a wide-ranging suite of pre-programmed terms that a researcher can add into a bipartite ERGM.
+
+To view the most common "ERGM terms" that researchers can add to their models, you can type into your console `help("ergm-terms")`, or follow this link: https://www.rdocumentation.org/packages/ergm/versions/3.9.4/topics/ergm-terms. The link will take you to a website that has a concise table of all pre-programmed statnet ergm-terms, as well as information about their potential uses.
+
+To understand which ergm-terms can be used in bipartite analyses, look for the column "Unip/bip" (which means Unipartite/Bipartite). The ergm-terms listed as "both" or "bipartite" can be added to bipartite ERGMs.
+
+Below are some common ERGM terms that are unique to bipartite ERGM analysis - so this list does not include `edges` although most bipartite ERGMs indeed add the term `edges`.
+
+## `b1degree` or `b2degree`
+
+`b1degree` is different from `b2degree` in that the former is a measurement for mode 1, and the latter is a measurement for mode 2. So, it's essential to understand in your network which mode is mode 1 and which is mode 2. These terms measure the number of mode 1 or mode 2 nodes (respectively) of degree x.
+
+Interpretation: A positive parameter estimate for b1degree would indicate a tendency for "preferential attachment" or centralization of bipartite edges connected to nodes in Mode 1. Meaning, most bipartite edges would connect to a small group of nodes in Mode 1 (rather than randomly distributed across the nodes in Mode 1).
+
+## `b1cov` or `b2cov`
+
+Similarly, the `1` or `2` indicate the mode in question. This term measures the effect of a covariate for the first or second mode in a bipartite network. In other words, if you have data for a continuous, independent variable that you think explains edge formation, that exists as a node attribute, you can add it to the model as a node covariate for either the 1st (b1) or 2nd (b2) mode.
+
+Interpretation: A positive parameter estimate for `b1cov` would suggest that nodes in the 1st mode who have greater covariate values are more likely to form edges. 
+
+## `b1factor` or `b2factor`
+
+This term is very similar to `b1cov` in that it measures the effect of a node attribute for either mode 1 (b1) or mode 2 (b2). The difference is that this is for factor data (i.e., categorical).
+
+Interpretation: A positive parameter estimate for `b1factor` for a given category of an attribute (e.g., "orange" instead of "banana" in the factor variable "fruit") would suggest that the given category of node is more likely to form bipartite edges.
+
+# Practice running a bipartite ERGM
+
+Now that we've learned the basic function of bipartite ERGMs (i.e., to model the likelihood of bipartite edge formation between Mode 1 and Mode 2), and because we've now learned some basic bipartite ergm-terms, let's run a real model!
+
+Let's use an example of a bipartite network from an existing research project - the full manuscript was published recently (Fried et al. 2022). 
+```{r, message=F, warning=F, echo=F}
+# Set working directory ---------------------------------------------------
+library(network)
+library(statnet)
+# Read in .rds files from "1_Data_ActorForum.r" ---------------------------
+af_network_full <- readRDS("af_network_full.rds")
+af_network <- af_network_full
+CollaborativeClosure <- readRDS("PartnersInForum.rds")
+```
+
+Let's take a look at the dataset that we're working with. The topic of this dataset is climate change adaptation governance in Ohio. There are two network levels, `actors` and `forums`. In this case, actors are environmental organizations, and forums represent the collaborative spaces where they come together to work towards managing issues. 
+
+Typically, when examining datasets, it's good practice to examine the data structure and size, as well as to identify important variables in the data. Let's do that for our bipartite network dataset `af_network`.
+
+```{r}
+class(af_network) #Network object
+
+#Check out summary(af_network) to learn about the structure of the data
+
+#summary(af_network) #1035 total nodes (642 in the first mode), 1705 edges, several important variables, such as forum sponsorship and actor type.
+```
+
+## Bipartite ERGM example: important variables
+
+Now that we've inspected the network dataset `af_network`, we noticed that there are 1035 total nodes (including actors and forums), and that 642 of these nodes represent actors (to find this out, we see that the results of `summary(af_network)` include the result `bipartite = 642`.) We also saw a list of important variables, including:
+
+1) `actor_issues`: 1st Mode (Organization Level) node covariate (continuous, integer), represents the number of distinct environmental issues an organization works on. The expectation is that actors who work on more issues should be more likely to attend forums because they need to learn/collaborate more.
+
+2) `OrgType`: 1st Mode (Organization Level) node factor (categorical), representing the type of organization (e.g., non-profit, university, local government, etc.). Different types of organizations likely have differing capacities (i.e., resources) to attend collaborative forums.
+
+3) `GovSponsored`: 2nd Mode (Forum Level) node covariate (binary / dummy variable), where forums that are sponsored by the government have a value of `1`, otherwise `0`. The expectation is that forums sponsored by the government are more credible and meaningful, prompting more actors to attend these forums.
+
+## Bipartite ERGM example: important variables
+
+Before we run the ERGM, let's set control parameters. Remember to check out our [future] blog post detailing ERGM control parameters for a more in-depth understanding of each of the parameters below.
+
+The specific values we will use below are much smaller than the values you'd typically use when running ERGM analyses for publications. Smaller values will help the model run more quickly (i.e., the MCMC chain takes less time because it's drawing less samples as it estimates the value for each parameter).
+```{r}
+# Set the control and seed for modeling -----------------------------------
+cont <-
+  control.ergm(
+    MCMC.burnin = 50000,
+    MCMC.samplesize = 1000,
+    MCMC.interval = 1000, 
+    seed = 123 #Always set a seed for reproducibility
+  )
+```
+
+## Bipartite ERGM example: building a model
+
+Remember that the bipartite ERGM is designed to evaluate the likelihood of an edge being formed between the two levels. So, we must add parameters to our model that we believe explain bipartite edge formation.
+
+Let's start with a very simple model, only including the parameter `edges` (which is probably the most commonly used parameter in any ERGM analysis and essentially measures network density):
+
+```{r, message=F, warning=F}
+m1 <- ergm(af_network_full ~ 
+           edges, 
+           control = cont, 
+           verbose = TRUE)
+m1 
+```
+
+We see that `edges` has a negative parameter estimate, indicating that it is unlikely for any given pair of an actor and a forum to have an edge (i.e., this is a sparse network, which is typical and expected).
+
+Let's add some more parameters to this bipartite ERGM to more fully capture variables that affect edge formation.
+
+```{r, message=F, warning=F}
+m2 <- ergm(af_network_full ~ 
+           edges +
+           b1cov("actor_issues") +
+           b1factor("OrgType") +
+           b2cov("GovSponsored"),
+           control = cont, 
+           verbose = TRUE)
+m2 
+```
+
+When we look at the results of `m2`, we see results for each category of actor type (apologies that they're not named, other than `1`, `2`, `3`, and so on...). We also see one parameter estimate for `b1cov("actor_issues")` and for `b2cov("GovSponsored")`. We used `b1cov` and `b2cov` for "actor_issues" and "GovSponsored" respectively because these two variables are node covariates, where each node has a value for each variable. The variable "actor_issues" is for Organizations - not Forums - so this exists as a first mode variable, hence `b1`. The opposite is true for "GovSponsored".  
+
+The interpretation of the `b1factor` parameter estimates for "OrgType" is nuanced and unique in that `statnet` by default uses the first "level" (i.e., first category) of the variable as a baseline, meaning that all parameter estimates for the categories are RELATIVE to the first level. In this case study, "OrgType.1" is "Federal Government" actors, so the results suggest that all actor types are less likely to participate in forums than federal government actors (as they'd have a parameter estimate of 0.00 using this logic).
+
+The negative paramter estimate for `actor_issues` indicates that actors who work on more issues are less likely to participate in forums. This is the opposite of our expectation.
+
+The positive parameter estimate for `GovSponsored` indicates that actors are more likely to participate in a forum if it is sponsored by the government.
+
+Overall, the results of this ERGM may not fully capture dependencies in the network that affect bipartite edge formation. In reality, the ERGM used in the case study's actual manuscript (Fried et al. 2022) had many more variables than we included in this tutorial. Also, the values used in the real version of this model for the control parameter were ten-fold greater than what was used in this tutorial (which caused some models to take around 20-30 minutes to run on a regular computer).
+
+## Bipartite ERGM example: adding extra parameters to improve model robustness
+
+Because in many empirical networks, there is a tendency for "popular" actors to have many edges (i.e., have a high degree), there is a need to control ERGMs by adding in extra parameters that account for differences in degree distribution of nodes in levels. In bipartite networks, we can use the parameter `gwb1degree()` or `gwb2degree()` to control for the degree distribution of the first and second modes, respectively.
+
+In an ERGM, because all parameters estimates are dependent on each other, it's essential to add control variables (different from the ERGM control parameters we described earlier, like burn-in) to account for fundamental features of the network.
+
+For starters, let's add `gwb1degree()` with a decay value of `0.4` to the model, and see how this affects goodness of fit. (As a reference, we covered what "goodness of fit" means in the first ERGM page).
+
+```{r, message=F, warning=F}
+m3 <- ergm(af_network_full ~ 
+           edges +
+           b1cov("actor_issues") +
+           b1factor("OrgType") +
+           b2cov("GovSponsored") +
+           gwb1degree(.4, T),
+           control = cont, 
+           verbose = TRUE)
+m3
+```
+
+## Bipartite ERGM example: Comparing the "model fit" of M2 and M3 using "Goodness of Fit"
+
+Let's plot and visually compare the goodness of fit of M2 and M3 to see how adding `gwb1degree` impacted fitness.
+```{r}
+gofm2 <- gof(m2)
+gofm3 <- gof(m3)
+plot(gofm2)
+plot(gofm3)
+```
+
+## Bipartite ERGM example: comparing results across models
+### Displaying ERGM results using `texreg`
+
+I highly advocate for the usage of the package `texreg` for displaying ERGM results, especially when you run multiple models that utilize overlapping parameters. The package provides a nice way to compare parameter estimates across similar models. You can use the function `screenreg` to produce a quick data table, or `htmlreg` to produce a .html version of the data table, which you can easily save to your working directory. Check `?texreg::htmlreg()` for furter details.
+
+Output for just m1 using `texreg`
+```{r}
+library(texreg)
+#Output for m1
+screenreg(list(m1), single.row = T) 
+```
+
+Output for multiple models using the package `texreg`
+```{r}
+#Output for multiple models
+screenreg(list(m1, m2, m3), single.row = T) 
+# Or, use htmlreg() to create a .html file with this output!
+# htmlreg(list(m1, m2, m3), single.row = T)
+```
+
+
+### Reference
+
+Harrison Fried, Matthew Hamilton, Ramiro Berardo, Theorizing Multilevel Closure Structures Guiding Forum Participation, Journal of Public Administration Research and Theory, 2022;, muac042, https://doi.org/10.1093/jopart/muac042
+
