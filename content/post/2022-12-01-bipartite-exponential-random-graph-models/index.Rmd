@@ -11,10 +11,8 @@ tags:
   - coding
   - statnet
   - workflow
-output: 
-  html_document:
-    toc: true
-    toc_float: true  
+toc: yes
+draft: yes
 ---
 
 # Introduction   
@@ -241,3 +239,4 @@ screenreg(list(m1, m2, m3), single.row = T)
 
 Harrison Fried, Matthew Hamilton, Ramiro Berardo, Theorizing Multilevel Closure Structures Guiding Forum Participation, Journal of Public Administration Research and Theory, 2022;, muac042, https://doi.org/10.1093/jopart/muac042
 
+ 
