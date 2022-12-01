@@ -491,3 +491,4 @@ plotd <- plot(gissuenet,
      layout=layout.fruchterman.reingold,
      main="fruchterman.reingold")
 ```
+ 
