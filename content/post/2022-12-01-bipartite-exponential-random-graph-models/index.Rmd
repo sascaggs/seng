@@ -225,7 +225,7 @@ library(texreg)
 #Output for m1
 screenreg(list(m1), single.row = T) 
 ```
-
+ 
 Output for multiple models using the package `texreg`
 ```{r}
 #Output for multiple models
