@@ -1,0 +1,315 @@
+---
+title: 'An introduction to community detection and network motifs'
+author: Shane A. Scaggs
+date: '2022-12-06'
+slug: community-detection-and-subgraph-patterns-in-networks
+categories:
+  - methods
+tags:
+  - analysis
+  - structure
+  - igraph
+  - statnet
+  - workflow
+bibliography: cd_motif.bib      
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>In this post, I will focus on two topics: community detection and subgraph motifs. In previous posts, we have discussed some basic methods for describing network structure. We used these methods to either describe the positioning of individual nodes (e.g., centrality metrics) or some global properties of a network (e.g., connectivity, average path length). Now we will focus on subgraph patterns that transcend the scale of individuals or dyads but nevertheless reside within a global network of interest.</p>
+<div id="community-detection" class="section level2">
+<h2>Community detection</h2>
+<p>Community detection is a method that we can use to identify cluster of nodes that are connected to one another than they are to other parts of the network <span class="citation">(<a href="#ref-fortunato2010community" role="doc-biblioref">Fortunato 2010</a>)</span>. We call these <em>communities</em>.</p>
+<div id="applications" class="section level3">
+<h3>Applications</h3>
+<p>Identifying communities in networks is a massive area of research. This is because of social media. If companies can detect communities within social media networks, they can use those clusters to target ads, suggest new pages and music to users, and more <span class="citation">(<a href="#ref-villa2021echo" role="doc-biblioref">Villa, Pasi, and Viviani 2021</a>)</span>.</p>
+<p>But some us might have similar goals. Suppose we work with a community of land managers who share insights about their project successes and failures. By studying these relationships and identifying communities within them, we may be able to provides insights about who else has similar outcomes. Moreover, dense subgraph communities are examples of echo chambers. We can use these community structures to help our research subjects connect with individuals who may lie outside of their typical partnerships.</p>
+<p>Many times, we study networks in which we already have attribute data about group affiliations. In this context, why would we need to use community detection? With community detection we can identify individuals who, despite being affiliated with a specific group, might fall into a different group based on their connections. It also very useful to have “ground truth” data to validate community detection results.</p>
+</div>
+<div id="community-detection-methods" class="section level3">
+<h3>Community detection methods</h3>
+<p>Community detection uses an algorithm to partition a graph into subgraphs. There are many, <em>many</em> algorithms. Today we’ll focus on some that come packaged in <code>igraph</code> and we will discuss some cutting edge options.</p>
+<pre class="r"><code>library(igraph)
+library(intergraph)</code></pre>
+<p>Let’s start by generating a network for our analysis. We’ll do this using <code>statnet</code>.</p>
+<pre class="r"><code>library(statnet)</code></pre>
+<p>This little bit of code will generate a network with <code>N</code> nodes and <code>G</code> groups. Edges form based on edge density (<code>ed</code>) within <code>group</code> homophily (<code>h</code>).</p>
+<pre class="r"><code># set seed for reproducibility 
+set.seed(777)
+
+# settings
+N  = 40       # number of nodes
+G  =  3       # number of groups
+ed = -3       # edge density (log-odds)
+h  =  2       # group homophily  
+
+# empty network 
+g = network(N, directed = F, density = 0)
+
+# create group attribute
+g %v% &#39;group&#39; = sample(1:G, size = N, replace = T)
+
+# simulate and plot netwok
+sim_g = simulate(g ~ edges + nodematch(&#39;group&#39;),  coef = c(ed,h))
+plot(sim_g, vertex.col = g %v% &#39;group&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+The graph shows some visible clustering. But let’s run some algorithms and what we get.</p>
+<pre class="r"><code># convert network to igraph 
+ig = intergraph::asIgraph(sim_g)</code></pre>
+<p>The <code>walktrap</code> algrorithm implements a <em>random walk</em> in which a random origin node is chosen and at each step, the algorithm proceeds randomly to a connected node in the adjacent neighborhood. The documentation suggests that dense communities tend to result in short random walks. This is because in a dense community, a random walk from one node to the next can rapidly take you back to where you began.</p>
+<pre class="r"><code>clust_wt = cluster_walktrap(ig, steps = 4) # 4 is default</code></pre>
+<p>The <code>edge_betweeness</code> starts by finding the node with the highest betweenness and then prunes it. This process repeats until it arrives at a rooted tree.</p>
+<pre class="r"><code>clust_eb = cluster_edge_betweenness(ig)</code></pre>
+<p>In the <code>louvain</code> algorithm, each node is placed in it’s own community and it then reassigned to a new based on the highest contribution it makes to the overall modularity score of the graph. The <code>resolution</code> parameter controls the number of communities. The default is 1, so I adjust to 0.5 to obtain fewer, albeit larger communities.</p>
+<pre class="r"><code>clust_lv = cluster_louvain(ig, resolution = 0.5)</code></pre>
+<p>The <code>leiden</code> algorithm is similar to louvain. It proceeds by reassigned nodes to new groups, partition the graph according to those assignments, and then aggregated them. A key difference is that the leiden algorithm only visits nodes which have a new local neighborhood after the partition and aggregated procedure.</p>
+<p>The leiden algorithm currently only works with <em>undirected</em> networks. For directed ones, you would need to use Python or <code>reticulate</code> in R.</p>
+<pre class="r"><code>clust_ld = cluster_leiden(ig, resolution_parameter = 0.05)</code></pre>
+</div>
+<div id="comparing-algorithms" class="section level3">
+<h3>Comparing algorithms</h3>
+<p>Now we can compare the detected communities to those that we originally assigned.</p>
+<pre class="r"><code># nmi = normalized mutual information, a conditional entropy calculation
+compare(clust_wt, V(ig)$group, method = &#39;nmi&#39;)</code></pre>
+<pre><code>## [1] 0.5879944</code></pre>
+<pre class="r"><code>compare(clust_eb, V(ig)$group, method = &#39;nmi&#39;)</code></pre>
+<pre><code>## [1] 0.6044824</code></pre>
+<pre class="r"><code>compare(clust_lv, V(ig)$group, method = &#39;nmi&#39;)</code></pre>
+<pre><code>## [1] 0.7041267</code></pre>
+<pre class="r"><code>compare(clust_ld, V(ig)$group, method = &#39;nmi&#39;)</code></pre>
+<pre><code>## [1] 0.2634199</code></pre>
+<p>Values closer to 1 indicate that there is a larger difference between the observed groupings and the detected communities. Based on this, we see that the louvain algorithm was the most confused This does not mean that louvain is a worse algorithm – certain algorithms will perform better under different circumstances. The leiden algorithm clear performs the best in this context.</p>
+<p>We can also compare the algorithm results to each other.</p>
+<pre class="r"><code>compare(clust_wt, clust_eb)</code></pre>
+<pre><code>## [1] 0.6799444</code></pre>
+<pre class="r"><code>compare(clust_wt, clust_lv)</code></pre>
+<pre><code>## [1] 0.4959008</code></pre>
+<pre class="r"><code>compare(clust_wt, clust_ld)</code></pre>
+<pre><code>## [1] 1.072275</code></pre>
+<pre class="r"><code>compare(clust_eb, clust_lv)</code></pre>
+<pre><code>## [1] 0.6943464</code></pre>
+<pre class="r"><code>compare(clust_eb, clust_ld)</code></pre>
+<pre><code>## [1] 0.8631095</code></pre>
+<pre class="r"><code>compare(clust_lv, clust_ld)</code></pre>
+<pre><code>## [1] 1.270374</code></pre>
+</div>
+<div id="steps-and-resoluton" class="section level3">
+<h3>Steps and resoluton</h3>
+<p>Let’s return to the walktrap and leiden algorithms. Recall that I included an additional parameter on these algorithms: <code>steps</code> and <code>resolution</code>. I made a rather arbitrary decision which begs a question: how should we decide how many steps these algorithms should take? Here is one way to help you decide.</p>
+<p>In principle, running an algorithm for longer should make it more certain about the number of communities that are in the graph. However, not running it long enough and you will get an inflated number of communities. But this rule of thumb really depends on the algorithm. So let’s cycle through different parameter values and look at how many communities are found.</p>
+<p>Begin by setting the largest value we want to test. It is important to go larger than you’d initially expect.</p>
+<pre class="r"><code># 100 steps 
+steps = 100 </code></pre>
+<p>Create an empty list to store results.</p>
+<pre class="r"><code>l = list()</code></pre>
+<p>Then we can use a <code>for</code> loop to run our algorithm multiple times.</p>
+<pre class="r"><code>for(i in 1:steps) {
+    c = cluster_walktrap(ig, steps = i)
+    l[[i]] = c$membership
+}</code></pre>
+<p>Each entry contains a list of membership IDs. If we calculate the number of unique IDs and then take their length, we have the number of communities returned by each run.</p>
+<pre class="r"><code>n_communties = unlist(lapply(lapply(l, unique), length))</code></pre>
+<p>Now plot the results against the vector of runs.</p>
+<pre class="r"><code>plot(1:steps, n_communties, type=&#39;o&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+We see that step values under 20 produce more variable numbers of communities. If we chose anything between 5 and 20, we would receive 4 communities, but once we go about 22, the algorithm stabilizes on 2 communities. Any value larger than 22 should be acceptable.</p>
+<p>Let’s do the same thing, but for the resolution parameter.</p>
+<pre class="r"><code>r = seq(0.001,1, length=200)
+l = list()
+for(i in 1:length(r)) {
+    c = cluster_leiden(ig, resolution_parameter = r[i])
+    l[[i]] = c$membership
+}
+n_communties = unlist(lapply(lapply(l, unique), length))
+plot(1:length(r), n_communties, type=&#39;o&#39;)
+abline(a=3,b=0, lty=2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>This graph is a bit more complicated. The leiden algorithm is capable of generate up to <code>N</code> communities when the resolution = 1. So how should we decide? Well I’ve plotted a reference line for the number of observed groups. One approach would be to select a resolution that gives that number of groups so that we can compare the placement of nodes in both cases. For other applications, or when no a priori groups are defined, we might opt for additional communities.</p>
+</div>
+<div id="visualize-communities" class="section level3">
+<h3>Visualize communities</h3>
+<p><code>igraph</code> has built in methods for visualizing the communities that were detected. We can do this by place both the community and the graph in the <code>plot</code> function.</p>
+<pre class="r"><code>par(mfrow=c(2,3), mar=c(1,1,1,1))
+plot(ig, 
+     vertex.color = V(ig)$group, 
+     layout=layout_with_kk, 
+     main=&#39;Original&#39;)
+plot(clust_wt, ig, layout=layout_with_kk, main=&#39;Walktrap&#39;)
+plot(clust_eb, ig, layout=layout_with_kk, main=&#39;Edge betweenness&#39;)
+plot(clust_lv, ig, layout=layout_with_kk, main=&#39;Louvain&#39;)
+plot(clust_ld, ig, layout=layout_with_kk, main=&#39;Leiden&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" />
+These visuals can be a bit messy, but they do make three things clear:</p>
+<ol style="list-style-type: decimal">
+<li>Red edges indicate connections <em>between</em> communities, according to the algorithm.</li>
+<li>Bubbles show community boundaries and indicate how many communities were detected. All three algorithms found more communities that observed groups.</li>
+<li>Some nodes fall into multiple bubbles. These indicate nodes that are likely go-betweens.</li>
+</ol>
+<p>We can extract memberships from the results and add them graphs. Here is an example from <code>louvain</code>.</p>
+<pre class="r"><code>par(mfrow=c(1,1))
+mem_lv = clust_lv$membership
+V(ig)$mem_lv = mem_lv
+plot(ig, 
+     vertex.color = V(ig)$mem_lv, 
+     layout=layout_with_kk, 
+     main=&#39;Louvain memberships&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+</div>
+<div id="motifs" class="section level2">
+<h2>Motifs</h2>
+<p>Switch gears, let’s talk about motifs. A motif is a specific pattern of nodes and edges. We can think about motifs are structural building blocks that underlie the structure of a network <span class="citation">(<a href="#ref-bodin2009role" role="doc-biblioref">Bodin and Crona 2009</a>)</span>. Our earliest exposure to this idea was when we talked about triads. In an undirected network, there are four possible triads, each representing a different kind of motif.</p>
+<p>As we study networks, we may have specific network configurations in mind that are indicative of specific processes. As a cursory comparison, we can thinking about a hierachical star pattern compared to a circlical pattern.</p>
+<pre class="r"><code>par(mfrow=c(1,2), mar=c(1,1,1,1))
+cyc = rbind(c(1,2),c(2,3),c(3,4),c(4,1))
+cyc = network(cyc, directed = F)
+star = rbind(c(1,2),c(1,3),c(1,4))
+star = network(star, directed = F)
+gplot(cyc, arrowhead.cex = 0)
+gplot(star, arrowhead.cex = 0)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" />
+In a structural sense, these two motifs have very different properties. There average path lengths are different and they are less or more centralized with respect to the degree centrality.</p>
+<pre class="r"><code>centralization(cyc, degree)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>centralization(star, degree)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>average.path.length(asIgraph(cyc))</code></pre>
+<pre><code>## [1] 1.333333</code></pre>
+<pre class="r"><code>average.path.length(asIgraph(star))</code></pre>
+<pre><code>## [1] 1.5</code></pre>
+<p>Studying the presence of these motifs within a network might help you understand the social dynamics that are driving the network structure. So how can we do this?</p>
+<div id="subgraph-isomorphism" class="section level3">
+<h3>Subgraph isomorphism</h3>
+<p>Two graphs are said to be isomorphic is they have the same structure, even if the node and edge labels differ. Rarely is it helpful to compare two full networks this way, so most people look for <em>subgraph isomorphisms</em>.</p>
+<p>To do this, we specify a subgraph a pattern of interest. Then we can ask 1) whether that pattern is present anywhere in the network, and 2) how many times that pattern occurs. Let’s try this out using the two patterns above as examples.</p>
+<p>First, we apply the <code>subgraph_isomorphism</code> function within <code>igraph</code>. This function accepts a specific <code>pattern</code> and a <code>target</code> graph. For anyone who has used <code>grep</code>, this process should seem familiar.</p>
+<p>The patterns you provide need to be igraph objects, so let’s check ours.</p>
+<pre class="r"><code>is.igraph(cyc)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>is.igraph(star)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>They are not, so we’ll convert them using <code>intergraph</code>.</p>
+<pre class="r"><code>cyc.ig = asIgraph(cyc)
+star.ig = asIgraph(star)</code></pre>
+<p>Now let’s plug them in.</p>
+<pre class="r"><code>subgraph_isomorphic(cyc.ig, ig)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>subgraph_isomorphic(star.ig, ig)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>They both exist at least once in the network. Makes a lot sense since these are very generic patterns.</p>
+<p>Now can use the same method to identify every set of vertices which are part of one of these two patterns using <code>subgraph_isomorphisms</code>.</p>
+<pre class="r"><code>cyc.iso = subgraph_isomorphisms(cyc.ig, ig)
+star.iso = subgraph_isomorphisms(star.ig, ig)</code></pre>
+<p>The function returns a list where every entry is a vertex set. Let’s take a look at the first 6 entries.</p>
+<pre class="r"><code>head(cyc.iso)</code></pre>
+<pre><code>## [[1]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1 26 38  6
+## 
+## [[2]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1 26 38  8
+## 
+## [[3]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1  8 38 26
+## 
+## [[4]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1  8 38  6
+## 
+## [[5]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1  6 38  8
+## 
+## [[6]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1  6 38 26</code></pre>
+<pre class="r"><code>head(star.iso)</code></pre>
+<pre><code>## [[1]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1 26  6  8
+## 
+## [[2]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1 26  8  6
+## 
+## [[3]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1  8 26  6
+## 
+## [[4]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1  8  6 26
+## 
+## [[5]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1  6  8 26
+## 
+## [[6]]
+## + 4/40 vertices, from c7c70de:
+## [1]  1  6 26  8</code></pre>
+<p>One thing we can do is count them up.</p>
+<pre class="r"><code>length(cyc.iso)</code></pre>
+<pre><code>## [1] 624</code></pre>
+<pre class="r"><code>length(star.iso)</code></pre>
+<pre><code>## [1] 3876</code></pre>
+<p>We find there are many more stars then that are cycles. A simple reason for this is that there is one addition edge in a cycle.</p>
+<p>If we used <code>induced  = T</code>, then the resulting list will contain new subgraph objects. This is helpful if you wish to plot every subgraph.</p>
+<pre class="r"><code>cyc.iso = subgraph_isomorphisms(cyc.ig, ig, induced = T)
+star.iso = subgraph_isomorphisms(star.ig, ig, induced = T)</code></pre>
+<p>Another cool feature of these functions is the ability to specify <code>domains</code> – these are specific subsets of vertices that we can use to constrain the search for isomorphisms. To try this out, let’s use a slightly more complicated pattern.</p>
+<p>First we want to isolate a set of vertices to search. We can do this using the <code>group</code> attribute.</p>
+<pre class="r"><code>group1 = V(ig)$vertex.names[ V(ig)$group == 1 ]
+group2 = V(ig)$vertex.names[ V(ig)$group == 2 ]
+group3 = V(ig)$vertex.names[ V(ig)$group == 3 ]</code></pre>
+<p>Now we construct a list that labels each group set as a domain.</p>
+<pre class="r"><code>domains = list(`1` = group1,
+               `2` = group2, 
+               `3` = group3)</code></pre>
+<p>I’m going simulate a small graph using a preferential attachment simulation. We need a separate attachment simulation for each group because the pattern must be of the same size as the domain of interest.</p>
+<pre class="r"><code>set.seed(777)
+pa1 = barabasi.game(length(group1), power = 2, directed = F)
+pa2 = barabasi.game(length(group2), power = 2, directed = F)
+pa3 = barabasi.game(length(group3), power = 2, directed = F)
+
+par(mfrow=c(1,3), mar=c(1,1,1,1))
+plot(pa1)
+plot(pa2)
+plot(pa3)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-30-1.png" width="672" />
+I suspect it is very unlikely that we will find these networks in our domains but let’s proceed.</p>
+<p>Then we run the function as before with the <code>domains</code> object included.</p>
+<pre class="r"><code>iso1 = subgraph_isomorphisms(pattern = pa1, 
+                             target = ig, 
+                             domains = domains)</code></pre>
+<p>***I haven’t been able to get this code to run properly so I am still debugging, but this is the general process.</p>
+</div>
+</div>
+<div id="parting-thoughts" class="section level2">
+<h2>Parting thoughts</h2>
+<div id="community-detection-1" class="section level4">
+<h4>Community detection</h4>
+<p>This cursory introduction shows us how to use communtity detection, some specific applications, and a general workflow. But there are many algorithms to explore. For example, we have at all discussed deep learning or neural networks. These are possible topics for future meetings.</p>
+<p>IF you want to learn more, I noticed there are several <a href="https://scholar.google.com/scholar?hl=en&amp;as_sdt=0%2C36&amp;q=%22community+detection%22+AND+%22neural+networks%22+AND+review&amp;btnG=">recent preprints</a> that discuss these topics.</p>
+</div>
+<div id="motifs-1" class="section level3">
+<h3>Motifs</h3>
+<p>We have hardly scratched the surface of motifs. Mostly due to a lack of time. But one package you may want to check out is <code>motifr</code>. This package assists with motif analysis, particular in multilevel/multilayer networks.</p>
+</div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2>References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-bodin2009role" class="csl-entry">
+Bodin, Örjan, and Beatrice I Crona. 2009. <span>“The Role of Social Networks in Natural Resource Governance: What Relational Patterns Make a Difference?”</span> <em>Global Environmental Change</em> 19 (3): 366–74.
+</div>
+<div id="ref-fortunato2010community" class="csl-entry">
+Fortunato, Santo. 2010. <span>“Community Detection in Graphs.”</span> <em>Physics Reports</em> 486 (3-5): 75–174.
+</div>
+<div id="ref-villa2021echo" class="csl-entry">
+Villa, Giacomo, Gabriella Pasi, and Marco Viviani. 2021. <span>“Echo Chamber Detection and Analysis.”</span> <em>Social Network Analysis and Mining</em> 11 (1): 1–17.
+</div>
+</div>
+</div>
