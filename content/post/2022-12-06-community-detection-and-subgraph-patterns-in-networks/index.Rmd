@@ -89,7 +89,7 @@ clust_eb = cluster_edge_betweenness(ig)
 In the `louvain` algorithm, each node is placed in it's own community and it then reassigned to a new based on the highest contribution it makes to the overall modularity score of the graph. The `resolution` parameter controls the number of communities. The default is 1, so I adjust to 0.5 to obtain fewer, albeit larger communities. 
 
 ```{r}
-clust_lv = cluster_louvain(ig, resolution = 0.5)
+clust_lv = cluster_louvain(ig, resolution = 0.55)
 ```
 
 The `leiden` algorithm is similar to louvain. It proceeds by reassigned nodes to new groups, partition the graph according to those assignments, and then aggregated them. A key difference is that the leiden algorithm only visits nodes which have a new local neighborhood after the partition and aggregated procedure. 
@@ -181,6 +181,19 @@ abline(a=3,b=0, lty=2)
 ```
 
 This graph is a bit more complicated. The leiden algorithm is capable of generate up to `N` communities when the resolution = 1. So how should we decide? Well I've plotted a reference line for the number of observed groups. One approach would be to select a resolution that gives that number of groups so that we can compare the placement of nodes in both cases. For other applications, or when no a priori groups are defined, we might opt for additional communities.
+
+
+```{r}
+r = seq(0.001,1, length=500)
+l = list()
+for(i in 1:length(r)) {
+    c = cluster_louvain(ig, resolution  = r[i])
+    l[[i]] = c$membership
+}
+n_communties = unlist(lapply(lapply(l, unique), length))
+plot(1:length(r), n_communties, type='o')
+abline(a=3,b=0, lty=2)
+```
 
 ### Visualize communities  
 
