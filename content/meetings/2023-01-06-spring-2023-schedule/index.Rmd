@@ -23,7 +23,7 @@ This semester, we will have 7 meetings. Something new we are doing this semester
 
 Date                                                 Topic              Location
 ------------------------  --------------------------------  --------------------
-2023-01-27                              Geographic Networks                 Zoom
+2023-01-27                              Geographic Networks                  Zoom
 2022-02-10                              Informal Workshop I        Pomerene Hall
 2022-02-24                      Advanced Data Visualization                 Zoom
 2022-03-10                             Application of ERGMs        Pomerene Hall
