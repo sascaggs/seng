@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+<title>Bipartite Exponential Random Graph Models - Social Ecological Networks Group</title>
+<meta property="og:title" content="Bipartite Exponential Random Graph Models - Social Ecological Networks Group">
+
+
+  <link href='https://seng.netlify.app/images/SENG_Circle_NoOutline.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/SENG_Circle_NoOutline.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="/people/">Contributors</a></li>
+    
+    <li><a href="/post/">Posts</a></li>
+    
+    <li><a href="/canon/">Canon</a></li>
+    
+    <li><a href="/meetings/">Meetings</a></li>
+    
+    <li><a href="/contact/">Contact</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    
+    
+    
+    <h1 class="article-title">Bipartite Exponential Random Graph Models</h1>
+    <span class="article-duration">14 min read</span>
+    <span class="author">Harrison Fried</span> <br>
+    <span class="article-date">2022-11-18</span>
+    <br>
+    <p class="terms">
+      
+      
+      Categories:
+      
+      <a href='/categories/methods'>methods</a>
+       <br>
+      
+      
+      
+      Tags:
+      
+      <a href='/tags/analysis'>analysis</a>
+      
+      <a href='/tags/bipartite'>bipartite</a>
+      
+      <a href='/tags/coding'>coding</a>
+      
+      <a href='/tags/statnet'>statnet</a>
+      
+      <a href='/tags/workflow'>workflow</a>
+       <br>
+      
+       <br>
+    </p>
+    
+
+
+    
+
+    <div class="article-content">
+      
+<script src="https://seng.netlify.app/2022/11/18/bipartite-exponential-random-graph-models/index_files/header-attrs/header-attrs.js"></script>
+
+<div id="TOC">
+
+</div>
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>We have already discussed a lot about Exponential Random Graph Models (ERGMs) in the first tutorial. However, there’s much more to learn! Many times, researchers would like to run ERGMs for network datasets that are not binary, and determine how complex variables influence the probability of a network connection. For example, additional methods exist for using ERGMs with networks that have bipartite (two-mode) data and longitudinal (dynamic networks across time) data. On this page, we will discuss both bipartite and longitudinal ERGMs.</p>
+<p>Remember that to use ERGMs, we use the <a href="https://statnet.org/packages/"><code>statnet</code></a> suite of packages, one of which is the <code>ergm</code> package. If you haven’t already, install <code>statnet</code>.</p>
+<pre class="r"><code>#install statnet suite
+#install.packages(&#39;network&#39;, dependencies = T)
+#install.packages(&#39;statnet&#39;, dependencies = T)
+library(statnet)
+#You may need to update your statnet package if you haven&#39;t in a while, you can do so by doing &quot; statnet::update_statnet() &quot;</code></pre>
+</div>
+<div id="refresher---what-is-an-ergm" class="section level1">
+<h1>Refresher - what is an ERGM?</h1>
+<p>ERGMs can model the structural dependencies in a relational data object. In other words, for a measured empirical network, what are the underlying processes of edge formation that formed the network we see before us? ERGMs essentially measure the probability of an edge forming between a given pair of nodes; we can use an ERGM to estimate both the probability and uncertainty that such an edge exists in a given graph. As described in the first part of our ERGMs conversation, more conventional statistical approaches fail in this endeavor because they assume that observations are independent, and we are specifically interested in the dependence of our observations.</p>
+<p>There are many different types of ERGMs. Each variation is used to model networks with different kinds of edges, for instance:</p>
+<p>Two types of ERGMs we have covered or will cover in this page:
+- Binary ERGMs are for edges that are present or absent (we focused on this for the majority of the ERGMs part 1).
+- Bipartite ERGMs for multi-level (two-mode) networks; edges are between nodes of mode a and mode b (not within-mode).</p>
+<p>Three additional types of ERGMs that we won’t cover in this page:
+- Valued ERGMs (VERGMs) are for weighted networks; edges &gt; 1.
+- Bayesian ERGMs (BERGMs) for probabilistic networks; edges are probabilities.
+- Temporal ERGMs (TERGMs) for longitudinal networks; edges turn on and off over time.</p>
+</div>
+<div id="control-variables" class="section level1">
+<h1>Control variables</h1>
+<p>When running an ERGM, it is important to set controls for the MCMCMLE process, which can be used to help the model converge (such as by allowing it to run for longer), or to ensure replicability (such as by setting a seed).</p>
+<p>For a more in-depth description of setting control parameters, as well as switching them around to achieve model convergence (in the case of a degenerate model), we plan to have a SENG event in the near future dedicated to understanding ERGM control terms.</p>
+</div>
+<div id="advanced-ergms-for-different-types-of-networks" class="section level1">
+<h1>Advanced ERGMs for Different Types of Networks</h1>
+<div id="bipartite-ergms" class="section level2">
+<h2>Bipartite ERGMs</h2>
+<p>###A refresher on bipartite networks and introduction to bipartite ERGMs</p>
+<p>First, we’ll start by discussing bipartite ERGMs. Let’s first revisit what bipartite networks are. These networks have two “levels” (i.e., two types of nodes - termed “modes”). Common examples of bipartite networks exist everywhere, such as networks of politicians (mode 1) and the bills they sponsor (mode 2). Or in the case of a group of individual people (mode 1) and the habitat patches they utilize for resources (mode 2).</p>
+<p>The goal of bipartite ERGMs is to measure the tendency of an edge to form between any pair of nodes from mode 1 and mode 2. So, what is the probability of an edge to form between a politician and a bill? Or, what is the probability of an edge to form between an individual person and a habitat patch?</p>
+<p>Well, these probabilities are typically based on a series of variables. Each of these variables can be added to a bipartite ERGM.</p>
+</div>
+</div>
+<div id="common-bipartite-ergm-terms-that-researchers-add-to-their-models" class="section level1">
+<h1>Common bipartite ERGM terms that researchers add to their models</h1>
+<p>Just as with the simpler binary ERGMs we discussed at the first ERGM SENG event/post, there is a wide-ranging suite of pre-programmed terms that a researcher can add into a bipartite ERGM.</p>
+<p>To view the most common “ERGM terms” that researchers can add to their models, you can type into your console <code>help("ergm-terms")</code>, or follow this link: <a href="https://www.rdocumentation.org/packages/ergm/versions/3.9.4/topics/ergm-terms" class="uri">https://www.rdocumentation.org/packages/ergm/versions/3.9.4/topics/ergm-terms</a>. The link will take you to a website that has a concise table of all pre-programmed statnet ergm-terms, as well as information about their potential uses.</p>
+<p>To understand which ergm-terms can be used in bipartite analyses, look for the column “Unip/bip” (which means Unipartite/Bipartite). The ergm-terms listed as “both” or “bipartite” can be added to bipartite ERGMs.</p>
+<p>Below are some common ERGM terms that are unique to bipartite ERGM analysis - so this list does not include <code>edges</code> although most bipartite ERGMs indeed add the term <code>edges</code>.</p>
+<div id="b1degree-or-b2degree" class="section level2">
+<h2><code>b1degree</code> or <code>b2degree</code></h2>
+<p><code>b1degree</code> is different from <code>b2degree</code> in that the former is a measurement for mode 1, and the latter is a measurement for mode 2. So, it’s essential to understand in your network which mode is mode 1 and which is mode 2. These terms measure the number of mode 1 or mode 2 nodes (respectively) of degree x.</p>
+<p>Interpretation: A positive parameter estimate for b1degree would indicate a tendency for “preferential attachment” or centralization of bipartite edges connected to nodes in Mode 1. Meaning, most bipartite edges would connect to a small group of nodes in Mode 1 (rather than randomly distributed across the nodes in Mode 1).</p>
+</div>
+<div id="b1cov-or-b2cov" class="section level2">
+<h2><code>b1cov</code> or <code>b2cov</code></h2>
+<p>Similarly, the <code>1</code> or <code>2</code> indicate the mode in question. This term measures the effect of a covariate for the first or second mode in a bipartite network. In other words, if you have data for a continuous, independent variable that you think explains edge formation, that exists as a node attribute, you can add it to the model as a node covariate for either the 1st (b1) or 2nd (b2) mode.</p>
+<p>Interpretation: A positive parameter estimate for <code>b1cov</code> would suggest that nodes in the 1st mode who have greater covariate values are more likely to form edges.</p>
+</div>
+<div id="b1factor-or-b2factor" class="section level2">
+<h2><code>b1factor</code> or <code>b2factor</code></h2>
+<p>This term is very similar to <code>b1cov</code> in that it measures the effect of a node attribute for either mode 1 (b1) or mode 2 (b2). The difference is that this is for factor data (i.e., categorical).</p>
+<p>Interpretation: A positive parameter estimate for <code>b1factor</code> for a given category of an attribute (e.g., “orange” instead of “banana” in the factor variable “fruit”) would suggest that the given category of node is more likely to form bipartite edges.</p>
+</div>
+</div>
+<div id="practice-running-a-bipartite-ergm" class="section level1">
+<h1>Practice running a bipartite ERGM</h1>
+<p>Now that we’ve learned the basic function of bipartite ERGMs (i.e., to model the likelihood of bipartite edge formation between Mode 1 and Mode 2), and because we’ve now learned some basic bipartite ergm-terms, let’s run a real model!</p>
+<p>Let’s use an example of a bipartite network from an existing research project - the full manuscript was published recently (Fried et al. 2022).</p>
+<p>Let’s take a look at the dataset that we’re working with. The topic of this dataset is climate change adaptation governance in Ohio. There are two network levels, <code>actors</code> and <code>forums</code>. In this case, actors are environmental organizations, and forums represent the collaborative spaces where they come together to work towards managing issues.</p>
+<p>Typically, when examining datasets, it’s good practice to examine the data structure and size, as well as to identify important variables in the data. Let’s do that for our bipartite network dataset <code>af_network</code>.</p>
+<pre class="r"><code>class(af_network) #Network object</code></pre>
+<pre><code>## [1] &quot;network&quot;</code></pre>
+<pre class="r"><code>#Check out summary(af_network) to learn about the structure of the data
+
+#summary(af_network) #1035 total nodes (642 in the first mode), 1705 edges, several important variables, such as forum sponsorship and actor type.</code></pre>
+<div id="bipartite-ergm-example-important-variables" class="section level2">
+<h2>Bipartite ERGM example: important variables</h2>
+<p>Now that we’ve inspected the network dataset <code>af_network</code>, we noticed that there are 1035 total nodes (including actors and forums), and that 642 of these nodes represent actors (to find this out, we see that the results of <code>summary(af_network)</code> include the result <code>bipartite = 642</code>.) We also saw a list of important variables, including:</p>
+<ol style="list-style-type: decimal">
+<li><p><code>actor_issues</code>: 1st Mode (Organization Level) node covariate (continuous, integer), represents the number of distinct environmental issues an organization works on. The expectation is that actors who work on more issues should be more likely to attend forums because they need to learn/collaborate more.</p></li>
+<li><p><code>OrgType</code>: 1st Mode (Organization Level) node factor (categorical), representing the type of organization (e.g., non-profit, university, local government, etc.). Different types of organizations likely have differing capacities (i.e., resources) to attend collaborative forums.</p></li>
+<li><p><code>GovSponsored</code>: 2nd Mode (Forum Level) node covariate (binary / dummy variable), where forums that are sponsored by the government have a value of <code>1</code>, otherwise <code>0</code>. The expectation is that forums sponsored by the government are more credible and meaningful, prompting more actors to attend these forums.</p></li>
+</ol>
+</div>
+<div id="bipartite-ergm-example-important-variables-1" class="section level2">
+<h2>Bipartite ERGM example: important variables</h2>
+<p>Before we run the ERGM, let’s set control parameters. Remember to check out our [future] blog post detailing ERGM control parameters for a more in-depth understanding of each of the parameters below.</p>
+<p>The specific values we will use below are much smaller than the values you’d typically use when running ERGM analyses for publications. Smaller values will help the model run more quickly (i.e., the MCMC chain takes less time because it’s drawing less samples as it estimates the value for each parameter).</p>
+<pre class="r"><code># Set the control and seed for modeling -----------------------------------
+cont &lt;-
+  control.ergm(
+    MCMC.burnin = 50000,
+    MCMC.samplesize = 1000,
+    MCMC.interval = 1000, 
+    seed = 123 #Always set a seed for reproducibility
+  )</code></pre>
+</div>
+<div id="bipartite-ergm-example-building-a-model" class="section level2">
+<h2>Bipartite ERGM example: building a model</h2>
+<p>Remember that the bipartite ERGM is designed to evaluate the likelihood of an edge being formed between the two levels. So, we must add parameters to our model that we believe explain bipartite edge formation.</p>
+<p>Let’s start with a very simple model, only including the parameter <code>edges</code> (which is probably the most commonly used parameter in any ERGM analysis and essentially measures network density):</p>
+<pre class="r"><code>m1 &lt;- ergm(af_network_full ~ 
+           edges, 
+           control = cont, 
+           verbose = TRUE)
+m1 </code></pre>
+<pre><code>## 
+## Call:
+## ergm(formula = af_network_full ~ edges, control = cont, verbose = TRUE)
+## 
+## Maximum Likelihood Coefficients:
+##  edges  
+## -4.993</code></pre>
+<p>We see that <code>edges</code> has a negative parameter estimate, indicating that it is unlikely for any given pair of an actor and a forum to have an edge (i.e., this is a sparse network, which is typical and expected).</p>
+<p>Let’s add some more parameters to this bipartite ERGM to more fully capture variables that affect edge formation.</p>
+<pre class="r"><code>m2 &lt;- ergm(af_network_full ~ 
+           edges +
+           b1cov(&quot;actor_issues&quot;) +
+           b1factor(&quot;OrgType&quot;) +
+           b2cov(&quot;GovSponsored&quot;),
+           control = cont, 
+           verbose = TRUE)
+m2 </code></pre>
+<pre><code>## 
+## Call:
+## ergm(formula = af_network_full ~ edges + b1cov(&quot;actor_issues&quot;) + 
+##     b1factor(&quot;OrgType&quot;) + b2cov(&quot;GovSponsored&quot;), control = cont, 
+##     verbose = TRUE)
+## 
+## Maximum Likelihood Coefficients:
+##              edges  b1cov.actor_issues  b1factor.OrgType.2  b1factor.OrgType.3  
+##           -3.63364            -0.49018            -0.01069            -1.49184  
+## b1factor.OrgType.4  b1factor.OrgType.5  b1factor.OrgType.6  b1factor.OrgType.7  
+##           -1.88065            -2.09815            -1.56695            -0.63032  
+## b1factor.OrgType.8  b2cov.GovSponsored  
+##           -1.40663             0.10822</code></pre>
+<p>When we look at the results of <code>m2</code>, we see results for each category of actor type (apologies that they’re not named, other than <code>1</code>, <code>2</code>, <code>3</code>, and so on…). We also see one parameter estimate for <code>b1cov("actor_issues")</code> and for <code>b2cov("GovSponsored")</code>. We used <code>b1cov</code> and <code>b2cov</code> for “actor_issues” and “GovSponsored” respectively because these two variables are node covariates, where each node has a value for each variable. The variable “actor_issues” is for Organizations - not Forums - so this exists as a first mode variable, hence <code>b1</code>. The opposite is true for “GovSponsored”.</p>
+<p>The interpretation of the <code>b1factor</code> parameter estimates for “OrgType” is nuanced and unique in that <code>statnet</code> by default uses the first “level” (i.e., first category) of the variable as a baseline, meaning that all parameter estimates for the categories are RELATIVE to the first level. In this case study, “OrgType.1” is “Federal Government” actors, so the results suggest that all actor types are less likely to participate in forums than federal government actors (as they’d have a parameter estimate of 0.00 using this logic).</p>
+<p>The negative paramter estimate for <code>actor_issues</code> indicates that actors who work on more issues are less likely to participate in forums. This is the opposite of our expectation.</p>
+<p>The positive parameter estimate for <code>GovSponsored</code> indicates that actors are more likely to participate in a forum if it is sponsored by the government.</p>
+<p>Overall, the results of this ERGM may not fully capture dependencies in the network that affect bipartite edge formation. In reality, the ERGM used in the case study’s actual manuscript (Fried et al. 2022) had many more variables than we included in this tutorial. Also, the values used in the real version of this model for the control parameter were ten-fold greater than what was used in this tutorial (which caused some models to take around 20-30 minutes to run on a regular computer).</p>
+</div>
+<div id="bipartite-ergm-example-adding-extra-parameters-to-improve-model-robustness" class="section level2">
+<h2>Bipartite ERGM example: adding extra parameters to improve model robustness</h2>
+<p>Because in many empirical networks, there is a tendency for “popular” actors to have many edges (i.e., have a high degree), there is a need to control ERGMs by adding in extra parameters that account for differences in degree distribution of nodes in levels. In bipartite networks, we can use the parameter <code>gwb1degree()</code> or <code>gwb2degree()</code> to control for the degree distribution of the first and second modes, respectively.</p>
+<p>In an ERGM, because all parameters estimates are dependent on each other, it’s essential to add control variables (different from the ERGM control parameters we described earlier, like burn-in) to account for fundamental features of the network.</p>
+<p>For starters, let’s add <code>gwb1degree()</code> with a decay value of <code>0.4</code> to the model, and see how this affects goodness of fit. (As a reference, we covered what “goodness of fit” means in the first ERGM page).</p>
+<pre class="r"><code>m3 &lt;- ergm(af_network_full ~ 
+           edges +
+           b1cov(&quot;actor_issues&quot;) +
+           b1factor(&quot;OrgType&quot;) +
+           b2cov(&quot;GovSponsored&quot;) +
+           gwb1degree(.4, T),
+           control = cont, 
+           verbose = TRUE)
+m3</code></pre>
+<pre><code>## 
+## Call:
+## ergm(formula = af_network_full ~ edges + b1cov(&quot;actor_issues&quot;) + 
+##     b1factor(&quot;OrgType&quot;) + b2cov(&quot;GovSponsored&quot;) + gwb1degree(0.4, 
+##     T), control = cont, verbose = TRUE)
+## 
+## Last MCMC sample of size 3315 based on:
+##              edges  b1cov.actor_issues  b1factor.OrgType.2  b1factor.OrgType.3  
+##          -3.667204           -0.140995            0.002515           -0.554089  
+## b1factor.OrgType.4  b1factor.OrgType.5  b1factor.OrgType.6  b1factor.OrgType.7  
+##          -0.637835           -0.694503           -0.576316           -0.318346  
+## b1factor.OrgType.8  b2cov.GovSponsored   gwb1deg.fixed.0.4  
+##          -0.537159            0.107896           -4.150561  
+## 
+## Monte Carlo Maximum Likelihood Coefficients:
+##              edges  b1cov.actor_issues  b1factor.OrgType.2  b1factor.OrgType.3  
+##           -3.66034            -0.15414            -0.00961            -0.55752  
+## b1factor.OrgType.4  b1factor.OrgType.5  b1factor.OrgType.6  b1factor.OrgType.7  
+##           -0.64601            -0.69886            -0.58173            -0.32547  
+## b1factor.OrgType.8  b2cov.GovSponsored   gwb1deg.fixed.0.4  
+##           -0.53880             0.10918            -4.15039</code></pre>
+</div>
+<div id="bipartite-ergm-example-comparing-the-model-fit-of-m2-and-m3-using-goodness-of-fit" class="section level2">
+<h2>Bipartite ERGM example: Comparing the “model fit” of M2 and M3 using “Goodness of Fit”</h2>
+<p>You also plot and visually compare the goodness of fit of M2 and M3 to see how adding <code>gwb1degree</code> impacted fitness.</p>
+<pre class="r"><code>gofm2 &lt;- gof(m2)
+gofm3 &lt;- gof(m3)
+plot(gofm2)
+plot(gofm3)</code></pre>
+</div>
+<div id="bipartite-ergm-example-comparing-results-across-models" class="section level2">
+<h2>Bipartite ERGM example: comparing results across models</h2>
+<div id="displaying-ergm-results-using-texreg" class="section level3">
+<h3>Displaying ERGM results using <code>texreg</code></h3>
+<p>I highly advocate for the usage of the package <code>texreg</code> for displaying ERGM results, especially when you run multiple models that utilize overlapping parameters. The package provides a nice way to compare parameter estimates across similar models. You can use the function <code>screenreg</code> to produce a quick data table, or <code>htmlreg</code> to produce a .html version of the data table, which you can easily save to your working directory. Check <code>?texreg::htmlreg()</code> for furter details.</p>
+<p>Output for just m1 using <code>texreg</code></p>
+<pre class="r"><code>library(texreg)</code></pre>
+<pre><code>## Warning: package &#39;texreg&#39; was built under R version 4.1.3</code></pre>
+<pre><code>## Version:  1.38.6
+## Date:     2022-04-06
+## Author:   Philip Leifeld (University of Essex)
+## 
+## Consider submitting praise using the praise or praise_interactive functions.
+## Please cite the JSS article in your publications -- see citation(&quot;texreg&quot;).</code></pre>
+<pre class="r"><code>#Output for m1
+screenreg(list(m1), single.row = T) </code></pre>
+<pre><code>## 
+## ====================================
+##                 Model 1             
+## ------------------------------------
+## edges               -4.99 (0.02) ***
+## ------------------------------------
+## AIC              20390.57           
+## BIC              20401.01           
+## Log Likelihood  -10194.28           
+## ====================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
+<p>Output for multiple models using the package <code>texreg</code></p>
+<pre class="r"><code>#Output for multiple models
+screenreg(list(m1, m2, m3), single.row = T) </code></pre>
+<pre><code>## 
+## ==================================================================================
+##                     Model 1               Model 2              Model 3            
+## ----------------------------------------------------------------------------------
+## edges                   -4.99 (0.02) ***     -3.63 (0.07) ***     -3.66 (0.06) ***
+## b1cov.actor_issues                           -0.49 (0.21) *       -0.15 (0.12)    
+## b1factor.OrgType.2                           -0.01 (0.09)         -0.01 (0.08)    
+## b1factor.OrgType.3                           -1.49 (0.12) ***     -0.56 (0.08) ***
+## b1factor.OrgType.4                           -1.88 (0.10) ***     -0.65 (0.07) ***
+## b1factor.OrgType.5                           -2.10 (0.09) ***     -0.70 (0.07) ***
+## b1factor.OrgType.6                           -1.57 (0.11) ***     -0.58 (0.07) ***
+## b1factor.OrgType.7                           -0.63 (0.08) ***     -0.33 (0.07) ***
+## b1factor.OrgType.8                           -1.41 (0.12) ***     -0.54 (0.08) ***
+## b2cov.GovSponsored                            0.11 (0.05) *        0.11 (0.05) *  
+## gwb1deg.fixed.0.4                                                 -4.15 (0.12) ***
+## ----------------------------------------------------------------------------------
+## AIC                  20390.57             19287.65             18114.07           
+## BIC                  20401.01             19392.03             18228.89           
+## Log Likelihood      -10194.28             -9633.82             -9046.03           
+## ==================================================================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
+<pre class="r"><code># Or, use htmlreg() to create a .html file with this output!
+# htmlreg(list(m1, m2, m3), single.row = T)</code></pre>
+</div>
+<div id="reference" class="section level3">
+<h3>Reference</h3>
+<p>Harrison Fried, Matthew Hamilton, Ramiro Berardo, Theorizing Multilevel Closure Structures Guiding Forum Participation, Journal of Public Administration Research and Theory, 2022;, muac042, <a href="https://doi.org/10.1093/jopart/muac042" class="uri">https://doi.org/10.1093/jopart/muac042</a></p>
+</div>
+</div>
+</div>
+
+    </div>
+  </article>
+  
+  <aside> 
+  
+  </aside>
+
+  
+
+
+</main>
+
+<footer class="footer">
+        <ul class="footer-links">
+          
+          <h2> <strong> Social Ecological Networks Group </strong> </h2>
+          <img src = "/images/SENG_Circle_NoOutline.png" alt = "SENG logo" width = "108" height = "96">
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+

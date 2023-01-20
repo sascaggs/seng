@@ -6,40 +6,85 @@
     <description>Recent content in Tags on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 19 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 06 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>informational</title>
+      <link>https://seng.netlify.app/tags/informational/</link>
+      <pubDate>Fri, 06 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/informational/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>analysis</title>
       <link>https://seng.netlify.app/tags/analysis/</link>
-      <pubDate>Wed, 19 Oct 2022 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/tags/analysis/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>coding</title>
-      <link>https://seng.netlify.app/tags/coding/</link>
-      <pubDate>Wed, 19 Oct 2022 00:00:00 +0000</pubDate>
+      <title>igraph</title>
+      <link>https://seng.netlify.app/tags/igraph/</link>
+      <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://seng.netlify.app/tags/coding/</guid>
+      <guid>https://seng.netlify.app/tags/igraph/</guid>
       <description></description>
     </item>
     
     <item>
       <title>statnet</title>
       <link>https://seng.netlify.app/tags/statnet/</link>
-      <pubDate>Wed, 19 Oct 2022 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/tags/statnet/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>structure</title>
+      <link>https://seng.netlify.app/tags/structure/</link>
+      <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/structure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>workflow</title>
       <link>https://seng.netlify.app/tags/workflow/</link>
-      <pubDate>Wed, 19 Oct 2022 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/tags/workflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bipartite</title>
+      <link>https://seng.netlify.app/tags/bipartite/</link>
+      <pubDate>Fri, 18 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/bipartite/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>coding</title>
+      <link>https://seng.netlify.app/tags/coding/</link>
+      <pubDate>Fri, 18 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/coding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Rstudio</title>
+      <link>https://seng.netlify.app/tags/rstudio/</link>
+      <pubDate>Fri, 07 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/rstudio/</guid>
       <description></description>
     </item>
     
@@ -58,24 +103,6 @@
       <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/tags/nodes/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>structure</title>
-      <link>https://seng.netlify.app/tags/structure/</link>
-      <pubDate>Fri, 30 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://seng.netlify.app/tags/structure/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>informational</title>
-      <link>https://seng.netlify.app/tags/informational/</link>
-      <pubDate>Thu, 01 Sep 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://seng.netlify.app/tags/informational/</guid>
       <description></description>
     </item>
     
@@ -143,15 +170,6 @@
     </item>
     
     <item>
-      <title>Rstudio</title>
-      <link>https://seng.netlify.app/tags/rstudio/</link>
-      <pubDate>Sat, 25 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://seng.netlify.app/tags/rstudio/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>edgelist</title>
       <link>https://seng.netlify.app/tags/edgelist/</link>
       <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
@@ -166,15 +184,6 @@
       <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/tags/graphs/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>igraph</title>
-      <link>https://seng.netlify.app/tags/igraph/</link>
-      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://seng.netlify.app/tags/igraph/</guid>
       <description></description>
     </item>
     

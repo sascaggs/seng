@@ -6,7 +6,17 @@
     <description>Recent content in Rstudio on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/rstudio/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 07 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/rstudio/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>(Re)Introduction to Networks in R</title>
+      <link>https://seng.netlify.app/meetings/re-introduction-to-networks-in-r/</link>
+      <pubDate>Fri, 07 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/re-introduction-to-networks-in-r/</guid>
+      <description>In this meeting, we cover the basics of working with networks in R. By the end of the workshop, you will be acquainted with three packages – igraph, statnet, and tidygraph – and you will be able to create a network from scratch, turn it into a network object, create vertex and edge attributes, and genereate a basic visualization. Let’s get started.
+R Markdown IntroductionBefore we begin talking about networks, let’s first talk about the R studio environment.</description>
+    </item>
+    
     <item>
       <title>Network Simulation using {statnet}</title>
       <link>https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/</link>

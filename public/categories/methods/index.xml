@@ -6,7 +6,35 @@
     <description>Recent content in methods on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 19 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/categories/methods/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 06 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/categories/methods/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>An introduction to community detection and network motifs</title>
+      <link>https://seng.netlify.app/2022/12/06/community-detection-and-subgraph-patterns-in-networks/</link>
+      <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/12/06/community-detection-and-subgraph-patterns-in-networks/</guid>
+      <description>In this post, I will focus on two topics: community detection and subgraph motifs. In previous posts, we have discussed some basic methods for describing network structure. We used these methods to either describe the positioning of individual nodes (e.g., centrality metrics) or some global properties of a network (e.g., connectivity, average path length). Now we will focus on subgraph patterns that transcend the scale of individuals or dyads but nevertheless reside within a global network of interest.</description>
+    </item>
+    
+    <item>
+      <title>Bipartite Exponential Random Graph Models</title>
+      <link>https://seng.netlify.app/2022/11/18/bipartite-exponential-random-graph-models/</link>
+      <pubDate>Fri, 18 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/11/18/bipartite-exponential-random-graph-models/</guid>
+      <description>IntroductionWe have already discussed a lot about Exponential Random Graph Models (ERGMs) in the first tutorial. However, there’s much more to learn! Many times, researchers would like to run ERGMs for network datasets that are not binary, and determine how complex variables influence the probability of a network connection. For example, additional methods exist for using ERGMs with networks that have bipartite (two-mode) data and longitudinal (dynamic networks across time) data.</description>
+    </item>
+    
+    <item>
+      <title>Exponential Random Graph Models, Valued Edges, and Markov Chain Monte Carlo</title>
+      <link>https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/</link>
+      <pubDate>Fri, 18 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/</guid>
+      <description>PreambleWe’ve talked about ERGMs but we really only covered binary ERGMs. Not too long ago, binary ERGMs were all that was available to us in R, something that anthropologist David Nolin noted in a 2010 paper on food sharing in Human Nature:
+“The chief disadvantage of ERGM is that dependent-variable networks can consist only of binary ties… Networks composed of valued ties can be binarized for use with ERGM, but this entails a loss of statistical information.</description>
+    </item>
+    
     <item>
       <title>Exponential Random Graph Models, An Introduction</title>
       <link>https://seng.netlify.app/2022/10/19/exponential-random-graph-models-an-introduction/</link>
@@ -14,6 +42,16 @@
       
       <guid>https://seng.netlify.app/2022/10/19/exponential-random-graph-models-an-introduction/</guid>
       <description>IntroductionWe can a learn a lot about a network using visualization tools and descriptive statistics. But many researchers would like to make inferences about how specific variables influence the probability of a network connection. There are multiple ways to do this – latent network modeling, multilevel Bayesian models, quadratic assignment procedures – but one of the most common and versatile methods is to build Exponential Random Graph Models (ERGMs).</description>
+    </item>
+    
+    <item>
+      <title>(Re)Introduction to Networks in R</title>
+      <link>https://seng.netlify.app/meetings/re-introduction-to-networks-in-r/</link>
+      <pubDate>Fri, 07 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/meetings/re-introduction-to-networks-in-r/</guid>
+      <description>In this meeting, we cover the basics of working with networks in R. By the end of the workshop, you will be acquainted with three packages – igraph, statnet, and tidygraph – and you will be able to create a network from scratch, turn it into a network object, create vertex and edge attributes, and genereate a basic visualization. Let’s get started.
+R Markdown IntroductionBefore we begin talking about networks, let’s first talk about the R studio environment.</description>
     </item>
     
     <item>

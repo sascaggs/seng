@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+<title>Exponential Random Graph Models, Valued Edges, and Markov Chain Monte Carlo - Social Ecological Networks Group</title>
+<meta property="og:title" content="Exponential Random Graph Models, Valued Edges, and Markov Chain Monte Carlo - Social Ecological Networks Group">
+
+
+  <link href='https://seng.netlify.app/images/SENG_Circle_NoOutline.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/SENG_Circle_NoOutline.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="/people/">Contributors</a></li>
+    
+    <li><a href="/post/">Posts</a></li>
+    
+    <li><a href="/canon/">Canon</a></li>
+    
+    <li><a href="/meetings/">Meetings</a></li>
+    
+    <li><a href="/contact/">Contact</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    
+    
+    
+    <h1 class="article-title">Exponential Random Graph Models, Valued Edges, and Markov Chain Monte Carlo</h1>
+    <span class="article-duration">16 min read</span>
+    <span class="author">Shane A. Scaggs</span> <br>
+    <span class="article-date">2022-11-18</span>
+    <br>
+    <p class="terms">
+      
+      
+      Categories:
+      
+      <a href='/categories/methods'>methods</a>
+       <br>
+      
+      
+      
+      Tags:
+      
+      <a href='/tags/analysis'>analysis</a>
+      
+      <a href='/tags/coding'>coding</a>
+      
+      <a href='/tags/statnet'>statnet</a>
+      
+      <a href='/tags/workflow'>workflow</a>
+       <br>
+      
+       <br>
+    </p>
+    
+
+
+    
+
+    <div class="article-content">
+      
+<script src="https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="preamble" class="section level1">
+<h1>Preamble</h1>
+<p>We’ve talked about ERGMs but we really only covered binary ERGMs. Not too long ago, binary ERGMs were all that was available to us in R, something that anthropologist David Nolin noted in a 2010 paper on food sharing in <em>Human Nature</em>:</p>
+<blockquote>
+<p>“The chief disadvantage of ERGM is that dependent-variable networks can consist only of binary ties… Networks composed of valued ties can be binarized for use with ERGM, but this entails a loss of statistical information.”</p>
+</blockquote>
+<p>We no longer have this problem. Instead, we have a plethora of extensions and alternatives, particularly for edges that consist of count data. Any of these packages could work: <code>ergm.count</code>, <code>STRAND</code>, the social relations model (Kenny and LaVoie 1984), <code>GERGM</code>, <code>bergm</code>, <code>latentnet</code>, etc.</p>
+<p>Let’s stick with the <code>statnet</code> suite that we started with and look at valued ergms using the <code>ergm.count</code> package. A published article by <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3964598/">Martina Morris and Pavel Krivitsky</a> (2017) accompanies this package, and there is also <a href="https://statnet.org/Workshops/valued.html">a very helpful workshop</a> on the statnet website.</p>
+<p>The other thing we will do today is spend a little time looking at the MCMC control settings in the ERGM package. When it comes to MCMC and MLE controls, there is a lot to cover. We will be focusing on some of the most commonly adjusted settings when calibrating an MCMC sampler. For a more interactive look at MCMC algorithms, <a href="http://chi-feng.github.io/mcmc-demo/">check out these simulations</a>.</p>
+</div>
+<div id="setup" class="section level1">
+<h1>Setup</h1>
+<p>For this example, let’s use the network data from Koster and Leckie (2014) that is included as part of the <code>rethinking</code> package.</p>
+<pre class="r"><code>data(&#39;KosterLeckie&#39;, package = &#39;rethinking&#39;)</code></pre>
+<p>Now let’s load up <code>statnet</code>.</p>
+<pre class="r"><code>library(statnet)</code></pre>
+</div>
+<div id="wrangling" class="section level1">
+<h1>Wrangling</h1>
+<p>The <code>KosterLeckie</code> data contains information about 25 households (<code>kl_households</code>) and their food sharing relationships (<code>kl_dyads</code>). These relations are stored in a dyadic format. Take a look.</p>
+<pre class="r"><code>head(kl_dyads)</code></pre>
+<pre><code>##   hidA hidB did giftsAB giftsBA offset drel1 drel2 drel3 drel4 dlndist  dass
+## 1    1    2   1       0       4  0.000     0     0     1     0  -2.790 0.000
+## 2    1    3   2       6      31 -0.003     0     1     0     0  -2.817 0.044
+## 3    1    4   3       2       5 -0.019     0     1     0     0  -1.886 0.025
+## 4    1    5   4       4       2  0.000     0     1     0     0  -1.892 0.011
+## 5    1    6   5       8       2 -0.003     1     0     0     0  -3.499 0.022
+## 6    1    7   6       2       1  0.000     0     0     0     0  -1.853 0.071
+##   d0125
+## 1     0
+## 2     0
+## 3     0
+## 4     0
+## 5     0
+## 6     0</code></pre>
+<p>So we’ll have to do just a little bit of wrangling to get this into an edgelist format. First, we isolate the AB columns along with the household IDs.</p>
+<pre class="r"><code>AB_dyads = kl_dyads[, c(&#39;hidA&#39;,&#39;hidB&#39;,&#39;giftsAB&#39;)]</code></pre>
+<p>Then we want to do the same thing, but we need to switch the order of the <code>hidA</code> and <code>hidB</code> column so that they exhibit the correction directionality.</p>
+<pre class="r"><code>BA_dyads = kl_dyads[, c(&#39;hidB&#39;,&#39;hidA&#39;,&#39;giftsBA&#39;)]</code></pre>
+<p>Now we will rename the columns, bind them together, and filter out any rows where there were no gifts exchanged.</p>
+<pre class="r"><code># rename
+colnames(AB_dyads) = c(&#39;sender&#39;,&#39;receiver&#39;,&#39;gifts&#39;)
+colnames(BA_dyads) = c(&#39;sender&#39;,&#39;receiver&#39;,&#39;gifts&#39;)
+# filter and bind
+el = rbind(AB_dyads[ !AB_dyads$gifts == 0, ], 
+           BA_dyads[ !BA_dyads$gifts == 0, ])</code></pre>
+<p>Edge attributes can be stored in an edgelist as additional columns. So in this case, we have an edgelist with a single edge attribute called <code>gifts</code>. Let’s construct the full network now. Let’s not forget to add the vertex attributes from the <code>kl_households</code> file.</p>
+<pre class="r"><code>g = network(el, vertex.attr = kl_households)
+g</code></pre>
+<pre><code>##  Network attributes:
+##   vertices = 25 
+##   directed = TRUE 
+##   hyper = FALSE 
+##   loops = FALSE 
+##   multiple = FALSE 
+##   bipartite = FALSE 
+##   total edges= 427 
+##     missing edges= 0 
+##     non-missing edges= 427 
+## 
+##  Vertex attribute names: 
+##     hfish hgame hid hpastor hpigs hwealth vertex.names 
+## 
+##  Edge attribute names: 
+##     gifts</code></pre>
+<p>Let’s quickly visualize this network.</p>
+<pre class="r"><code>library(tidygraph)
+library(ggraph)
+
+g %&gt;% as_tbl_graph() %&gt;%
+    ggraph() + 
+    geom_edge_link(aes(width=gifts)) </code></pre>
+<p><img src="https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/index_files/figure-html/unnamed-chunk-8-1.png" width="672" />
+# Questions</p>
+<p>First, let’s decide some specific questions that we wanted to ask about this network. In particular, I would like to know the following:</p>
+<ol style="list-style-type: decimal">
+<li>Is reciprocity a strong driver of edge formation?</li>
+<li>What impact does harvest size have on the number of gives and sharing partners a household has?</li>
+<li>How prevalent are triangles in this network?</li>
+</ol>
+</div>
+<div id="constructing-a-model" class="section level1">
+<h1>Constructing a model</h1>
+<p>Building a ERGM that can handle edge counts is very similar to how we constructed our ERGMs before. Many of the functions are the same – <code>ergm</code>, <code>simulate</code>, <code>summary</code> – as is the general syntax for including covariates.</p>
+<p>If you check the documentation for <code>ergm-terms</code>, you’ll find that each term has a listed of network types that it is compatible with: binary, directed, undirected, valued, etc. This helps us find the valued versions of particular terms.</p>
+<p>For example, in a binary ERGM we include an <code>edges</code> term that estimates the overall edge density. However, the density of a valued ERGM cannot be described solely by the number of observed edges, because the values on the edges are relevant. According to the documentation, a <code>threshold</code> can be set, but in some cases there may not be an obvious maximum value for the edges, making it impossible to calculate a density. Instead, we include a <code>sum</code> term in place of the <code>edges</code> term.</p>
+<p>We can test this by taking a summary of <code>g ~ sum</code> – a simple valued ERGM.</p>
+<pre class="r"><code>summary(g ~ sum)</code></pre>
+<pre><code>## Error: ERGM term &#39;sum&#39; function &#39;InitErgmTerm.sum&#39; not found.</code></pre>
+<p>Oops we’re getting an error!</p>
+<p>This is because there is another key difference between valued and binary ERGMs. A valued ERGM requires that a <code>response</code> argument be included in the ERGM function. This “response” is the valued edge attribute that we want to estimate in the model (i.e., <code>gifts</code>).</p>
+<pre class="r"><code>summary(g ~ sum, response = &#39;gifts&#39;)</code></pre>
+<pre><code>##  sum 
+## 2871</code></pre>
+<p>This summary tells us the sum of all values across every edge in the network. We can validate this.</p>
+<pre class="r"><code>sum(el$gifts)</code></pre>
+<pre><code>## [1] 2871</code></pre>
+<div id="reference-distribution" class="section level2">
+<h2>Reference distribution</h2>
+<p>In a binary ERGM, ties are either present or absent. Under the hood, this data structure implies a very specific reference distribution – a <code>Bernoulii</code> distribution. You can think of a Bernoulli kind of like a weighted coin flip where the probability tells us how likely we are to get a <code>1</code>. The Bernoulli is the same as a <code>Binomial</code> distribution that has <code>size = 1</code>.</p>
+<pre class="r"><code># binomial with same number of edges as network
+rbinom(n=427, size=1, prob=0.5)</code></pre>
+<pre><code>##   [1] 0 0 1 1 0 0 1 0 1 1 0 1 0 0 1 1 0 0 0 1 1 0 0 1 1 1 0 0 1 0 0 1 1 1 0 1 1
+##  [38] 1 0 0 0 0 0 1 1 0 0 1 0 1 0 0 1 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0
+##  [75] 0 0 1 0 1 1 1 0 1 0 1 1 1 0 0 0 0 1 1 1 1 1 1 1 1 1 0 0 1 0 0 1 0 0 0 1 0
+## [112] 0 0 1 1 0 1 1 0 1 1 0 1 0 1 1 0 1 1 1 0 0 0 0 0 1 1 1 0 1 1 0 1 1 0 1 0 1
+## [149] 0 1 1 1 0 0 1 1 1 0 0 0 1 1 0 0 0 0 0 1 0 1 1 1 0 0 1 0 1 1 0 0 1 0 0 0 1
+## [186] 0 0 0 0 0 1 0 0 1 0 0 0 1 0 1 0 0 0 0 1 1 0 1 0 1 1 0 0 1 1 0 0 0 0 1 1 0
+## [223] 1 1 1 0 0 1 0 1 1 1 0 0 0 1 1 1 0 1 0 0 1 1 1 1 1 1 1 0 1 1 1 0 0 1 0 1 0
+## [260] 1 1 1 0 1 1 1 0 0 0 1 0 0 0 1 0 1 1 1 1 1 0 1 1 0 0 0 1 0 0 0 1 1 0 0 0 0
+## [297] 1 0 0 0 1 0 0 0 0 0 0 1 1 0 0 1 1 0 1 0 0 0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 1
+## [334] 0 0 0 0 0 0 0 0 0 1 1 1 0 1 0 0 0 1 1 0 0 1 0 0 0 1 1 0 0 1 0 0 0 0 0 0 0
+## [371] 1 0 1 0 0 0 0 0 1 0 0 1 1 0 0 1 0 1 1 0 0 0 1 0 0 1 1 1 1 1 0 1 1 1 0 1 1
+## [408] 1 0 0 1 1 0 1 1 1 0 1 1 1 0 1 0 0 1 0 1</code></pre>
+<p>For a valued ERGM, it isn’t totally obvious what the reference distribution should be since there are multiple distributions that can be used for counts and continuous values. Let’s check the documentation using <code>help("ergm-references")</code>.</p>
+<p>We find that <code>ergm.count</code> supports three types of reference distributions: Poisson, Geometric, and Binomial. We need to choose a reference distribution that is sensible for our gift data.</p>
+<pre class="r"><code>hist(g %e% &#39;gifts&#39;)</code></pre>
+<p><img src="https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>We have a long tail and a high number of zeros. Let’s explore these other distributions and see if they are similar.</p>
+<div id="poisson" class="section level3">
+<h3>Poisson</h3>
+<p>A poisson distribution is a discrete distribution whose mean and variance are described by a single parameter lambda.</p>
+<pre class="r"><code>hist(rpois(n=427, lambda = 1))</code></pre>
+<p><img src="https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Higher values of lambda will lead to a more bell shaped curve.</p>
+<pre class="r"><code>hist(rpois(n=427, lambda = 10))</code></pre>
+<p><img src="https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+This is quite what we’re after since our gift distribution has a lot of zeros. Perhaps we could try a zero-inflated Poisson, an option that is supported by the <code>ergm.count</code> package. I’m constructing this distribution as a mixture of a bernoulli (for the zeros) and a poisson.</p>
+<pre class="r"><code>hist( ifelse(rbinom(n=427,size=1,prob=0.5) == 0, 0 , rpois(n=427, lambda=2)), 
+      main = &#39;&#39;)</code></pre>
+<p><img src="https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/index_files/figure-html/unnamed-chunk-16-1.png" width="672" />
+This is a bit closer, but the problem is that we don’t have a long enough tail. Our data ranges all the way up to 100. Increasing the value of lambda won’t help either because it will lead to a hurdle distribution. See here.</p>
+<pre class="r"><code>hist( ifelse(rbinom(n=427,size=1,prob=0.5) == 0, 0 , rpois(n=427, lambda=10)), 
+      main = &#39;&#39;)</code></pre>
+<p><img src="https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+</div>
+<div id="binomial" class="section level3">
+<h3>Binomial</h3>
+<p>The <code>Binomial</code> distribution may work if we weight the probability toward low values and set a high value of size. We should use the maximum value of gifts that is observed in the network.</p>
+<pre class="r"><code>max(el$gifts)</code></pre>
+<pre><code>## [1] 110</code></pre>
+<pre class="r"><code>hist(rbinom(n=427, size=max(el$gifts), prob = 0.01))</code></pre>
+<p><img src="https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>We’ve having the same problem as the poisson distribution. and In fact, the Poisson and Binomial distribution because one and the same when there is a high count.</p>
+</div>
+<div id="geometric" class="section level3">
+<h3>Geometric</h3>
+<p>Our last option is the geometric distribution. The geometric distribution is described by a single parameter <code>prob</code> which controls the “probability of success”. When prob is near 1, the distribution collapses onto a small number of values and a short tail.</p>
+<pre class="r"><code>hist(rgeom(n=427, prob=0.9))</code></pre>
+<p><img src="https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/index_files/figure-html/unnamed-chunk-19-1.png" width="672" />
+But when probability is low, the distribution exhibits a much longer tail and an inflation of low values.</p>
+<pre class="r"><code>hist(rgeom(n=427, prob=0.1))</code></pre>
+<p><img src="https://seng.netlify.app/2022/11/18/exponential-random-graph-models-valued-edges-and-markov-chain-monte-carlo/index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p>This seems much closer to the kind of reference distribution we are looking for. Let’s give it a try.</p>
+<pre class="r"><code>fit0 = ergm(g ~ sum, response = &#39;gifts&#39;, reference = ~Geometric)</code></pre>
+<pre><code>## Best valid proposal &#39;Geometric&#39; cannot take into account hint(s) &#39;sparse&#39;.</code></pre>
+<pre><code>## Starting contrastive divergence estimation via CD-MCMLE:</code></pre>
+<pre><code>## Iteration 1 of at most 60:</code></pre>
+<pre><code>## Convergence test P-value:3.9e-12</code></pre>
+<pre><code>## The log-likelihood improved by 0.4016.</code></pre>
+<pre><code>## Iteration 2 of at most 60:</code></pre>
+<pre><code>## Convergence test P-value:1.8e-08</code></pre>
+<pre><code>## The log-likelihood improved by 0.1277.</code></pre>
+<pre><code>## Iteration 3 of at most 60:</code></pre>
+<pre><code>## Convergence test P-value:4.6e-02</code></pre>
+<pre><code>## The log-likelihood improved by 0.01478.</code></pre>
+<pre><code>## Iteration 4 of at most 60:</code></pre>
+<pre><code>## Convergence test P-value:7.2e-04</code></pre>
+<pre><code>## The log-likelihood improved by 0.03908.</code></pre>
+<pre><code>## Iteration 5 of at most 60:</code></pre>
+<pre><code>## Convergence test P-value:6.1e-02</code></pre>
+<pre><code>## The log-likelihood improved by 0.01288.</code></pre>
+<pre><code>## Iteration 6 of at most 60:</code></pre>
+<pre><code>## Convergence test P-value:1.7e-03</code></pre>
+<pre><code>## The log-likelihood improved by 0.03562.</code></pre>
+<pre><code>## Iteration 7 of at most 60:</code></pre>
+<pre><code>## Convergence test P-value:3.3e-02</code></pre>
+<pre><code>## The log-likelihood improved by 0.01704.</code></pre>
+<pre><code>## Iteration 8 of at most 60:</code></pre>
+<pre><code>## Convergence test P-value:8.8e-01</code></pre>
+<pre><code>## Convergence detected. Stopping.</code></pre>
+<pre><code>## The log-likelihood improved by &lt; 0.0001.</code></pre>
+<pre><code>## Finished CD.</code></pre>
+<pre><code>## Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+<pre><code>## Iteration 1 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 0.3570.</code></pre>
+<pre><code>## The log-likelihood improved by 2.5646.</code></pre>
+<pre><code>## Estimating equations are not within tolerance region.</code></pre>
+<pre><code>## Iteration 2 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 0.3951.</code></pre>
+<pre><code>## The log-likelihood improved by 1.8599.</code></pre>
+<pre><code>## Estimating equations are not within tolerance region.</code></pre>
+<pre><code>## Iteration 3 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 0.7296.</code></pre>
+<pre><code>## The log-likelihood improved by 2.5740.</code></pre>
+<pre><code>## Estimating equations are not within tolerance region.</code></pre>
+<pre><code>## Iteration 4 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.1594.</code></pre>
+<pre><code>## Estimating equations are not within tolerance region.</code></pre>
+<pre><code>## Iteration 5 of at most 60:</code></pre>
+<pre><code>## Optimizing with step length 1.0000.</code></pre>
+<pre><code>## The log-likelihood improved by 0.0008.</code></pre>
+<pre><code>## Convergence test p-value: 0.0004. Converged with 99% confidence.
+## Finished MCMLE.
+## Evaluating log-likelihood at the estimate. Setting up bridge sampling...
+## Best valid proposal &#39;Geometric&#39; cannot take into account hint(s) &#39;sparse&#39;.
+## Using 16 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 .
+## Note: Null model likelihood calculation is not implemented for valued
+## ERGMs at this time.  This means that all likelihood-based inference
+## (LRT, Analysis of Deviance, AIC, BIC, etc.) is only valid between
+## models with the same reference distribution and constraints.
+## This model was fit using MCMC.  To examine model diagnostics and check
+## for degeneracy, use the mcmc.diagnostics() function.</code></pre>
+<pre class="r"><code>summary(fit0)</code></pre>
+<pre><code>## Call:
+## ergm(formula = g ~ sum, response = &quot;gifts&quot;, reference = ~Geometric)
+## 
+## Monte Carlo Maximum Likelihood Results:
+## 
+##      Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## sum -0.188961   0.008011      0  -23.59   &lt;1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance:     0  on 600  degrees of freedom
+##  Residual Deviance: -4057  on 599  degrees of freedom
+##  
+## Note that the null model likelihood and deviance are defined to be 0.
+## This means that all likelihood-based inference (LRT, Analysis of
+## Deviance, AIC, BIC, etc.) is only valid between models with the same
+## reference distribution and constraints.
+## 
+## AIC: -4055  BIC: -4051  (Smaller is better. MC Std. Err. = 59.79)</code></pre>
+<p>Good news is that the model runs. Let’s worry about interpetation a bit later.</p>
+</div>
+</div>
+</div>
+<div id="question-1" class="section level1">
+<h1>Question 1</h1>
+<p>Let’s build a model to answer question 1 about the effects of reciprocity. In our last workshop, we used the <code>mutual</code> term to estimate reciprocity. In that scenario, it’s pretty straight forward: reciprocity occurs when there is both an edge from <span class="math inline">\(i \rightarrow j\)</span> and <span class="math inline">\(j \rightarrow i\)</span>.</p>
+<p>In the valued case, it isn’t so simple. Maybe there is an edge from <span class="math inline">\(i \rightarrow j\)</span> with a value of 1, but the value of the edge from <span class="math inline">\(j to i\)</span> has a value of 10. Is this truly reciprocity or do the values need to be the same? The answer isn’t obvious and you should consult your ethnographic information about the study system to make a decision.</p>
+<p>If we consult the <code>help("ergm-terms")</code> documentation, we find that mutual terms for valued networks require additional arguments <code>form</code>. We have the following options:</p>
+<ol style="list-style-type: decimal">
+<li><code>min</code> = mutual pairs match based on the minimum value observed (easy to interpret)</li>
+<li><code>nabsdiff</code> = mutual pairs match based on the absolute difference between them</li>
+<li><code>product</code> = mutual pairs match using product of edge values</li>
+<li><code>geometric</code> = mutual pairs form an uncentered covariance (hard to interpret)</li>
+</ol>
+<p>There is no clear answer here. I am going to choose <code>nabsdiff</code> because this will allow us to keep information about both the differences between edge values and their overall combination.</p>
+<pre class="r"><code>fit1.1 = ergm(g ~ sum + mutual(form=&quot;nabsdiff&quot;), response = &#39;gifts&#39;, reference = ~Geometric)
+summary(fit1.1)</code></pre>
+<pre><code>## Call:
+## ergm(formula = g ~ sum + mutual(form = &quot;nabsdiff&quot;), response = &quot;gifts&quot;, 
+##     reference = ~Geometric)
+## 
+## Monte Carlo Maximum Likelihood Results:
+## 
+##                 Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## sum             -0.22147    0.01313      0  -16.87  &lt; 1e-04 ***
+## mutual.nabsdiff -0.05487    0.01704      0   -3.22  0.00128 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance:     0  on 600  degrees of freedom
+##  Residual Deviance: -4034  on 598  degrees of freedom
+##  
+## Note that the null model likelihood and deviance are defined to be 0.
+## This means that all likelihood-based inference (LRT, Analysis of
+## Deviance, AIC, BIC, etc.) is only valid between models with the same
+## reference distribution and constraints.
+## 
+## AIC: -4030  BIC: -4021  (Smaller is better. MC Std. Err. = 41.26)</code></pre>
+<p>The results of this model indicate that there is a significant but slightly negative effect of mutuality on this network. A good practice would be to try other forms of mutuality and determine if some of wildly different than the others. I did this already and they all give similar results.</p>
+</div>
+<div id="question-2" class="section level1">
+<h1>Question 2</h1>
+<p>For the next question, I want to understand how harvests of fish and game influence connections. First, I need to combined the <code>hgame</code> and <code>hfish</code> into on node attributes.</p>
+<pre class="r"><code>g %v% &#39;harv&#39; = g %v% &#39;hgame&#39; + g %v% &#39;hfish&#39;</code></pre>
+<p>Now I need to choose the appropriate ERGM term: <code>nodecov</code>. Like the mutual term we have to specify additional arguments. In this case, we want to base our node covariate term on the <code>sum</code> of the the edges connected to the household.</p>
+<pre class="r"><code>fit2.1 = ergm(g ~ sum + nodecov(attr=&#39;harv&#39;, form=&#39;sum&#39;), response = &#39;gifts&#39;, reference = ~Geometric)
+summary(fit2.1)</code></pre>
+<pre><code>## Call:
+## ergm(formula = g ~ sum + nodecov(attr = &quot;harv&quot;, form = &quot;sum&quot;), 
+##     response = &quot;gifts&quot;, reference = ~Geometric)
+## 
+## Monte Carlo Maximum Likelihood Results:
+## 
+##                   Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## sum              -0.243765   0.012306      0 -19.809   &lt;1e-04 ***
+## nodecov.sum.harv  0.020437   0.002556      0   7.995   &lt;1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance:     0  on 600  degrees of freedom
+##  Residual Deviance: -4119  on 598  degrees of freedom
+##  
+## Note that the null model likelihood and deviance are defined to be 0.
+## This means that all likelihood-based inference (LRT, Analysis of
+## Deviance, AIC, BIC, etc.) is only valid between models with the same
+## reference distribution and constraints.
+## 
+## AIC: -4115  BIC: -4106  (Smaller is better. MC Std. Err. = 45.06)</code></pre>
+<p>Now the results show that there is a very slight but significant effect of harvests the number incoming and outgoing connections a household has. In the binary case, we can interpret this as is, but in the valued case, we may want to determine what the probability is for a specific edge value. To do this, we need to multiply our coefficient estimates of <code>sum</code> and <code>nodecov</code> by values of interest.</p>
+</div>
+
+    </div>
+  </article>
+  
+  <aside> 
+  
+  </aside>
+
+  
+
+
+</main>
+
+<footer class="footer">
+        <ul class="footer-links">
+          
+          <h2> <strong> Social Ecological Networks Group </strong> </h2>
+          <img src = "/images/SENG_Circle_NoOutline.png" alt = "SENG logo" width = "108" height = "96">
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

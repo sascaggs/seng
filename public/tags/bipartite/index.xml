@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bipartite on Social Ecological Networks Group</title>
+    <link>https://seng.netlify.app/tags/bipartite/</link>
+    <description>Recent content in bipartite on Social Ecological Networks Group</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 18 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/bipartite/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bipartite Exponential Random Graph Models</title>
+      <link>https://seng.netlify.app/2022/11/18/bipartite-exponential-random-graph-models/</link>
+      <pubDate>Fri, 18 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2022/11/18/bipartite-exponential-random-graph-models/</guid>
+      <description>IntroductionWe have already discussed a lot about Exponential Random Graph Models (ERGMs) in the first tutorial. However, there’s much more to learn! Many times, researchers would like to run ERGMs for network datasets that are not binary, and determine how complex variables influence the probability of a network connection. For example, additional methods exist for using ERGMs with networks that have bipartite (two-mode) data and longitudinal (dynamic networks across time) data.</description>
+    </item>
+    
+  </channel>
+</rss>
