@@ -67,7 +67,12 @@ Prior to joining Oregon State, I was a postdoctoral fellow at the University of 
 
 I am a master's student in the School of Environment and Natural Resources at the Ohio State University. My research is focused on collaboration and learning in environmental policy networks. Particularly, I am interested in the development of theory grounded tools which help policymakers and community stakeholders develop more collaborative and community engaged decision making processes. I am currently working in the [Socio-Environmental Networks and Sustainability](https://sens-lab.github.io/) (SENS) Lab with Dr. Matt Hamilton where we are studying policy learning and diffusion in wildfire risk mitigation networks. I have broad interest in complex governance, social learning, text analysis and natural language processing, and network analysis. 
 
+<br>
+
+
 ## Nicolás Gómez Andújar
+
+![](/./people_files/nico.jpg){width=40% height=40%}
 
 [Contact Nico](mailto: nicolas.x.gomez@gmail.com) (el/he)
 
