@@ -23,12 +23,12 @@ This semester, we will have 7 meetings. Something new we are doing this semester
 
 Date                                                 Topic              Location
 ------------------------  --------------------------------  --------------------
-2023-01-27                              Geographic Networks                  Zoom
+2023-01-27                                          Welcome                 Zoom
 2023-02-10                              Informal Workshop I        Pomerene Hall
 2023-02-24                      Advanced Data Visualization                 Zoom
 2023-03-10                             Application of ERGMs        Pomerene Hall
 2023-03-24                                 Bayesian Methods                 Zoom
 2023-04-14                             Informal Workshop II        Pomerene Hall
-2023-04-28                                              TBD                 Zoom  
+2023-04-28                              Geographic Networks                 Zoom  
 
 Our four topical meetings will be an Introduction to Geographic Networks (led by Harrison Fried), advanced data visualization techniques (led by Shane Scaggs), the application of ERGM in Public Administration: Take Interstate Benchmarking Networks as an Example (led by Shuai Cao), and Bayesian Methods (led by Shane Scaggs). We have one date still open to let us know if there is anything you want to share or cover in that meeting. 
