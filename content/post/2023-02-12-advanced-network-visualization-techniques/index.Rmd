@@ -1,0 +1,260 @@
+---
+title: Advanced Network Visualization Techniques
+author: Shane A. Scaggs
+date: '2023-02-12'
+slug: advanced-network-visualization-techniques
+categories:
+  - methods
+tags:
+  - visualization
+  - simulation
+  - coding
+  - workflow
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(dpi=300,fig.width=7, out.width = "90%", message = F, warning = F)
+```
+
+
+```{r, echo=F, message=F, warning=F}
+library(tidyverse)
+library(statnet)
+library(igraph)
+library(tidygraph)
+library(ggraph)
+library(patchwork)
+
+ptheme = theme( panel.background = element_rect(color='black', fill='white'), 
+                panel.grid = element_blank(), 
+                strip.background = element_rect(color=NA,fill='white'),
+                axis.ticks.length = unit(2, 'mm'))
+```
+
+![](images/network spaghetti.JPG){width=90%}
+
+Picture this: You're working on project and you've just finished collecting all your network data. You've worked hard to get a complete network and you're eager to start analyzing it. You power up your computer, load up Rstudio, and after lots of careful wrangling and tidying, you're ready to plot the network. With great anticipation, you write a little code and WHAM! you get hit with a hot plate of spaghetti and meatballs. 
+
+Anyone who has tried to visualize a network that is even remotely  [dense](https://seng.netlify.app/2021/12/22/size-structure-and-density/) can probably relate to this experience. That's because networks complex, multidimensional objects; some of the most difficult objects to visualize. 
+
+# Simplicity of design and the data density problem 
+
+The great statistician Edward Tufte is an expert at data visualization. His book *The Visual Display of Quantitative Information* gives us many guidelines for designing pleasant graphs. But there are two bits of information that will specifically help us understand how to produce effective network visualizations. The first comes from one of his most well known quotations: 
+
+> Graphical elegance is often found in simplicity of design and complexity of data. 
+
+Networks are, by definition, complex objects. This is true even for graphs with a small quantity of nodes and edges. The inherent complexity of networks means that we must **always** strive for simplicity when we visualize a network. This means you have no choice but to minimize the number of visual aesthetics used in the visualization. Ask yourself: what is the single most essential feature of this network that I want the my audience to appreciate? Let this essence guide your design. 
+
+The second piece of advice is to maximize data density, within reason. This principle, for example, guides our decisions about the range of values on the axes of any plot. The axes to be constrained to the range of values for which we actually have data. 
+
+```{r, echo=F, out.width="90%", dpi=300, fig.height=4*0.681, fig.width=8*0.681, fig.cap="Two example scatterplots for the same data. The plot on the left has low data density that is caused by specifying axis ranges that are well beyond the range of the data. The plot on the right fixes this problem, and as a result, we see a more honest portrayal of the pattern."}
+N = 100
+x = rnorm(N)
+y = rnorm(N, x, 2)
+d = data.frame(x,y)
+
+d %>%  
+    ggplot( aes(x=x, y=y) ) + ptheme + 
+    geom_point( size=2, pch=21 ) + 
+    xlim(c(-4,4)) + 
+    ylim(c(-10,10)) +
+    labs(title="Low density scatterplot") + 
+
+d %>%  
+    ggplot( aes(x=x, y=y) ) + ptheme + 
+    geom_point( size=2, pch=21 ) + 
+    labs(title="High density scatterplot")
+```
+Fixing data density problems in conventional graphs, like the scatterplots above, can be pretty simple. But networks pose problems because they tend to have high data density to begin with. This make any additional aesthetic choice risky because it can take us beyond a reasonable data density that viewers can actually comprehend. There is also no straight forward way to change axes or omit nodes and edges without distorting our representation of the network structure. 
+
+Let's look at some techniques to deal with data density and then we will move on to some other graphical challenges with networks. 
+
+# Start with a simulation 
+
+Let's start by simulating a network that we can use to illustrate some of these techniques. For details about how to simulate networks using `statnet`, check out our [previous post](https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/) on the topic. We want to use a simulation because 1) we can create challenges and learn to overcome them, and 2) we know the correct answers for the graph structure and the attributes, which helps us know whether we have been successful or not. 
+
+We will simulate a network composed of three groups who tend to form edges with other agents of the same group. This is a homophilous network, and we will keep it fairly dense. 
+
+```{r}
+# load package
+library(statnet )
+
+# seed for reproducibility
+set.seed(777)
+
+# how many nodes? how many groups?  
+N = 60 
+groups = c('G1','G2','G3')
+
+# initialize empty network 
+empty_g = network( N, directed = TRUE, density = 0 )
+
+# create group attribute 
+empty_g %v% 'group' = sample( groups, size = N, replace = TRUE )
+
+# set parameters for edge density (edges) and homophily (nodematch) and reciprocity (mutual)
+# remember these are in log-odds where 0 = 50/50
+pars = c(-4,1,2) 
+
+# simulate 
+sim_g = simulate( empty_g ~ edges + nodematch('group') + mutual, coef = pars )
+plot(sim_g)
+```
+
+# Highlighting group structure
+
+This graph is structured by three groups. We know because we wrote the simulation. But this structure is not obvious from the graph you see above. It looks like spaghetti and meatballs. A good starting point would be to color each node according to it's group. 
+
+```{r,warning=F, message=F}
+# load packages 
+library(tidygraph)
+library(ggraph)
+
+sim_g %>% 
+    as_tbl_graph %>%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link() + 
+    geom_node_point( aes(color=group) )
+```
+
+This helps a little bit, but we can do better. 
+
+## Using small multiples 
+
+Tufte advises us to use *small multiples* -- repeated versions of the same graph with different emphases -- to maintain data density while improved clarity. When using tools like `ggplot2` or `graph`, we can create small multiples by using *facets*. 
+
+Facetting takes a graph and splits it into multiple smaller graphs based on a factor. In this case, we want to split the graph based on `group`, a node attribute. For this we want to use `facet_nodes`. 
+
+```{r, warning=F, message=F, fig.height=3}
+sim_g %>% 
+    as_tbl_graph %>%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link() + 
+    geom_node_point( aes(color=group) ) + 
+    facet_nodes(~group)
+```
+
+Now we are able to see more clearly how each group is connected in the graph. However, this technique does pose a new problem: it is too easy to assume that these are three separate networks. There are two ways to solve this problem, and they both will require a package called `patchwork`. This package allows us to combine multiple graphs using `+` for side to side and `/` for top and bottom^[`patchwork` has many other functions that allow you to assemble plot layouts, add labels to plots, and choose relative heights and widths. Learn more from the author at https://patchwork.data-imaginist.com/].
+
+### Option 1: Add a reference graph 
+
+One choice we have is to plot the network in full as a reference and then use the facets to draw out the subgraphs. We just add them together with `patchwork`. 
+
+```{r, fig.height=3, fig.width=8}
+# full network 
+full = sim_g %>% 
+    as_tbl_graph %>%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link() + 
+    geom_node_point( aes(color=group) ) + 
+    theme(legend.position = 'none') + 
+    ggtitle("Full network")
+
+# sub graphs
+sub = sim_g %>% 
+    as_tbl_graph %>%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link() + 
+    geom_node_point( aes(color=group) ) + 
+    facet_nodes(~group) + 
+    ggtitle("Network subgroups")
+
+
+full + sub + plot_layout(widths = c(2,5))
+```
+
+All we have really done in this new graph is the following: 
+
+1. Plot the full network.
+2. Plot the faceted version.
+3. Save plots as objects and add them together. 
+4. Provide titles with `ggtitle`. 
+5. Remove the legend from the first graph; it is redundant.
+6. Adjust the relative widths using `plot_layout`. 
+
+There is more we could do to make it even prettier but this really helps clarify the full network. 
+
+### Option 2: Plot three separate networks with different emphases 
+
+The second option is similar to the first but takes a different path. We will plot the network three separate times but in each graph, we will de-emphasize all but one group. Again, we can string these together using `patchwork`. 
+
+This approach is slightly more complicated then the first because we want to emphasize both the nodes and edges in each group. To do this, we need to create edge attributes for edges that connect occur between groups `r groups` as well those edges that are not homophilous. 
+
+```{r}
+sim_g = sim_g %>%
+    as_tbl_graph() %>%
+    activate(edges) %>%
+    mutate(group_from = .N()$group[from], 
+           group_to = .N()$group[to], 
+           group_match = ifelse( group_from == 'G1' & group_to == 'G1', 'G1', 
+                         ifelse( group_from == 'G2' & group_to == 'G2', 'G2', 
+                         ifelse( group_from == 'G3' & group_to == 'G3', 'G3', 'No match' ))))
+sim_g
+```
+
+This code looks a bit more intimidating than it really is. What we have are two essential steps: 
+
+1. Code each edge according to the group of each sender (`group_from`) and each receiver (`group_to`). This is done by activating the edges (`activate(edges)`) and then using the `.N()$group[from]` to pull out the node attributes at each edge. 
+2. Next, we use these two new edge attributes within some nested `ifelse` statements where we ask if the groups are the same, and if so, assign that group to the edge. 
+
+One we have those attributes, we can use them to color the nodes and edges. 
+
+```{r, fig.height=2.75, fig.width=8, fig.cap="Group substructure in a homophilous network. Each panel emphasizes one group of nodes in the graph with all other edges colored grey.", out.width="99%"}
+g1 = sim_g %>%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=group_match) ) + 
+    geom_node_point( aes( color=group), size=2 ) + 
+    scale_edge_color_manual( values = c('#ad003f','#cccccc77','#cccccc77','#cccccc77'), guide = NULL) + 
+    scale_color_manual(values = c('#ad003f','#cccccc77','#cccccc77'), guide = NULL) + 
+    ggtitle('Group 1')
+                                        
+g2 = sim_g %>%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=group_match) ) + 
+    geom_node_point( aes( color=group), size=2 ) + 
+    scale_edge_color_manual( values = c('#cccccc77','#d2a52e','#cccccc77','#cccccc77'), guide = NULL) + 
+    scale_color_manual(values = c('#cccccc77','#d2a52e','#cccccc77'), guide = NULL) + 
+    ggtitle('Group 2')   
+
+g3 = sim_g %>%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=group_match) ) + 
+    geom_node_point( aes( color=group), size=2 ) + 
+    scale_edge_color_manual( values = c('#cccccc77','#cccccc77','#00c994','#cccccc77'), guide = NULL) + 
+    scale_color_manual(values = c('#cccccc77','#cccccc77','#00c994'), guide = NULL) + 
+    ggtitle('Group 3') 
+                                        
+g1 + g2 + g3
+```
+
+Now we've just repeated the same graph three times. We use an all grey palette and just switch out one of the grey colors for a emphasis color based on the position of the group name in the vector, e.g., group 1 is position 1 in the vector of color values. 
+
+One complication with this approach is how to create a legend. There is a solution to this but it requires making plot with all the colors, extracting only the legend, and then plotting the legend alone in a fourth panel. I've gotten around this by using titles and explaining the colors in the caption. 
+
+### A note on layouts 
+
+We will focus on layouts a bit more later on in this post, but I just want to make one thing explicit about the two examples above:
+
+> The layout must be the same for each graph, otherwise it will be impossible to visually compare the structure across graphs. 
+
+The layout for these graphs is the `ggraph` default called `"stress"`. Because this layout does not randomly change each time we make a plot -- unlike Fruchterman-Reingold layouts, for example -- we don't need to do anything special. But if you want to use a different layout that has more randomness to it, you can save the layout first and then reuse it. This is done within `igraph` but can be transferred to `ggraph` with no problems.
+
+```{r}
+# same layout fr 
+lo = layout_with_fr(sim_g)
+plot(sim_g, layout = lo)
+
+# use lo in ggraph 
+sim_g %>%
+    ggraph(layout = lo) +
+    geom_edge_link() + 
+    geom_node_point()
+```
+
