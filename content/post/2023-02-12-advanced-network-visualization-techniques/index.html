@@ -16,7 +16,7 @@ tags:
 
 <p><img src="images/network%20spaghetti.JPG" style="width:90.0%" /></p>
 <p>Picture this: You’re working on project and you’ve just finished collecting all your network data. You’ve worked hard to get a complete network and you’re eager to start analyzing it. You power up your computer, load up Rstudio, and after lots of careful wrangling and tidying, you’re ready to plot the network. With great anticipation, you write a little code and WHAM! you get hit with a hot plate of spaghetti and meatballs.</p>
-<p>Anyone who has tried to visualize a network that is even remotely <a href="https://seng.netlify.app/2021/12/22/size-structure-and-density/">dense</a> can probably relate to this experience. That’s because networks complex, multidimensional objects; some of the most difficult objects to visualize.</p>
+<p>Anyone who has tried to visualize a network that is even remotely <a href="https://seng.netlify.app/2021/12/22/size-structure-and-density/">dense</a> can probably relate to this experience. That’s because networks are complex, multidimensional objects; some of the most difficult objects to visualize.</p>
 <div id="simplicity-of-design-and-the-data-density-problem" class="section level1">
 <h1>Simplicity of design and the data density problem</h1>
 <p>The great statistician Edward Tufte is an expert at data visualization. His book <em>The Visual Display of Quantitative Information</em> gives us many guidelines for designing pleasant graphs. But there are two bits of information that will specifically help us understand how to produce effective network visualizations. The first comes from one of his most well known quotations:</p>
@@ -173,7 +173,7 @@ sim_g</code></pre>
     ggraph() + 
     theme_graph() + 
     geom_edge_link( aes(color=group_match) ) + 
-    geom_node_point( aes( color=group), size=2 ) + 
+    geom_node_point( aes( color=group) ) + 
     scale_edge_color_manual( values = c(&#39;#ad003f&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
     scale_color_manual(values = c(&#39;#ad003f&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
     ggtitle(&#39;Group 1&#39;)
@@ -182,7 +182,7 @@ g2 = sim_g %&gt;%
     ggraph() + 
     theme_graph() + 
     geom_edge_link( aes(color=group_match) ) + 
-    geom_node_point( aes( color=group), size=2 ) + 
+    geom_node_point( aes( color=group) ) + 
     scale_edge_color_manual( values = c(&#39;#cccccc77&#39;,&#39;#d2a52e&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
     scale_color_manual(values = c(&#39;#cccccc77&#39;,&#39;#d2a52e&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
     ggtitle(&#39;Group 2&#39;)   
@@ -191,7 +191,7 @@ g3 = sim_g %&gt;%
     ggraph() + 
     theme_graph() + 
     geom_edge_link( aes(color=group_match) ) + 
-    geom_node_point( aes( color=group), size=2 ) + 
+    geom_node_point( aes( color=group) ) + 
     scale_edge_color_manual( values = c(&#39;#cccccc77&#39;,&#39;#cccccc77&#39;,&#39;#00c994&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
     scale_color_manual(values = c(&#39;#cccccc77&#39;,&#39;#cccccc77&#39;,&#39;#00c994&#39;), guide = NULL) + 
     ggtitle(&#39;Group 3&#39;) 

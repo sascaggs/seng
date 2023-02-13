@@ -35,7 +35,7 @@ ptheme = theme( panel.background = element_rect(color='black', fill='white'),
 
 Picture this: You're working on project and you've just finished collecting all your network data. You've worked hard to get a complete network and you're eager to start analyzing it. You power up your computer, load up Rstudio, and after lots of careful wrangling and tidying, you're ready to plot the network. With great anticipation, you write a little code and WHAM! you get hit with a hot plate of spaghetti and meatballs. 
 
-Anyone who has tried to visualize a network that is even remotely  [dense](https://seng.netlify.app/2021/12/22/size-structure-and-density/) can probably relate to this experience. That's because networks complex, multidimensional objects; some of the most difficult objects to visualize. 
+Anyone who has tried to visualize a network that is even remotely  [dense](https://seng.netlify.app/2021/12/22/size-structure-and-density/) can probably relate to this experience. That's because networks are complex, multidimensional objects; some of the most difficult objects to visualize. 
 
 # Simplicity of design and the data density problem 
 
@@ -208,7 +208,7 @@ g1 = sim_g %>%
     ggraph() + 
     theme_graph() + 
     geom_edge_link( aes(color=group_match) ) + 
-    geom_node_point( aes( color=group), size=2 ) + 
+    geom_node_point( aes( color=group) ) + 
     scale_edge_color_manual( values = c('#ad003f','#cccccc77','#cccccc77','#cccccc77'), guide = NULL) + 
     scale_color_manual(values = c('#ad003f','#cccccc77','#cccccc77'), guide = NULL) + 
     ggtitle('Group 1')
@@ -217,7 +217,7 @@ g2 = sim_g %>%
     ggraph() + 
     theme_graph() + 
     geom_edge_link( aes(color=group_match) ) + 
-    geom_node_point( aes( color=group), size=2 ) + 
+    geom_node_point( aes( color=group) ) + 
     scale_edge_color_manual( values = c('#cccccc77','#d2a52e','#cccccc77','#cccccc77'), guide = NULL) + 
     scale_color_manual(values = c('#cccccc77','#d2a52e','#cccccc77'), guide = NULL) + 
     ggtitle('Group 2')   
@@ -226,7 +226,7 @@ g3 = sim_g %>%
     ggraph() + 
     theme_graph() + 
     geom_edge_link( aes(color=group_match) ) + 
-    geom_node_point( aes( color=group), size=2 ) + 
+    geom_node_point( aes( color=group) ) + 
     scale_edge_color_manual( values = c('#cccccc77','#cccccc77','#00c994','#cccccc77'), guide = NULL) + 
     scale_color_manual(values = c('#cccccc77','#cccccc77','#00c994'), guide = NULL) + 
     ggtitle('Group 3') 

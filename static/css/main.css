@@ -363,3 +363,15 @@ table thead th {
 
 th, td { padding: 5px; }
 tr:nth-child(even) { background: #eee; }
+
+
+blockquote {
+  color: #3300ff;
+  background: #3300ff33;
+  border-left: 10px solid #3300ff;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+  font-style: normal;
+  font-size: 95%;
+}
