@@ -45,7 +45,7 @@ The great statistician Edward Tufte is an expert at data visualization. His book
 
 Networks are, by definition, complex objects. This is true even for graphs with a small quantity of nodes and edges. The inherent complexity of networks means that we must **always** strive for simplicity when we visualize a network. This means you have no choice but to minimize the number of visual aesthetics used in the visualization. Ask yourself: what is the single most essential feature of this network that I want the my audience to appreciate? Let this essence guide your design. 
 
-The second piece of advice is to maximize data density, within reason. This principle, for example, guides our decisions about the range of values on the axes of any plot. The axes to be constrained to the range of values for which we actually have data. 
+The second piece of advice is to maximize data density, within reason. You can think of data density as the ratio of "data ink" used to plot the data to the amount of black graph space. This principle, for example, guides our decisions about the range of values on the axes of any plot. The axes should be constrained to the range of values for which we actually have data. 
 
 ```{r, echo=F, out.width="90%", dpi=300, fig.height=4*0.681, fig.width=8*0.681, fig.cap="Two example scatterplots for the same data. The plot on the left has low data density that is caused by specifying axis ranges that are well beyond the range of the data. The plot on the right fixes this problem, and as a result, we see a more honest portrayal of the pattern."}
 N = 100
@@ -122,9 +122,9 @@ This helps a little bit, but we can do better.
 
 ## Using small multiples 
 
-Tufte advises us to use *small multiples* -- repeated versions of the same graph with different emphases -- to maintain data density while improved clarity. When using tools like `ggplot2` or `graph`, we can create small multiples by using *facets*. 
+Tufte advises us to use *small multiples* -- repeated versions of the same graph with different emphases -- to maintain data density while improving clarity. When using tools that are based on the grammar of graphics (`ggplot2`, `ggraph`, `ggdist`), we can create small multiples by using *facets*. 
 
-Facetting takes a graph and splits it into multiple smaller graphs based on a factor. In this case, we want to split the graph based on `group`, a node attribute. For this we want to use `facet_nodes`. 
+Faceting takes a single graph and splits it into multiple panels based on a factor. In this case, we want to split the graph based on `group`, a node attribute. For this we want to use `facet_nodes`. 
 
 ```{r, warning=F, message=F, fig.height=3}
 sim_g %>% 
@@ -182,14 +182,14 @@ There is more we could do to make it even prettier but this really helps clarify
 
 The second option is similar to the first but takes a different path. We will plot the network three separate times but in each graph, we will de-emphasize all but one group. Again, we can string these together using `patchwork`. 
 
-This approach is slightly more complicated then the first because we want to emphasize both the nodes and edges in each group. To do this, we need to create edge attributes for edges that connect occur between groups `r groups` as well those edges that are not homophilous. 
+This approach is slightly more complicated then the first because we want to emphasize both the nodes and edges in each group. To do this, we need to create edge attributes for edges that connect between the groups `r groups` as well those edges that are not homophilous. 
 
 ```{r}
 sim_g = sim_g %>%
     as_tbl_graph() %>%
     activate(edges) %>%
     mutate(group_from = .N()$group[from], 
-           group_to = .N()$group[to], 
+           group_to   = .N()$group[to], 
            group_match = ifelse( group_from == 'G1' & group_to == 'G1', 'G1', 
                          ifelse( group_from == 'G2' & group_to == 'G2', 'G2', 
                          ifelse( group_from == 'G3' & group_to == 'G3', 'G3', 'No match' ))))
@@ -198,10 +198,11 @@ sim_g
 
 This code looks a bit more intimidating than it really is. What we have are two essential steps: 
 
-1. Code each edge according to the group of each sender (`group_from`) and each receiver (`group_to`). This is done by activating the edges (`activate(edges)`) and then using the `.N()$group[from]` to pull out the node attributes at each edge. 
+1. Code each edge according to the group of each sender (`group_from`) and each receiver (`group_to`). This is done by activating the edges (`activate(edges)`) and then using the `.N()$group[from]` and `.N()$group[to]` syntax to pull out the node attributes at beginning and end of each edge. 
+
 2. Next, we use these two new edge attributes within some nested `ifelse` statements where we ask if the groups are the same, and if so, assign that group to the edge. 
 
-One we have those attributes, we can use them to color the nodes and edges. 
+Once we have those attributes, we can use them to color the nodes and edges. 
 
 ```{r, fig.height=2.75, fig.width=8, fig.cap="Group substructure in a homophilous network. Each panel emphasizes one group of nodes in the graph with all other edges colored grey.", out.width="99%"}
 g1 = sim_g %>%
