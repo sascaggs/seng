@@ -24,7 +24,7 @@ tags:
 <p>Graphical elegance is often found in simplicity of design and complexity of data.</p>
 </blockquote>
 <p>Networks are, by definition, complex objects. This is true even for graphs with a small quantity of nodes and edges. The inherent complexity of networks means that we must <strong>always</strong> strive for simplicity when we visualize a network. This means you have no choice but to minimize the number of visual aesthetics used in the visualization. Ask yourself: what is the single most essential feature of this network that I want the my audience to appreciate? Let this essence guide your design.</p>
-<p>The second piece of advice is to maximize data density, within reason. This principle, for example, guides our decisions about the range of values on the axes of any plot. The axes to be constrained to the range of values for which we actually have data.</p>
+<p>The second piece of advice is to maximize data density, within reason. You can think of data density as the ratio of “data ink” used to plot the data to the amount of black graph space. This principle, for example, guides our decisions about the range of values on the axes of any plot. The axes should be constrained to the range of values for which we actually have data.</p>
 <div class="figure"><span style="display:block;" id="fig:unnamed-chunk-2"></span>
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" alt="Two example scatterplots for the same data. The plot on the left has low data density that is caused by specifying axis ranges that are well beyond the range of the data. The plot on the right fixes this problem, and as a result, we see a more honest portrayal of the pattern." width="90%" />
 <p class="caption">
@@ -80,8 +80,8 @@ sim_g %&gt;%
 <p>This helps a little bit, but we can do better.</p>
 <div id="using-small-multiples" class="section level2">
 <h2>Using small multiples</h2>
-<p>Tufte advises us to use <em>small multiples</em> – repeated versions of the same graph with different emphases – to maintain data density while improved clarity. When using tools like <code>ggplot2</code> or <code>graph</code>, we can create small multiples by using <em>facets</em>.</p>
-<p>Facetting takes a graph and splits it into multiple smaller graphs based on a factor. In this case, we want to split the graph based on <code>group</code>, a node attribute. For this we want to use <code>facet_nodes</code>.</p>
+<p>Tufte advises us to use <em>small multiples</em> – repeated versions of the same graph with different emphases – to maintain data density while improving clarity. When using tools that are based on the grammar of graphics (<code>ggplot2</code>, <code>ggraph</code>, <code>ggdist</code>), we can create small multiples by using <em>facets</em>.</p>
+<p>Faceting takes a single graph and splits it into multiple panels based on a factor. In this case, we want to split the graph based on <code>group</code>, a node attribute. For this we want to use <code>facet_nodes</code>.</p>
 <pre class="r"><code>sim_g %&gt;% 
     as_tbl_graph %&gt;%
     ggraph() + 
@@ -131,12 +131,12 @@ full + sub + plot_layout(widths = c(2,5))</code></pre>
 <div id="option-2-plot-three-separate-networks-with-different-emphases" class="section level3">
 <h3>Option 2: Plot three separate networks with different emphases</h3>
 <p>The second option is similar to the first but takes a different path. We will plot the network three separate times but in each graph, we will de-emphasize all but one group. Again, we can string these together using <code>patchwork</code>.</p>
-<p>This approach is slightly more complicated then the first because we want to emphasize both the nodes and edges in each group. To do this, we need to create edge attributes for edges that connect occur between groups G1, G2, G3 as well those edges that are not homophilous.</p>
+<p>This approach is slightly more complicated then the first because we want to emphasize both the nodes and edges in each group. To do this, we need to create edge attributes for edges that connect between the groups G1, G2, G3 as well those edges that are not homophilous.</p>
 <pre class="r"><code>sim_g = sim_g %&gt;%
     as_tbl_graph() %&gt;%
     activate(edges) %&gt;%
     mutate(group_from = .N()$group[from], 
-           group_to = .N()$group[to], 
+           group_to   = .N()$group[to], 
            group_match = ifelse( group_from == &#39;G1&#39; &amp; group_to == &#39;G1&#39;, &#39;G1&#39;, 
                          ifelse( group_from == &#39;G2&#39; &amp; group_to == &#39;G2&#39;, &#39;G2&#39;, 
                          ifelse( group_from == &#39;G3&#39; &amp; group_to == &#39;G3&#39;, &#39;G3&#39;, &#39;No match&#39; ))))
@@ -165,10 +165,10 @@ sim_g</code></pre>
 ## # … with 57 more rows</code></pre>
 <p>This code looks a bit more intimidating than it really is. What we have are two essential steps:</p>
 <ol style="list-style-type: decimal">
-<li>Code each edge according to the group of each sender (<code>group_from</code>) and each receiver (<code>group_to</code>). This is done by activating the edges (<code>activate(edges)</code>) and then using the <code>.N()$group[from]</code> to pull out the node attributes at each edge.</li>
-<li>Next, we use these two new edge attributes within some nested <code>ifelse</code> statements where we ask if the groups are the same, and if so, assign that group to the edge.</li>
+<li><p>Code each edge according to the group of each sender (<code>group_from</code>) and each receiver (<code>group_to</code>). This is done by activating the edges (<code>activate(edges)</code>) and then using the <code>.N()$group[from]</code> and <code>.N()$group[to]</code> syntax to pull out the node attributes at beginning and end of each edge.</p></li>
+<li><p>Next, we use these two new edge attributes within some nested <code>ifelse</code> statements where we ask if the groups are the same, and if so, assign that group to the edge.</p></li>
 </ol>
-<p>One we have those attributes, we can use them to color the nodes and edges.</p>
+<p>Once we have those attributes, we can use them to color the nodes and edges.</p>
 <pre class="r"><code>g1 = sim_g %&gt;%
     ggraph() + 
     theme_graph() + 
@@ -224,6 +224,220 @@ sim_g %&gt;%
     geom_node_point()</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-2.png" width="90%" /></p>
 </div>
+</div>
+</div>
+<div id="homophily-and-reciprocity" class="section level1">
+<h1>Homophily and Reciprocity</h1>
+<p>The examples using small multiples have already provided some of the tools for visualizing dyadic attributes. Let’s dig a little deeper into dyads by creating visualizations that highlight homophily and reciprocity.</p>
+<p>But first, a new simulation of a larger network.</p>
+<pre class="r"><code># seed for reproducibility
+set.seed(777)
+
+# how many nodes? how many groups?  
+N = 100 
+groups = c(&#39;G1&#39;,&#39;G2&#39;,&#39;G3&#39;)
+
+# initialize empty network 
+empty_g = network( N, directed = TRUE, density = 0 )
+
+# create group attribute 
+empty_g %v% &#39;group&#39; = sample( groups, size = N, replace = TRUE )
+
+# set parameters for edge density (edges) and homophily (nodematch) and reciprocity (mutual)
+# remember these are in log-odds where 0 = 50/50
+pars = c(-5.5,3,2) 
+
+# simulate 
+sim_g = simulate( empty_g ~ edges + nodematch(&#39;group&#39;) + mutual, coef = pars )
+plot(sim_g)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<div id="homophily" class="section level2">
+<h2>Homophily</h2>
+<p>Instead of visualizing homophily among groups using multiples, let’s do this on a single graph. We can usual a similar approach to the one above where we tag edges based on the sender and receiver.</p>
+<pre class="r"><code>sim_g = sim_g %&gt;%
+    as_tbl_graph() %&gt;%
+    activate(edges) %&gt;%
+    mutate(group_from = .N()$group[from], 
+           group_to   = .N()$group[to], 
+           group_match = ifelse( group_from == &#39;G1&#39; &amp; group_to == &#39;G1&#39;, &#39;G1&#39;, 
+                         ifelse( group_from == &#39;G2&#39; &amp; group_to == &#39;G2&#39;, &#39;G2&#39;, 
+                         ifelse( group_from == &#39;G3&#39; &amp; group_to == &#39;G3&#39;, &#39;G3&#39;, &#39;None&#39; ))))</code></pre>
+<p>Now we can map an edge color onto the <code>group_match</code> edge attribute, except this time we want to provide all of our colors in a single palette instead of swapping them out like we did before. In the previous version, we removed the legend by using <code>guide = NULL</code> but these time we want to keep the legend, so we remove these lines.</p>
+<pre class="r"><code>p = sim_g %&gt;%
+    ggraph(&#39;mds&#39;) + 
+    theme_graph() + 
+    geom_edge_link( aes(color=group_match), alpha=0.5 ) + 
+    geom_node_point( aes( color=group) ) + 
+    scale_edge_color_manual( values = c(&#39;#ad003f&#39;,&#39;#3300ff&#39;,&#39;springgreen&#39;,&#39;#aaaaaa&#39;)) + 
+    scale_color_manual(values = c(&#39;#ad003f&#39;,&#39;#3300ff&#39;,&#39;springgreen&#39;))
+p </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+<p>Here I am using the multidimensional scaling layout (<code>mds</code>) because it will give us more separation between the groups. With these layout we see very clearly the edge which occur between groups (e.g., “None”).</p>
+<p>Let’s also clean up the legend a bit by change the legend labels. We do this using the <code>labs</code> layer.</p>
+<pre class="r"><code>p + labs(edge_color=&#39;Homophily&#39;, color=&#39;Group&#39;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+</div>
+<div id="reciprocity" class="section level2">
+<h2>Reciprocity</h2>
+<p>To visualize reciprocity, we may have to sacrifice our homophily aesthetic, as this would be much too complicated for a viewer. The basic setup is to tag every edge which is reciprocal. The easiest function for doing this is called <code>is.mutual</code> from the <code>{igraph}</code> package. This function <em>does not</em> work with <code>network</code> objects created in <code>{statnet}</code> but it does work with <code>igraph</code> objects or <code>tbl_graph</code> objects.</p>
+<pre class="r"><code>class(sim_g)</code></pre>
+<pre><code>## [1] &quot;tbl_graph&quot; &quot;igraph&quot;</code></pre>
+<pre class="r"><code>is.mutual(sim_g)</code></pre>
+<pre><code>##   [1] FALSE  TRUE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE
+##  [13] FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE
+##  [25]  TRUE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE
+##  [37] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE  TRUE  TRUE
+##  [49] FALSE FALSE  TRUE FALSE  TRUE  TRUE  TRUE FALSE  TRUE FALSE FALSE FALSE
+##  [61] FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE
+##  [73]  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE
+##  [85]  TRUE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE
+##  [97]  TRUE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE
+## [109] FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE
+## [121]  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE  TRUE
+## [133] FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE
+## [145] FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE FALSE  TRUE  TRUE FALSE  TRUE
+## [157] FALSE  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE  TRUE
+## [169] FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## [181] FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE
+## [193]  TRUE FALSE FALSE  TRUE  TRUE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE
+## [205] FALSE  TRUE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
+## [217] FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE
+## [229]  TRUE  TRUE FALSE  TRUE  TRUE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE
+## [241] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE
+## [253]  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE
+## [265] FALSE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
+## [277] FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE  TRUE  TRUE FALSE
+## [289] FALSE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE
+## [301]  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE  TRUE FALSE  TRUE  TRUE
+## [313] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE
+## [325]  TRUE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE  TRUE
+## [337] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
+## [349]  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE
+## [361]  TRUE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE
+## [373] FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE
+## [385] FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE
+## [397] FALSE FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE  TRUE FALSE</code></pre>
+<p>The function returns a <code>TRUE</code> or <code>FALSE</code> value that indicates whether or not that edge is reciprocated. We can create a new edge attribute and label it with these T/F values. You can do this using the <code>igraph</code> syntax (<code>E(sim_g)</code>) or by using <code>tidygraph</code>. I’ll show both below.</p>
+<pre class="r"><code># igraph method
+E(sim_g)$Reciprocity = is.mutual(sim_g)
+
+# tidygraph methods 
+sim_g %&gt;%
+    activate(edges) %&gt;%
+    mutate(Reciprocity = is.mutual(sim_g))</code></pre>
+<pre><code>## # A tbl_graph: 100 nodes and 406 edges
+## #
+## # A directed simple graph with 2 components
+## #
+## # Edge Data: 406 × 7 (active)
+##    from    to na    group_from group_to group_match Reciprocity
+##   &lt;int&gt; &lt;int&gt; &lt;lgl&gt; &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;       &lt;lgl&gt;      
+## 1     1    15 FALSE G2         G3       None        FALSE      
+## 2     1    22 FALSE G2         G2       G2          TRUE       
+## 3     1    36 FALSE G2         G2       G2          FALSE      
+## 4     1    65 FALSE G2         G2       G2          FALSE      
+## 5     2    24 FALSE G2         G2       G2          FALSE      
+## 6     2    44 FALSE G2         G2       G2          TRUE       
+## # … with 400 more rows
+## #
+## # Node Data: 100 × 3
+##   group na    name 
+##   &lt;chr&gt; &lt;lgl&gt; &lt;chr&gt;
+## 1 G2    FALSE 1    
+## 2 G2    FALSE 2    
+## 3 G2    FALSE 3    
+## # … with 97 more rows</code></pre>
+<p>Armed with out new edge attribute, we can plot the network by mapping a color to this attribute. I find that black and transparent grey are ideal for this attribute. Keep it simple.</p>
+<pre class="r"><code>sim_g %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=Reciprocity) ) + 
+    geom_node_point( ) + 
+    scale_edge_color_manual( values = c(&#39;#aaaaaa55&#39;,&#39;black&#39;)) </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
+</div>
+<div id="working-with-arrows" class="section level2">
+<h2>Working with arrows</h2>
+<p>There is something glaringly missing from this directed graph: arrows. Arrows are tricky with networks because they add visual clutter. We should only use them when we absolutely need to, and in this case, where we are communicating patterns fo reciprocity, it would be great to have some arrows.</p>
+<p>We handle arrows in a <code>ggraph</code> by using an arrow argument. There are a few things to consider here:</p>
+<ol style="list-style-type: decimal">
+<li>How large should the arrows be?</li>
+<li>What angle should we used for the arrowhead?</li>
+<li>Should the arrow heads touch the nodes?</li>
+</ol>
+<p>Personally, I prefer smaller arrows for less clutter and I prefer the arrowheads do not touch the nodes. Let’s look at a simple example first.</p>
+<pre class="r"><code>x = 1:3
+grid = expand.grid(x,x)
+grid = grid[ !grid$Var1 == grid$Var2, ]</code></pre>
+<p>Here I’ve create a simple grid of node pairs 1, 2, and 3 and removed all of the loops in the grid. Now let’s make a plot with them so that you can see how the arrow arguments work.</p>
+<pre class="r"><code>grid %&gt;% 
+    as_tbl_graph() %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( arrow = arrow( angle=30, length = unit(3, &#39;mm&#39;), type = &#39;closed&#39;) ) + 
+    geom_node_point()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
+<p>Not particularly pretty. We can’t really see the nodes, the arrow heads are too long and the angle is much to wide.</p>
+<pre class="r"><code>grid %&gt;% 
+    as_tbl_graph() %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( arrow = arrow( angle=20, length = unit(2, &#39;mm&#39;), type = &#39;closed&#39;) ) + 
+    geom_node_point()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
+<p>That is starting to look a little better. But it would be great if we could prevent the arrowheads from touching the nodes. For this, we need to manipulate the <code>end_cap</code> and <code>start_cap</code>.</p>
+<pre class="r"><code>grid %&gt;% 
+    as_tbl_graph() %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( arrow = arrow( angle=20, length = unit(2, &#39;mm&#39;), type = &#39;closed&#39;), 
+                    end_cap = circle(2,&#39;mm&#39;) ) + 
+    geom_node_point()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-1.png" width="90%" /></p>
+<p>I’ve supplied a <code>circle</code> to the <code>end_cap</code> argument telling R that I want to leave a circular buffer that has a 2 mm radius. But because the edges are flowing in all directions, we need to supply the same argument to the <code>start_cap</code>.</p>
+<pre class="r"><code>grid %&gt;% 
+    as_tbl_graph() %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( arrow = arrow( angle=20, length = unit(2, &#39;mm&#39;), type = &#39;closed&#39;), 
+                    end_cap = circle(2,&#39;mm&#39;), 
+                    start_cap = circle(2,&#39;mm&#39;)) + 
+    geom_node_point()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-21-1.png" width="90%" /></p>
+<p>That looks much nicer. But as you change the size of your nodes, you may also have to change the size of the caps. This is an annoying reality but it is something to keep an eye on. You can see what I mean in the examples below.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-22-1.png" width="90%" /></p>
+<p>You can also use curved edges called <code>arcs</code> to illustrate reciprocal edges. These function just like the <code>geom_edge_link</code> layer, but they have an additional <code>strength</code> argument that controls the curvature of the arcs.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-23-1.png" width="90%" />
+You must be very careful using arcs because they effect double the number of edges anywhere there is reciprocity, which can add unnecessary density to your graph.</p>
+</div>
+<div id="revisiting-the-reciprocity-graph" class="section level2">
+<h2>Revisiting the reciprocity graph</h2>
+<p>Now let’s apply the arrow techniques to the reciprocity graph from above.</p>
+<pre class="r"><code>sim_g %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=Reciprocity),
+                    arrow = arrow( angle=20, length = unit(1, &#39;mm&#39;), type = &#39;closed&#39;), 
+                    end_cap = circle(1,&#39;mm&#39;), 
+                    start_cap = circle(1,&#39;mm&#39;)) + 
+    geom_node_point( ) + 
+    scale_edge_color_manual( values = c(&#39;#aaaaaa55&#39;,&#39;black&#39;)) </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-24-1.png" width="90%" /></p>
+<p>In principle, we don’t really even need nodes to visualize this graph because they provide little information. This is what it looks like when we omit them.</p>
+<pre class="r"><code>sim_g %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=Reciprocity),
+                    arrow = arrow( angle=20, length = unit(1, &#39;mm&#39;), type = &#39;closed&#39;), 
+                    end_cap = circle(1,&#39;mm&#39;), 
+                    start_cap = circle(1,&#39;mm&#39;)) + 
+    #geom_node_point( ) + 
+    scale_edge_color_manual( values = c(&#39;#aaaaaa55&#39;,&#39;black&#39;)) </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-25-1.png" width="90%" /></p>
+<p>This teaches us an important lesson:</p>
+<blockquote>
+<p>If an aesthetic provides no additional information, you should omit it.</p>
+</blockquote>
 </div>
 </div>
 <div class="footnotes footnotes-end-of-document">
