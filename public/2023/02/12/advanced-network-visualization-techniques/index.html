@@ -126,7 +126,7 @@
 Figure 1: Two example scatterplots for the same data. The plot on the left has low data density that is caused by specifying axis ranges that are well beyond the range of the data. The plot on the right fixes this problem, and as a result, we see a more honest portrayal of the pattern.
 </p>
 </div>
-<p>Fixing data density problems in conventional graphs, like the scatterplots above, can be pretty simple. But networks pose problems because they tend to have high data density to begin with. This make any additional aesthetic choice risky because it can take us beyond a reasonable data density that viewers can actually comprehend. There is also no straight forward way to change axes or omit nodes and edges without distorting our representation of the network structure.</p>
+<p>Fixing data density problems in conventional graphs, like the scatterplots above, can be pretty simple. But networks pose problems because they tend to have high data density to begin with. This makes any additional aesthetic choice risky because it can take us beyond a reasonable data density that viewers can actually comprehend. There is also no straight forward way to change axes or omit nodes and edges without distorting our representation of the network structure.</p>
 <p>Let’s look at some techniques to deal with data density and then we will move on to some other graphical challenges with networks.</p>
 </div>
 <div id="start-with-a-simulation" class="section level1">
@@ -134,7 +134,7 @@ Figure 1: Two example scatterplots for the same data. The plot on the left has l
 <p>Let’s start by simulating a network that we can use to illustrate some of these techniques. For details about how to simulate networks using <code>statnet</code>, check out our <a href="https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/">previous post</a> on the topic. We want to use a simulation because 1) we can create challenges and learn to overcome them, and 2) we know the correct answers for the graph structure and the attributes, which helps us know whether we have been successful or not.</p>
 <p>We will simulate a network composed of three groups who tend to form edges with other agents of the same group. This is a homophilous network, and we will keep it fairly dense.</p>
 <pre class="r"><code># load package
-library(statnet )
+library(statnet)
 
 # seed for reproducibility
 set.seed(777)
@@ -502,8 +502,8 @@ grid = grid[ !grid$Var1 == grid$Var2, ]</code></pre>
 <p>That looks much nicer. But as you change the size of your nodes, you may also have to change the size of the caps. This is an annoying reality but it is something to keep an eye on. You can see what I mean in the examples below.</p>
 <p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-22-1.png" width="90%" /></p>
 <p>You can also use curved edges called <code>arcs</code> to illustrate reciprocal edges. These function just like the <code>geom_edge_link</code> layer, but they have an additional <code>strength</code> argument that controls the curvature of the arcs.</p>
-<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-23-1.png" width="90%" />
-You must be very careful using arcs because they effect double the number of edges anywhere there is reciprocity, which can add unnecessary density to your graph.</p>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-23-1.png" width="90%" /></p>
+<p>You must be very careful using arcs because they effectively double the number of edges anywhere there is reciprocity, which can add unnecessary density to your graph.</p>
 </div>
 <div id="revisiting-the-reciprocity-graph" class="section level2">
 <h2>Revisiting the reciprocity graph</h2>
@@ -535,39 +535,78 @@ You must be very careful using arcs because they effect double the number of edg
 </blockquote>
 </div>
 </div>
-<div id="layouts" class="section level1">
-<h1>Layouts</h1>
-<p>Now we’ve done quite a bit of visualizing already, but why stop now? Let’s crack on with some information about layouts. I’ve already shown you how to save a layout, and we could go on about which layouts are good or bad or whatever else, but that is a bit boring and there really won’t be a solid rule of thumb about when to use one layout or the other. You’re better off looking at the layouts available within <code>igraph</code> and trying them out yourself.</p>
-<p>So instead, let’s think a bit about what layouts are and how they work.</p>
-<p>A layout is essentially a set of coordinates assigned to each node to determine when they will fall on a two-dimensional plane. The major problem is how to assign coordinates. Most of the layouts that come with R packages use some kind of algorithm or model to assign coordinate. For example, the Fruchterman-Reingold algorithm tries to place nodes with the goal of minimizing the number of overlapping edges. This is great for visualization because it minimized clutter. Other layouts, like Kamada-Kawai, try to place ndoes with similar connection and centrality nearer to each other so that you can understand influential nodes and visual their “structural equivalence”.</p>
-<div id="graph-coreness" class="section level2">
-<h2>Graph coreness</h2>
-<p>Here is a layout created by <a href="https://jcasasr.wordpress.com/2015/02/03/plotting-the-coreness-of-a-network-with-r-and-igraph/">Jordi Casas-Roma</a>. The purpose of this layout is plot nodes based on their k-core values. A k-core measures how central or peripheral a node is relative to all the other nodes. The result is a bit like an onion or some tree rings where nodes with high k-core values are near the center and their layers radiating outward.</p>
-<p>Here is the code. Let’s pick it apart a bit.</p>
-<pre class="r"><code>CorenessLayout &lt;- function(g) {
-    coreness &lt;- graph.coreness(g);
-    xy &lt;- array(NA, dim=c(length(coreness), 2));
-    
-    shells &lt;- sort(unique(coreness));
-    for(shell in shells) {
-        v &lt;- 1 - ((shell-1) / max(shells));
-        nodes_in_shell &lt;- sum(coreness==shell);
-        angles &lt;- seq(0,360,(360/nodes_in_shell));
-        angles &lt;- angles[-length(angles)]; # remove last element
-        xy[coreness==shell, 1] &lt;- sin(angles) * v;
-        xy[coreness==shell, 2] &lt;- cos(angles) * v;
-    }
-    return(xy);
+<div id="large-graphs" class="section level1">
+<h1>Large graphs</h1>
+<p>A visualization problem that many network scientists encounter is the “hairball” effect. When plotting a large network it can be impossible to prevent edges from overlapping, and this causes the network to appear like a big hairball.</p>
+<pre class="r"><code># make hairball 
+N = 1000
+empty_g = network(N, directed = T, density = 0)
+
+# make a network with 1 component 
+sim_g = simulate( empty_g ~ edges + mutual + ostar(3) + odegree(0) + idegree(0), coef=c(-8,3,2,-8,-8) )
+
+# density 
+network.edgecount(sim_g) / (N*(N-1))</code></pre>
+<pre><code>## [1] 0.003808809</code></pre>
+<pre class="r"><code>plot(sim_g)</code></pre>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-26"></span>
+<img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-26-1.png" alt="An unforunate hairball. Note that this is a network with a very low density (0.003)!" width="90%" />
+<p class="caption">
+Figure 3: An unforunate hairball. Note that this is a network with a very low density (0.003)!
+</p>
+</div>
+<p>What can we do in this scenario? Aside from finding substructures and using small multiples, we can work with minimum spanning trees, focus on the core-peripher, or use a block model.</p>
+<div id="minimum-spanning-tree" class="section level2">
+<h2>Minimum spanning tree</h2>
+<p>The minimum spanning tree (MST) identifies the subgraph of a network in which all vertices are connected without any cycles. By definition, a MST has N-1 vertices, so it is essentially a method of pruning a complicated graph to identify the it’s most essential structure.</p>
+<pre class="r"><code>mst = minimum.spanning.tree(intergraph::asIgraph(sim_g))
+plot(intergraph::asNetwork(mst))</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-27-1.png" width="90%" /></p>
+<p>The MST is, of course, not the actual graph from the original simulation. By using it, you are transforming the network in a principled way. What the tree shows is the hierarchical structure of a graph, or the attachment network that underlies a particular hairball<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
+<p>So we need to take special care when using the MST, but it can be useful when you want to visually reveal structure that is otherwise hidden in a hairball.</p>
+</div>
+</div>
+<div id="core-periphery" class="section level1">
+<h1>Core-Periphery</h1>
+<p>One decent option we have to plot a dense graph is to identify the nodes that form the core and periphery of the network. To do this, we use a function in <code>igraph</code> called <code>graph.coreness</code> to find the k-cores of the graph. This function partitions a network into subgroups based on their degree centrality. The function below is provided by Jordi Casas-Roma on <a href="https://jcasasr.wordpress.com/2015/02/03/plotting-the-coreness-of-a-network-with-r-and-igraph/">his blog</a>.</p>
+<pre class="r"><code>KCoreLayout &lt;- function(g) {
+  coreness &lt;- graph.coreness(g)
+  xy &lt;- array(NA, dim=c(length(coreness),2))
+  
+  shells &lt;- sort(unique(coreness))
+  for(s in shells) {
+    v &lt;- 1 - ((s-1) / max(s))
+    nodes_in_s &lt;- sum(coreness==s)
+    angles &lt;- seq(0,360,(360/nodes_in_s))
+    angles &lt;- angles[-length(angles)]
+    xy[coreness==s,1] &lt;- sin(angles) * v
+    xy[coreness==s,2] &lt;- cos(angles) * v
+  }
+  return(xy)
 }</code></pre>
-<p>The first bit is <code>coreness &lt;- graph.coreness(g)</code>. That is obvious. It calculate the k-cores first, since these are the attribute upon which the layout will be based.</p>
-<p>The second bit is to create an array, <code>xy</code>, with dimensions that can hold the total number of cores (<code>length(coresness)</code>) and two columns for <code>x</code> and <code>y</code>.</p>
-<p>Next we have this <code>shells</code> loop.</p>
+<p>To create the visualization we need to calculate the k-cores as node attributes so that these can used in the graph.</p>
+<pre class="r"><code>sim_ig = intergraph::asIgraph(sim_g)
+V(sim_ig)$core = graph.coreness(sim_ig)</code></pre>
+<p>Then we use the <code>KCoreLayout</code> function to save the layout for this graph and then feed it into our <code>ggraph</code> approach like so.</p>
+<pre class="r"><code>lo = KCoreLayout(sim_ig)
+
+sim_ig %&gt;%
+    ggraph(lo) +
+    theme_graph() +
+    geom_edge_arc(strength = 0.1, alpha=0.1) + 
+    geom_node_point( aes(fill=factor(core)), pch=21, size=2 ) + 
+    coord_fixed()</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-30-1.png" width="90%" /></p>
+<p>This graph still suffers from a problem: the edge that make up the innermost core are still very difficult to distinguish. But this is still better than the hairball because we have some separation between the key layers in the network.</p>
+<div id="block-models" class="section level2">
+<h2>Block models</h2>
 </div>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>
 <li id="fn1"><p><code>patchwork</code> has many other functions that allow you to assemble plot layouts, add labels to plots, and choose relative heights and widths. Learn more from the author at <a href="https://patchwork.data-imaginist.com/" class="uri">https://patchwork.data-imaginist.com/</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>Any network created using a preferential attachment model is by definition a minimum spanning tree.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 
