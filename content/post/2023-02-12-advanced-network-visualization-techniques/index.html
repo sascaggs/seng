@@ -138,8 +138,8 @@ full + sub + plot_layout(widths = c(2,5))</code></pre>
     mutate(group_from = .N()$group[from], 
            group_to   = .N()$group[to], 
            group_match = ifelse( group_from == &#39;G1&#39; &amp; group_to == &#39;G1&#39;, &#39;G1&#39;, 
-                         ifelse( group_from == &#39;G2&#39; &amp; group_to == &#39;G2&#39;, &#39;G2&#39;, 
-                         ifelse( group_from == &#39;G3&#39; &amp; group_to == &#39;G3&#39;, &#39;G3&#39;, &#39;No match&#39; ))))
+                                 ifelse( group_from == &#39;G2&#39; &amp; group_to == &#39;G2&#39;, &#39;G2&#39;, 
+                                         ifelse( group_from == &#39;G3&#39; &amp; group_to == &#39;G3&#39;, &#39;G3&#39;, &#39;No match&#39; ))))
 sim_g</code></pre>
 <pre><code>## # A tbl_graph: 60 nodes and 136 edges
 ## #
@@ -177,7 +177,7 @@ sim_g</code></pre>
     scale_edge_color_manual( values = c(&#39;#ad003f&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
     scale_color_manual(values = c(&#39;#ad003f&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
     ggtitle(&#39;Group 1&#39;)
-                                        
+
 g2 = sim_g %&gt;%
     ggraph() + 
     theme_graph() + 
@@ -195,7 +195,7 @@ g3 = sim_g %&gt;%
     scale_edge_color_manual( values = c(&#39;#cccccc77&#39;,&#39;#cccccc77&#39;,&#39;#00c994&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
     scale_color_manual(values = c(&#39;#cccccc77&#39;,&#39;#cccccc77&#39;,&#39;#00c994&#39;), guide = NULL) + 
     ggtitle(&#39;Group 3&#39;) 
-                                        
+
 g1 + g2 + g3</code></pre>
 <div class="figure"><span style="display:block;" id="fig:unnamed-chunk-8"></span>
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" alt="Group substructure in a homophilous network. Each panel emphasizes one group of nodes in the graph with all other edges colored grey." width="99%" />
@@ -260,8 +260,8 @@ plot(sim_g)</code></pre>
     mutate(group_from = .N()$group[from], 
            group_to   = .N()$group[to], 
            group_match = ifelse( group_from == &#39;G1&#39; &amp; group_to == &#39;G1&#39;, &#39;G1&#39;, 
-                         ifelse( group_from == &#39;G2&#39; &amp; group_to == &#39;G2&#39;, &#39;G2&#39;, 
-                         ifelse( group_from == &#39;G3&#39; &amp; group_to == &#39;G3&#39;, &#39;G3&#39;, &#39;None&#39; ))))</code></pre>
+                                 ifelse( group_from == &#39;G2&#39; &amp; group_to == &#39;G2&#39;, &#39;G2&#39;, 
+                                         ifelse( group_from == &#39;G3&#39; &amp; group_to == &#39;G3&#39;, &#39;G3&#39;, &#39;None&#39; ))))</code></pre>
 <p>Now we can map an edge color onto the <code>group_match</code> edge attribute, except this time we want to provide all of our colors in a single palette instead of swapping them out like we did before. In the previous version, we removed the legend by using <code>guide = NULL</code> but these time we want to keep the legend, so we remove these lines.</p>
 <pre class="r"><code>p = sim_g %&gt;%
     ggraph(&#39;mds&#39;) + 
@@ -438,6 +438,35 @@ You must be very careful using arcs because they effect double the number of edg
 <blockquote>
 <p>If an aesthetic provides no additional information, you should omit it.</p>
 </blockquote>
+</div>
+</div>
+<div id="layouts" class="section level1">
+<h1>Layouts</h1>
+<p>Now we’ve done quite a bit of visualizing already, but why stop now? Let’s crack on with some information about layouts. I’ve already shown you how to save a layout, and we could go on about which layouts are good or bad or whatever else, but that is a bit boring and there really won’t be a solid rule of thumb about when to use one layout or the other. You’re better off looking at the layouts available within <code>igraph</code> and trying them out yourself.</p>
+<p>So instead, let’s think a bit about what layouts are and how they work.</p>
+<p>A layout is essentially a set of coordinates assigned to each node to determine when they will fall on a two-dimensional plane. The major problem is how to assign coordinates. Most of the layouts that come with R packages use some kind of algorithm or model to assign coordinate. For example, the Fruchterman-Reingold algorithm tries to place nodes with the goal of minimizing the number of overlapping edges. This is great for visualization because it minimized clutter. Other layouts, like Kamada-Kawai, try to place ndoes with similar connection and centrality nearer to each other so that you can understand influential nodes and visual their “structural equivalence”.</p>
+<div id="graph-coreness" class="section level2">
+<h2>Graph coreness</h2>
+<p>Here is a layout created by <a href="https://jcasasr.wordpress.com/2015/02/03/plotting-the-coreness-of-a-network-with-r-and-igraph/">Jordi Casas-Roma</a>. The purpose of this layout is plot nodes based on their k-core values. A k-core measures how central or peripheral a node is relative to all the other nodes. The result is a bit like an onion or some tree rings where nodes with high k-core values are near the center and their layers radiating outward.</p>
+<p>Here is the code. Let’s pick it apart a bit.</p>
+<pre class="r"><code>CorenessLayout &lt;- function(g) {
+    coreness &lt;- graph.coreness(g);
+    xy &lt;- array(NA, dim=c(length(coreness), 2));
+    
+    shells &lt;- sort(unique(coreness));
+    for(shell in shells) {
+        v &lt;- 1 - ((shell-1) / max(shells));
+        nodes_in_shell &lt;- sum(coreness==shell);
+        angles &lt;- seq(0,360,(360/nodes_in_shell));
+        angles &lt;- angles[-length(angles)]; # remove last element
+        xy[coreness==shell, 1] &lt;- sin(angles) * v;
+        xy[coreness==shell, 2] &lt;- cos(angles) * v;
+    }
+    return(xy);
+}</code></pre>
+<p>The first bit is <code>coreness &lt;- graph.coreness(g)</code>. That is obvious. It calculate the k-cores first, since these are the attribute upon which the layout will be based.</p>
+<p>The second bit is to create an array, <code>xy</code>, with dimensions that can hold the total number of cores (<code>length(coresness)</code>) and two columns for <code>x</code> and <code>y</code>.</p>
+<p>Next we have this <code>shells</code> loop.</p>
 </div>
 </div>
 <div class="footnotes footnotes-end-of-document">

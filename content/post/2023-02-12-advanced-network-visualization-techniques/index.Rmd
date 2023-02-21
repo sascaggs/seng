@@ -59,13 +59,13 @@ d %>%
     xlim(c(-4,4)) + 
     ylim(c(-10,10)) +
     labs(title="Low density scatterplot") + 
-
-d %>%  
+    
+    d %>%  
     ggplot( aes(x=x, y=y) ) + ptheme + 
     geom_point( size=2, pch=21 ) + 
     labs(title="High density scatterplot")
 ```
-Fixing data density problems in conventional graphs, like the scatterplots above, can be pretty simple. But networks pose problems because they tend to have high data density to begin with. This make any additional aesthetic choice risky because it can take us beyond a reasonable data density that viewers can actually comprehend. There is also no straight forward way to change axes or omit nodes and edges without distorting our representation of the network structure. 
+Fixing data density problems in conventional graphs, like the scatterplots above, can be pretty simple. But networks pose problems because they tend to have high data density to begin with. This makes any additional aesthetic choice risky because it can take us beyond a reasonable data density that viewers can actually comprehend. There is also no straight forward way to change axes or omit nodes and edges without distorting our representation of the network structure. 
 
 Let's look at some techniques to deal with data density and then we will move on to some other graphical challenges with networks. 
 
@@ -191,8 +191,8 @@ sim_g = sim_g %>%
     mutate(group_from = .N()$group[from], 
            group_to   = .N()$group[to], 
            group_match = ifelse( group_from == 'G1' & group_to == 'G1', 'G1', 
-                         ifelse( group_from == 'G2' & group_to == 'G2', 'G2', 
-                         ifelse( group_from == 'G3' & group_to == 'G3', 'G3', 'No match' ))))
+                                 ifelse( group_from == 'G2' & group_to == 'G2', 'G2', 
+                                         ifelse( group_from == 'G3' & group_to == 'G3', 'G3', 'No match' ))))
 sim_g
 ```
 
@@ -213,7 +213,7 @@ g1 = sim_g %>%
     scale_edge_color_manual( values = c('#ad003f','#cccccc77','#cccccc77','#cccccc77'), guide = NULL) + 
     scale_color_manual(values = c('#ad003f','#cccccc77','#cccccc77'), guide = NULL) + 
     ggtitle('Group 1')
-                                        
+
 g2 = sim_g %>%
     ggraph() + 
     theme_graph() + 
@@ -231,7 +231,7 @@ g3 = sim_g %>%
     scale_edge_color_manual( values = c('#cccccc77','#cccccc77','#00c994','#cccccc77'), guide = NULL) + 
     scale_color_manual(values = c('#cccccc77','#cccccc77','#00c994'), guide = NULL) + 
     ggtitle('Group 3') 
-                                        
+
 g1 + g2 + g3
 ```
 
@@ -300,8 +300,8 @@ sim_g = sim_g %>%
     mutate(group_from = .N()$group[from], 
            group_to   = .N()$group[to], 
            group_match = ifelse( group_from == 'G1' & group_to == 'G1', 'G1', 
-                         ifelse( group_from == 'G2' & group_to == 'G2', 'G2', 
-                         ifelse( group_from == 'G3' & group_to == 'G3', 'G3', 'None' ))))
+                                 ifelse( group_from == 'G2' & group_to == 'G2', 'G2', 
+                                         ifelse( group_from == 'G3' & group_to == 'G3', 'G3', 'None' ))))
 ```
 
 Now we can map an edge color onto the `group_match` edge attribute, except this time we want to provide all of our colors in a single palette instead of swapping them out like we did before. In the previous version, we removed the legend by using `guide = NULL` but these time we want to keep the legend, so we remove these lines. 
@@ -334,7 +334,7 @@ To visualize reciprocity, we may have to sacrifice our homophily aesthetic, as t
 class(sim_g)
 is.mutual(sim_g)
 ```
- 
+
 The function returns a `TRUE` or `FALSE` value that indicates whether or not that edge is reciprocated. We can create a new edge attribute and label it with these T/F values. You can do this using the `igraph` syntax (`E(sim_g)`) or by using `tidygraph`. I'll show both below. 
 
 ```{r}
@@ -435,9 +435,9 @@ grid %>%
                     start_cap = circle(2,'mm')) + 
     geom_node_point( size=6 ) + 
     ggtitle('Nodes too large for caps') |
-
-# alter the caps 
-grid %>% 
+    
+    # alter the caps 
+    grid %>% 
     as_tbl_graph() %>%
     ggraph() + 
     theme_graph() + 
@@ -457,25 +457,26 @@ grid %>%
     ggraph() + 
     theme_graph() + 
     geom_edge_arc( arrow = arrow( angle=20, length = unit(2, 'mm'), type = 'closed'), 
-                    end_cap = circle(2,'mm'), 
-                    start_cap = circle(2,'mm'), 
+                   end_cap = circle(2,'mm'), 
+                   start_cap = circle(2,'mm'), 
                    strength = 1) + 
     geom_node_point( ) + 
     ggtitle('Strength = 1') |
-
-# alter the caps 
-grid %>% 
+    
+    # alter the caps 
+    grid %>% 
     as_tbl_graph() %>%
     ggraph() + 
     theme_graph() + 
     geom_edge_arc( arrow = arrow( angle=20, length = unit(2, 'mm'), type = 'closed'), 
-                    end_cap = circle(2,'mm'), 
-                    start_cap = circle(2,'mm'), 
+                   end_cap = circle(2,'mm'), 
+                   start_cap = circle(2,'mm'), 
                    strength = 0.1) + 
     geom_node_point( ) + 
-    ggtitle('Strenth = 0.1')
+    ggtitle('Strength = 0.1')
 ```
-You must be very careful using arcs because they effect double the number of edges anywhere there is reciprocity, which can add unnecessary density to your graph.
+
+You must be very careful using arcs because they effectively double the number of edges anywhere there is reciprocity, which can add unnecessary density to your graph.
 
 ## Revisiting the reciprocity graph
 
@@ -511,4 +512,11 @@ This teaches us an important lesson:
 
 > If an aesthetic provides no additional information, you should omit it. 
 
+# Some fun visuals 
+
+```{r}
+
+
+
+```
 
