@@ -6,7 +6,16 @@
     <description>Recent content in simulation on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 24 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/simulation/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 12 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/simulation/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Advanced Network Visualization Techniques</title>
+      <link>https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/</link>
+      <pubDate>Sun, 12 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/</guid>
+      <description>Picture this: You’re working on project and you’ve just finished collecting all your network data. You’ve worked hard to get a complete network and you’re eager to start analyzing it. You power up your computer, load up Rstudio, and after lots of careful wrangling and tidying, you’re ready to plot the network. With great anticipation, you write a little code and WHAM! you get hit with a hot plate of spaghetti and meatballs.</description>
+    </item>
+    
     <item>
       <title>Egocentric patterns in homophilous networks</title>
       <link>https://seng.netlify.app/meetings/complete-and-egocentric-networks/</link>

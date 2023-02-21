@@ -6,7 +6,43 @@
     <description>Recent content in Tags on Social Ecological Networks Group</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 06 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 12 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://seng.netlify.app/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>coding</title>
+      <link>https://seng.netlify.app/tags/coding/</link>
+      <pubDate>Sun, 12 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/coding/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>simulation</title>
+      <link>https://seng.netlify.app/tags/simulation/</link>
+      <pubDate>Sun, 12 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/simulation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>visualization</title>
+      <link>https://seng.netlify.app/tags/visualization/</link>
+      <pubDate>Sun, 12 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/visualization/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>workflow</title>
+      <link>https://seng.netlify.app/tags/workflow/</link>
+      <pubDate>Sun, 12 Feb 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://seng.netlify.app/tags/workflow/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>informational</title>
       <link>https://seng.netlify.app/tags/informational/</link>
@@ -53,29 +89,11 @@
     </item>
     
     <item>
-      <title>workflow</title>
-      <link>https://seng.netlify.app/tags/workflow/</link>
-      <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://seng.netlify.app/tags/workflow/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>bipartite</title>
       <link>https://seng.netlify.app/tags/bipartite/</link>
       <pubDate>Fri, 18 Nov 2022 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/tags/bipartite/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>coding</title>
-      <link>https://seng.netlify.app/tags/coding/</link>
-      <pubDate>Fri, 18 Nov 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://seng.netlify.app/tags/coding/</guid>
       <description></description>
     </item>
     
@@ -121,15 +139,6 @@
       <pubDate>Mon, 24 Jan 2022 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/tags/sampling/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>simulation</title>
-      <link>https://seng.netlify.app/tags/simulation/</link>
-      <pubDate>Mon, 24 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://seng.netlify.app/tags/simulation/</guid>
       <description></description>
     </item>
     
@@ -184,15 +193,6 @@
       <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
       
       <guid>https://seng.netlify.app/tags/graphs/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>visualization</title>
-      <link>https://seng.netlify.app/tags/visualization/</link>
-      <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://seng.netlify.app/tags/visualization/</guid>
       <description></description>
     </item>
     

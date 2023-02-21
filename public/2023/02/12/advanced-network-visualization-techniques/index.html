@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+      
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WSBR7K5LHE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-WSBR7K5LHE');
+</script>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.80.0" />
+
+
+<title>Advanced Network Visualization Techniques - Social Ecological Networks Group</title>
+<meta property="og:title" content="Advanced Network Visualization Techniques - Social Ecological Networks Group">
+
+
+  <link href='https://seng.netlify.app/images/SENG_Circle_NoOutline.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/SENG_Circle_NoOutline.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="/people/">Contributors</a></li>
+    
+    <li><a href="/post/">Posts</a></li>
+    
+    <li><a href="/canon/">Canon</a></li>
+    
+    <li><a href="/meetings/">Meetings</a></li>
+    
+    <li><a href="/contact/">Contact</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    
+    
+    
+    <h1 class="article-title">Advanced Network Visualization Techniques</h1>
+    <span class="article-duration">20 min read</span>
+    <span class="author">Shane A. Scaggs</span> <br>
+    <span class="article-date">2023-02-12</span>
+    <br>
+    <p class="terms">
+      
+      
+      Categories:
+      
+      <a href='/categories/methods'>methods</a>
+       <br>
+      
+      
+      
+      Tags:
+      
+      <a href='/tags/visualization'>visualization</a>
+      
+      <a href='/tags/simulation'>simulation</a>
+      
+      <a href='/tags/coding'>coding</a>
+      
+      <a href='/tags/workflow'>workflow</a>
+       <br>
+      
+       <br>
+    </p>
+    
+
+
+    
+
+    <div class="article-content">
+      
+
+
+<p><img src="images/network%20spaghetti.JPG" style="width:90.0%" /></p>
+<p>Picture this: You’re working on project and you’ve just finished collecting all your network data. You’ve worked hard to get a complete network and you’re eager to start analyzing it. You power up your computer, load up Rstudio, and after lots of careful wrangling and tidying, you’re ready to plot the network. With great anticipation, you write a little code and WHAM! you get hit with a hot plate of spaghetti and meatballs.</p>
+<p>Anyone who has tried to visualize a network that is even remotely <a href="https://seng.netlify.app/2021/12/22/size-structure-and-density/">dense</a> can probably relate to this experience. That’s because networks are complex, multidimensional objects; some of the most difficult objects to visualize.</p>
+<div id="simplicity-of-design-and-the-data-density-problem" class="section level1">
+<h1>Simplicity of design and the data density problem</h1>
+<p>The great statistician Edward Tufte is an expert at data visualization. His book <em>The Visual Display of Quantitative Information</em> gives us many guidelines for designing pleasant graphs. But there are two bits of information that will specifically help us understand how to produce effective network visualizations. The first comes from one of his most well known quotations:</p>
+<blockquote>
+<p>Graphical elegance is often found in simplicity of design and complexity of data.</p>
+</blockquote>
+<p>Networks are, by definition, complex objects. This is true even for graphs with a small quantity of nodes and edges. The inherent complexity of networks means that we must <strong>always</strong> strive for simplicity when we visualize a network. This means you have no choice but to minimize the number of visual aesthetics used in the visualization. Ask yourself: what is the single most essential feature of this network that I want the my audience to appreciate? Let this essence guide your design.</p>
+<p>The second piece of advice is to maximize data density, within reason. You can think of data density as the ratio of “data ink” used to plot the data to the amount of black graph space. This principle, for example, guides our decisions about the range of values on the axes of any plot. The axes should be constrained to the range of values for which we actually have data.</p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-2"></span>
+<img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-2-1.png" alt="Two example scatterplots for the same data. The plot on the left has low data density that is caused by specifying axis ranges that are well beyond the range of the data. The plot on the right fixes this problem, and as a result, we see a more honest portrayal of the pattern." width="90%" />
+<p class="caption">
+Figure 1: Two example scatterplots for the same data. The plot on the left has low data density that is caused by specifying axis ranges that are well beyond the range of the data. The plot on the right fixes this problem, and as a result, we see a more honest portrayal of the pattern.
+</p>
+</div>
+<p>Fixing data density problems in conventional graphs, like the scatterplots above, can be pretty simple. But networks pose problems because they tend to have high data density to begin with. This make any additional aesthetic choice risky because it can take us beyond a reasonable data density that viewers can actually comprehend. There is also no straight forward way to change axes or omit nodes and edges without distorting our representation of the network structure.</p>
+<p>Let’s look at some techniques to deal with data density and then we will move on to some other graphical challenges with networks.</p>
+</div>
+<div id="start-with-a-simulation" class="section level1">
+<h1>Start with a simulation</h1>
+<p>Let’s start by simulating a network that we can use to illustrate some of these techniques. For details about how to simulate networks using <code>statnet</code>, check out our <a href="https://seng.netlify.app/meetings/introduction-to-network-simulation-with-statnet/">previous post</a> on the topic. We want to use a simulation because 1) we can create challenges and learn to overcome them, and 2) we know the correct answers for the graph structure and the attributes, which helps us know whether we have been successful or not.</p>
+<p>We will simulate a network composed of three groups who tend to form edges with other agents of the same group. This is a homophilous network, and we will keep it fairly dense.</p>
+<pre class="r"><code># load package
+library(statnet )
+
+# seed for reproducibility
+set.seed(777)
+
+# how many nodes? how many groups?  
+N = 60 
+groups = c(&#39;G1&#39;,&#39;G2&#39;,&#39;G3&#39;)
+
+# initialize empty network 
+empty_g = network( N, directed = TRUE, density = 0 )
+
+# create group attribute 
+empty_g %v% &#39;group&#39; = sample( groups, size = N, replace = TRUE )
+
+# set parameters for edge density (edges) and homophily (nodematch) and reciprocity (mutual)
+# remember these are in log-odds where 0 = 50/50
+pars = c(-4,1,2) 
+
+# simulate 
+sim_g = simulate( empty_g ~ edges + nodematch(&#39;group&#39;) + mutual, coef = pars )
+plot(sim_g)</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+</div>
+<div id="highlighting-group-structure" class="section level1">
+<h1>Highlighting group structure</h1>
+<p>This graph is structured by three groups. We know because we wrote the simulation. But this structure is not obvious from the graph you see above. It looks like spaghetti and meatballs. A good starting point would be to color each node according to it’s group.</p>
+<pre class="r"><code># load packages 
+library(tidygraph)
+library(ggraph)
+
+sim_g %&gt;% 
+    as_tbl_graph %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link() + 
+    geom_node_point( aes(color=group) )</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+<p>This helps a little bit, but we can do better.</p>
+<div id="using-small-multiples" class="section level2">
+<h2>Using small multiples</h2>
+<p>Tufte advises us to use <em>small multiples</em> – repeated versions of the same graph with different emphases – to maintain data density while improving clarity. When using tools that are based on the grammar of graphics (<code>ggplot2</code>, <code>ggraph</code>, <code>ggdist</code>), we can create small multiples by using <em>facets</em>.</p>
+<p>Faceting takes a single graph and splits it into multiple panels based on a factor. In this case, we want to split the graph based on <code>group</code>, a node attribute. For this we want to use <code>facet_nodes</code>.</p>
+<pre class="r"><code>sim_g %&gt;% 
+    as_tbl_graph %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link() + 
+    geom_node_point( aes(color=group) ) + 
+    facet_nodes(~group)</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p>Now we are able to see more clearly how each group is connected in the graph. However, this technique does pose a new problem: it is too easy to assume that these are three separate networks. There are two ways to solve this problem, and they both will require a package called <code>patchwork</code>. This package allows us to combine multiple graphs using <code>+</code> for side to side and <code>/</code> for top and bottom<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
+<div id="option-1-add-a-reference-graph" class="section level3">
+<h3>Option 1: Add a reference graph</h3>
+<p>One choice we have is to plot the network in full as a reference and then use the facets to draw out the subgraphs. We just add them together with <code>patchwork</code>.</p>
+<pre class="r"><code># full network 
+full = sim_g %&gt;% 
+    as_tbl_graph %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link() + 
+    geom_node_point( aes(color=group) ) + 
+    theme(legend.position = &#39;none&#39;) + 
+    ggtitle(&quot;Full network&quot;)
+
+# sub graphs
+sub = sim_g %&gt;% 
+    as_tbl_graph %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link() + 
+    geom_node_point( aes(color=group) ) + 
+    facet_nodes(~group) + 
+    ggtitle(&quot;Network subgroups&quot;)
+
+
+full + sub + plot_layout(widths = c(2,5))</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<p>All we have really done in this new graph is the following:</p>
+<ol style="list-style-type: decimal">
+<li>Plot the full network.</li>
+<li>Plot the faceted version.</li>
+<li>Save plots as objects and add them together.</li>
+<li>Provide titles with <code>ggtitle</code>.</li>
+<li>Remove the legend from the first graph; it is redundant.</li>
+<li>Adjust the relative widths using <code>plot_layout</code>.</li>
+</ol>
+<p>There is more we could do to make it even prettier but this really helps clarify the full network.</p>
+</div>
+<div id="option-2-plot-three-separate-networks-with-different-emphases" class="section level3">
+<h3>Option 2: Plot three separate networks with different emphases</h3>
+<p>The second option is similar to the first but takes a different path. We will plot the network three separate times but in each graph, we will de-emphasize all but one group. Again, we can string these together using <code>patchwork</code>.</p>
+<p>This approach is slightly more complicated then the first because we want to emphasize both the nodes and edges in each group. To do this, we need to create edge attributes for edges that connect between the groups G1, G2, G3 as well those edges that are not homophilous.</p>
+<pre class="r"><code>sim_g = sim_g %&gt;%
+    as_tbl_graph() %&gt;%
+    activate(edges) %&gt;%
+    mutate(group_from = .N()$group[from], 
+           group_to   = .N()$group[to], 
+           group_match = ifelse( group_from == &#39;G1&#39; &amp; group_to == &#39;G1&#39;, &#39;G1&#39;, 
+                                 ifelse( group_from == &#39;G2&#39; &amp; group_to == &#39;G2&#39;, &#39;G2&#39;, 
+                                         ifelse( group_from == &#39;G3&#39; &amp; group_to == &#39;G3&#39;, &#39;G3&#39;, &#39;No match&#39; ))))
+sim_g</code></pre>
+<pre><code>## # A tbl_graph: 60 nodes and 136 edges
+## #
+## # A directed simple graph with 3 components
+## #
+## # Edge Data: 136 × 6 (active)
+##    from    to na    group_from group_to group_match
+##   &lt;int&gt; &lt;int&gt; &lt;lgl&gt; &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;      
+## 1     1     3 FALSE G1         G1       G1         
+## 2     1    37 FALSE G1         G3       No match   
+## 3     2    11 FALSE G2         G3       No match   
+## 4     2    21 FALSE G2         G3       No match   
+## 5     2    22 FALSE G2         G2       G2         
+## 6     2    32 FALSE G2         G3       No match   
+## # … with 130 more rows
+## #
+## # Node Data: 60 × 3
+##   group na    name 
+##   &lt;chr&gt; &lt;lgl&gt; &lt;chr&gt;
+## 1 G1    FALSE 1    
+## 2 G2    FALSE 2    
+## 3 G1    FALSE 3    
+## # … with 57 more rows</code></pre>
+<p>This code looks a bit more intimidating than it really is. What we have are two essential steps:</p>
+<ol style="list-style-type: decimal">
+<li><p>Code each edge according to the group of each sender (<code>group_from</code>) and each receiver (<code>group_to</code>). This is done by activating the edges (<code>activate(edges)</code>) and then using the <code>.N()$group[from]</code> and <code>.N()$group[to]</code> syntax to pull out the node attributes at beginning and end of each edge.</p></li>
+<li><p>Next, we use these two new edge attributes within some nested <code>ifelse</code> statements where we ask if the groups are the same, and if so, assign that group to the edge.</p></li>
+</ol>
+<p>Once we have those attributes, we can use them to color the nodes and edges.</p>
+<pre class="r"><code>g1 = sim_g %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=group_match) ) + 
+    geom_node_point( aes( color=group) ) + 
+    scale_edge_color_manual( values = c(&#39;#ad003f&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
+    scale_color_manual(values = c(&#39;#ad003f&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
+    ggtitle(&#39;Group 1&#39;)
+
+g2 = sim_g %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=group_match) ) + 
+    geom_node_point( aes( color=group) ) + 
+    scale_edge_color_manual( values = c(&#39;#cccccc77&#39;,&#39;#d2a52e&#39;,&#39;#cccccc77&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
+    scale_color_manual(values = c(&#39;#cccccc77&#39;,&#39;#d2a52e&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
+    ggtitle(&#39;Group 2&#39;)   
+
+g3 = sim_g %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=group_match) ) + 
+    geom_node_point( aes( color=group) ) + 
+    scale_edge_color_manual( values = c(&#39;#cccccc77&#39;,&#39;#cccccc77&#39;,&#39;#00c994&#39;,&#39;#cccccc77&#39;), guide = NULL) + 
+    scale_color_manual(values = c(&#39;#cccccc77&#39;,&#39;#cccccc77&#39;,&#39;#00c994&#39;), guide = NULL) + 
+    ggtitle(&#39;Group 3&#39;) 
+
+g1 + g2 + g3</code></pre>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-8"></span>
+<img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-8-1.png" alt="Group substructure in a homophilous network. Each panel emphasizes one group of nodes in the graph with all other edges colored grey." width="99%" />
+<p class="caption">
+Figure 2: Group substructure in a homophilous network. Each panel emphasizes one group of nodes in the graph with all other edges colored grey.
+</p>
+</div>
+<p>Now we’ve just repeated the same graph three times. We use an all grey palette and just switch out one of the grey colors for a emphasis color based on the position of the group name in the vector, e.g., group 1 is position 1 in the vector of color values.</p>
+<p>One complication with this approach is how to create a legend. There is a solution to this but it requires making plot with all the colors, extracting only the legend, and then plotting the legend alone in a fourth panel. I’ve gotten around this by using titles and explaining the colors in the caption.</p>
+</div>
+<div id="a-note-on-layouts" class="section level3">
+<h3>A note on layouts</h3>
+<p>We will focus on layouts a bit more later on in this post, but I just want to make one thing explicit about the two examples above:</p>
+<blockquote>
+<p>The layout must be the same for each graph, otherwise it will be impossible to visually compare the structure across graphs.</p>
+</blockquote>
+<p>The layout for these graphs is the <code>ggraph</code> default called <code>"stress"</code>. Because this layout does not randomly change each time we make a plot – unlike Fruchterman-Reingold layouts, for example – we don’t need to do anything special. But if you want to use a different layout that has more randomness to it, you can save the layout first and then reuse it. This is done within <code>igraph</code> but can be transferred to <code>ggraph</code> with no problems.</p>
+<pre class="r"><code># same layout fr 
+lo = layout_with_fr(sim_g)
+plot(sim_g, layout = lo)</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
+<pre class="r"><code># use lo in ggraph 
+sim_g %&gt;%
+    ggraph(layout = lo) +
+    geom_edge_link() + 
+    geom_node_point()</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-9-2.png" width="90%" /></p>
+</div>
+</div>
+</div>
+<div id="homophily-and-reciprocity" class="section level1">
+<h1>Homophily and Reciprocity</h1>
+<p>The examples using small multiples have already provided some of the tools for visualizing dyadic attributes. Let’s dig a little deeper into dyads by creating visualizations that highlight homophily and reciprocity.</p>
+<p>But first, a new simulation of a larger network.</p>
+<pre class="r"><code># seed for reproducibility
+set.seed(777)
+
+# how many nodes? how many groups?  
+N = 100 
+groups = c(&#39;G1&#39;,&#39;G2&#39;,&#39;G3&#39;)
+
+# initialize empty network 
+empty_g = network( N, directed = TRUE, density = 0 )
+
+# create group attribute 
+empty_g %v% &#39;group&#39; = sample( groups, size = N, replace = TRUE )
+
+# set parameters for edge density (edges) and homophily (nodematch) and reciprocity (mutual)
+# remember these are in log-odds where 0 = 50/50
+pars = c(-5.5,3,2) 
+
+# simulate 
+sim_g = simulate( empty_g ~ edges + nodematch(&#39;group&#39;) + mutual, coef = pars )
+plot(sim_g)</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<div id="homophily" class="section level2">
+<h2>Homophily</h2>
+<p>Instead of visualizing homophily among groups using multiples, let’s do this on a single graph. We can usual a similar approach to the one above where we tag edges based on the sender and receiver.</p>
+<pre class="r"><code>sim_g = sim_g %&gt;%
+    as_tbl_graph() %&gt;%
+    activate(edges) %&gt;%
+    mutate(group_from = .N()$group[from], 
+           group_to   = .N()$group[to], 
+           group_match = ifelse( group_from == &#39;G1&#39; &amp; group_to == &#39;G1&#39;, &#39;G1&#39;, 
+                                 ifelse( group_from == &#39;G2&#39; &amp; group_to == &#39;G2&#39;, &#39;G2&#39;, 
+                                         ifelse( group_from == &#39;G3&#39; &amp; group_to == &#39;G3&#39;, &#39;G3&#39;, &#39;None&#39; ))))</code></pre>
+<p>Now we can map an edge color onto the <code>group_match</code> edge attribute, except this time we want to provide all of our colors in a single palette instead of swapping them out like we did before. In the previous version, we removed the legend by using <code>guide = NULL</code> but these time we want to keep the legend, so we remove these lines.</p>
+<pre class="r"><code>p = sim_g %&gt;%
+    ggraph(&#39;mds&#39;) + 
+    theme_graph() + 
+    geom_edge_link( aes(color=group_match), alpha=0.5 ) + 
+    geom_node_point( aes( color=group) ) + 
+    scale_edge_color_manual( values = c(&#39;#ad003f&#39;,&#39;#3300ff&#39;,&#39;springgreen&#39;,&#39;#aaaaaa&#39;)) + 
+    scale_color_manual(values = c(&#39;#ad003f&#39;,&#39;#3300ff&#39;,&#39;springgreen&#39;))
+p </code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+<p>Here I am using the multidimensional scaling layout (<code>mds</code>) because it will give us more separation between the groups. With these layout we see very clearly the edge which occur between groups (e.g., “None”).</p>
+<p>Let’s also clean up the legend a bit by change the legend labels. We do this using the <code>labs</code> layer.</p>
+<pre class="r"><code>p + labs(edge_color=&#39;Homophily&#39;, color=&#39;Group&#39;)</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+</div>
+<div id="reciprocity" class="section level2">
+<h2>Reciprocity</h2>
+<p>To visualize reciprocity, we may have to sacrifice our homophily aesthetic, as this would be much too complicated for a viewer. The basic setup is to tag every edge which is reciprocal. The easiest function for doing this is called <code>is.mutual</code> from the <code>{igraph}</code> package. This function <em>does not</em> work with <code>network</code> objects created in <code>{statnet}</code> but it does work with <code>igraph</code> objects or <code>tbl_graph</code> objects.</p>
+<pre class="r"><code>class(sim_g)</code></pre>
+<pre><code>## [1] &quot;tbl_graph&quot; &quot;igraph&quot;</code></pre>
+<pre class="r"><code>is.mutual(sim_g)</code></pre>
+<pre><code>##   [1] FALSE  TRUE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE
+##  [13] FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE
+##  [25]  TRUE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE
+##  [37] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE  TRUE  TRUE
+##  [49] FALSE FALSE  TRUE FALSE  TRUE  TRUE  TRUE FALSE  TRUE FALSE FALSE FALSE
+##  [61] FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE
+##  [73]  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE
+##  [85]  TRUE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE
+##  [97]  TRUE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE
+## [109] FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE
+## [121]  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE  TRUE
+## [133] FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE
+## [145] FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE FALSE  TRUE  TRUE FALSE  TRUE
+## [157] FALSE  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE  TRUE
+## [169] FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## [181] FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE FALSE  TRUE  TRUE
+## [193]  TRUE FALSE FALSE  TRUE  TRUE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE
+## [205] FALSE  TRUE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
+## [217] FALSE  TRUE FALSE  TRUE  TRUE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE
+## [229]  TRUE  TRUE FALSE  TRUE  TRUE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE
+## [241] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE
+## [253]  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE
+## [265] FALSE FALSE  TRUE FALSE  TRUE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
+## [277] FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE  TRUE  TRUE FALSE
+## [289] FALSE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE
+## [301]  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE  TRUE FALSE  TRUE  TRUE
+## [313] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE FALSE
+## [325]  TRUE  TRUE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE FALSE FALSE  TRUE
+## [337] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
+## [349]  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE
+## [361]  TRUE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE
+## [373] FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE
+## [385] FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE
+## [397] FALSE FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE  TRUE FALSE</code></pre>
+<p>The function returns a <code>TRUE</code> or <code>FALSE</code> value that indicates whether or not that edge is reciprocated. We can create a new edge attribute and label it with these T/F values. You can do this using the <code>igraph</code> syntax (<code>E(sim_g)</code>) or by using <code>tidygraph</code>. I’ll show both below.</p>
+<pre class="r"><code># igraph method
+E(sim_g)$Reciprocity = is.mutual(sim_g)
+
+# tidygraph methods 
+sim_g %&gt;%
+    activate(edges) %&gt;%
+    mutate(Reciprocity = is.mutual(sim_g))</code></pre>
+<pre><code>## # A tbl_graph: 100 nodes and 406 edges
+## #
+## # A directed simple graph with 2 components
+## #
+## # Edge Data: 406 × 7 (active)
+##    from    to na    group_from group_to group_match Reciprocity
+##   &lt;int&gt; &lt;int&gt; &lt;lgl&gt; &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;       &lt;lgl&gt;      
+## 1     1    15 FALSE G2         G3       None        FALSE      
+## 2     1    22 FALSE G2         G2       G2          TRUE       
+## 3     1    36 FALSE G2         G2       G2          FALSE      
+## 4     1    65 FALSE G2         G2       G2          FALSE      
+## 5     2    24 FALSE G2         G2       G2          FALSE      
+## 6     2    44 FALSE G2         G2       G2          TRUE       
+## # … with 400 more rows
+## #
+## # Node Data: 100 × 3
+##   group na    name 
+##   &lt;chr&gt; &lt;lgl&gt; &lt;chr&gt;
+## 1 G2    FALSE 1    
+## 2 G2    FALSE 2    
+## 3 G2    FALSE 3    
+## # … with 97 more rows</code></pre>
+<p>Armed with out new edge attribute, we can plot the network by mapping a color to this attribute. I find that black and transparent grey are ideal for this attribute. Keep it simple.</p>
+<pre class="r"><code>sim_g %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=Reciprocity) ) + 
+    geom_node_point( ) + 
+    scale_edge_color_manual( values = c(&#39;#aaaaaa55&#39;,&#39;black&#39;)) </code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
+</div>
+<div id="working-with-arrows" class="section level2">
+<h2>Working with arrows</h2>
+<p>There is something glaringly missing from this directed graph: arrows. Arrows are tricky with networks because they add visual clutter. We should only use them when we absolutely need to, and in this case, where we are communicating patterns fo reciprocity, it would be great to have some arrows.</p>
+<p>We handle arrows in a <code>ggraph</code> by using an arrow argument. There are a few things to consider here:</p>
+<ol style="list-style-type: decimal">
+<li>How large should the arrows be?</li>
+<li>What angle should we used for the arrowhead?</li>
+<li>Should the arrow heads touch the nodes?</li>
+</ol>
+<p>Personally, I prefer smaller arrows for less clutter and I prefer the arrowheads do not touch the nodes. Let’s look at a simple example first.</p>
+<pre class="r"><code>x = 1:3
+grid = expand.grid(x,x)
+grid = grid[ !grid$Var1 == grid$Var2, ]</code></pre>
+<p>Here I’ve create a simple grid of node pairs 1, 2, and 3 and removed all of the loops in the grid. Now let’s make a plot with them so that you can see how the arrow arguments work.</p>
+<pre class="r"><code>grid %&gt;% 
+    as_tbl_graph() %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( arrow = arrow( angle=30, length = unit(3, &#39;mm&#39;), type = &#39;closed&#39;) ) + 
+    geom_node_point()</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
+<p>Not particularly pretty. We can’t really see the nodes, the arrow heads are too long and the angle is much to wide.</p>
+<pre class="r"><code>grid %&gt;% 
+    as_tbl_graph() %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( arrow = arrow( angle=20, length = unit(2, &#39;mm&#39;), type = &#39;closed&#39;) ) + 
+    geom_node_point()</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
+<p>That is starting to look a little better. But it would be great if we could prevent the arrowheads from touching the nodes. For this, we need to manipulate the <code>end_cap</code> and <code>start_cap</code>.</p>
+<pre class="r"><code>grid %&gt;% 
+    as_tbl_graph() %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( arrow = arrow( angle=20, length = unit(2, &#39;mm&#39;), type = &#39;closed&#39;), 
+                    end_cap = circle(2,&#39;mm&#39;) ) + 
+    geom_node_point()</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-20-1.png" width="90%" /></p>
+<p>I’ve supplied a <code>circle</code> to the <code>end_cap</code> argument telling R that I want to leave a circular buffer that has a 2 mm radius. But because the edges are flowing in all directions, we need to supply the same argument to the <code>start_cap</code>.</p>
+<pre class="r"><code>grid %&gt;% 
+    as_tbl_graph() %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( arrow = arrow( angle=20, length = unit(2, &#39;mm&#39;), type = &#39;closed&#39;), 
+                    end_cap = circle(2,&#39;mm&#39;), 
+                    start_cap = circle(2,&#39;mm&#39;)) + 
+    geom_node_point()</code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-21-1.png" width="90%" /></p>
+<p>That looks much nicer. But as you change the size of your nodes, you may also have to change the size of the caps. This is an annoying reality but it is something to keep an eye on. You can see what I mean in the examples below.</p>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-22-1.png" width="90%" /></p>
+<p>You can also use curved edges called <code>arcs</code> to illustrate reciprocal edges. These function just like the <code>geom_edge_link</code> layer, but they have an additional <code>strength</code> argument that controls the curvature of the arcs.</p>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-23-1.png" width="90%" />
+You must be very careful using arcs because they effect double the number of edges anywhere there is reciprocity, which can add unnecessary density to your graph.</p>
+</div>
+<div id="revisiting-the-reciprocity-graph" class="section level2">
+<h2>Revisiting the reciprocity graph</h2>
+<p>Now let’s apply the arrow techniques to the reciprocity graph from above.</p>
+<pre class="r"><code>sim_g %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=Reciprocity),
+                    arrow = arrow( angle=20, length = unit(1, &#39;mm&#39;), type = &#39;closed&#39;), 
+                    end_cap = circle(1,&#39;mm&#39;), 
+                    start_cap = circle(1,&#39;mm&#39;)) + 
+    geom_node_point( ) + 
+    scale_edge_color_manual( values = c(&#39;#aaaaaa55&#39;,&#39;black&#39;)) </code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-24-1.png" width="90%" /></p>
+<p>In principle, we don’t really even need nodes to visualize this graph because they provide little information. This is what it looks like when we omit them.</p>
+<pre class="r"><code>sim_g %&gt;%
+    ggraph() + 
+    theme_graph() + 
+    geom_edge_link( aes(color=Reciprocity),
+                    arrow = arrow( angle=20, length = unit(1, &#39;mm&#39;), type = &#39;closed&#39;), 
+                    end_cap = circle(1,&#39;mm&#39;), 
+                    start_cap = circle(1,&#39;mm&#39;)) + 
+    #geom_node_point( ) + 
+    scale_edge_color_manual( values = c(&#39;#aaaaaa55&#39;,&#39;black&#39;)) </code></pre>
+<p><img src="https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/index_files/figure-html/unnamed-chunk-25-1.png" width="90%" /></p>
+<p>This teaches us an important lesson:</p>
+<blockquote>
+<p>If an aesthetic provides no additional information, you should omit it.</p>
+</blockquote>
+</div>
+</div>
+<div id="layouts" class="section level1">
+<h1>Layouts</h1>
+<p>Now we’ve done quite a bit of visualizing already, but why stop now? Let’s crack on with some information about layouts. I’ve already shown you how to save a layout, and we could go on about which layouts are good or bad or whatever else, but that is a bit boring and there really won’t be a solid rule of thumb about when to use one layout or the other. You’re better off looking at the layouts available within <code>igraph</code> and trying them out yourself.</p>
+<p>So instead, let’s think a bit about what layouts are and how they work.</p>
+<p>A layout is essentially a set of coordinates assigned to each node to determine when they will fall on a two-dimensional plane. The major problem is how to assign coordinates. Most of the layouts that come with R packages use some kind of algorithm or model to assign coordinate. For example, the Fruchterman-Reingold algorithm tries to place nodes with the goal of minimizing the number of overlapping edges. This is great for visualization because it minimized clutter. Other layouts, like Kamada-Kawai, try to place ndoes with similar connection and centrality nearer to each other so that you can understand influential nodes and visual their “structural equivalence”.</p>
+<div id="graph-coreness" class="section level2">
+<h2>Graph coreness</h2>
+<p>Here is a layout created by <a href="https://jcasasr.wordpress.com/2015/02/03/plotting-the-coreness-of-a-network-with-r-and-igraph/">Jordi Casas-Roma</a>. The purpose of this layout is plot nodes based on their k-core values. A k-core measures how central or peripheral a node is relative to all the other nodes. The result is a bit like an onion or some tree rings where nodes with high k-core values are near the center and their layers radiating outward.</p>
+<p>Here is the code. Let’s pick it apart a bit.</p>
+<pre class="r"><code>CorenessLayout &lt;- function(g) {
+    coreness &lt;- graph.coreness(g);
+    xy &lt;- array(NA, dim=c(length(coreness), 2));
+    
+    shells &lt;- sort(unique(coreness));
+    for(shell in shells) {
+        v &lt;- 1 - ((shell-1) / max(shells));
+        nodes_in_shell &lt;- sum(coreness==shell);
+        angles &lt;- seq(0,360,(360/nodes_in_shell));
+        angles &lt;- angles[-length(angles)]; # remove last element
+        xy[coreness==shell, 1] &lt;- sin(angles) * v;
+        xy[coreness==shell, 2] &lt;- cos(angles) * v;
+    }
+    return(xy);
+}</code></pre>
+<p>The first bit is <code>coreness &lt;- graph.coreness(g)</code>. That is obvious. It calculate the k-cores first, since these are the attribute upon which the layout will be based.</p>
+<p>The second bit is to create an array, <code>xy</code>, with dimensions that can hold the total number of cores (<code>length(coresness)</code>) and two columns for <code>x</code> and <code>y</code>.</p>
+<p>Next we have this <code>shells</code> loop.</p>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p><code>patchwork</code> has many other functions that allow you to assemble plot layouts, add labels to plots, and choose relative heights and widths. Learn more from the author at <a href="https://patchwork.data-imaginist.com/" class="uri">https://patchwork.data-imaginist.com/</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+    </div>
+  </article>
+  
+  <aside> 
+  
+  </aside>
+
+  
+
+
+</main>
+
+<footer class="footer">
+        <ul class="footer-links">
+          
+          <h2> <strong> Social Ecological Networks Group </strong> </h2>
+          <img src = "/images/SENG_Circle_NoOutline.png" alt = "SENG logo" width = "108" height = "96">
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

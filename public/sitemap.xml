@@ -3,8 +3,53 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://seng.netlify.app/2023/02/12/advanced-network-visualization-techniques/</loc>
+    <lastmod>2023-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://seng.netlify.app/categories/</loc>
-    <lastmod>2023-01-06T00:00:00+00:00</lastmod>
+    <lastmod>2023-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/coding/</loc>
+    <lastmod>2023-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/categories/methods/</loc>
+    <lastmod>2023-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/post/</loc>
+    <lastmod>2023-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/simulation/</loc>
+    <lastmod>2023-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/</loc>
+    <lastmod>2023-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/</loc>
+    <lastmod>2023-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/visualization/</loc>
+    <lastmod>2023-02-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://seng.netlify.app/tags/workflow/</loc>
+    <lastmod>2023-02-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -23,17 +68,7 @@
   </url>
   
   <url>
-    <loc>https://seng.netlify.app/</loc>
-    <lastmod>2023-01-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://seng.netlify.app/meetings/spring-2023-schedule/</loc>
-    <lastmod>2023-01-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://seng.netlify.app/tags/</loc>
     <lastmod>2023-01-06T00:00:00+00:00</lastmod>
   </url>
   
@@ -53,16 +88,6 @@
   </url>
   
   <url>
-    <loc>https://seng.netlify.app/categories/methods/</loc>
-    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://seng.netlify.app/post/</loc>
-    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://seng.netlify.app/tags/statnet/</loc>
     <lastmod>2022-12-06T00:00:00+00:00</lastmod>
   </url>
@@ -73,22 +98,12 @@
   </url>
   
   <url>
-    <loc>https://seng.netlify.app/tags/workflow/</loc>
-    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://seng.netlify.app/tags/bipartite/</loc>
     <lastmod>2022-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://seng.netlify.app/2022/11/18/bipartite-exponential-random-graph-models/</loc>
-    <lastmod>2022-11-18T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://seng.netlify.app/tags/coding/</loc>
     <lastmod>2022-11-18T00:00:00+00:00</lastmod>
   </url>
   
@@ -153,11 +168,6 @@
   </url>
   
   <url>
-    <loc>https://seng.netlify.app/tags/simulation/</loc>
-    <lastmod>2022-01-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://seng.netlify.app/tags/sociocentric-networks/</loc>
     <lastmod>2022-01-24T00:00:00+00:00</lastmod>
   </url>
@@ -209,11 +219,6 @@
   
   <url>
     <loc>https://seng.netlify.app/meetings/introduction-to-networks-in-r/</loc>
-    <lastmod>2021-02-26T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://seng.netlify.app/tags/visualization/</loc>
     <lastmod>2021-02-26T00:00:00+00:00</lastmod>
   </url>
   
